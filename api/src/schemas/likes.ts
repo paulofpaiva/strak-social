@@ -1,0 +1,13 @@
+import { pgTable, serial, uuid, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { posts } from "./posts.js";
+import { users, strakSchema } from "./auth.js";
+
+export const likes = strakSchema.table("likes", {
+  id: serial("id").primaryKey(),
+  postId: serial("post_id").references(() => posts.id).notNull(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+    // user can only like once, could maybe think better of this sometime
+  uniq: uniqueIndex("likes_user_post_idx").on(table.userId, table.postId), 
+}));

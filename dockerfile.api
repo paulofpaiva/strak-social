@@ -1,0 +1,14 @@
+FROM node:20-alpine
+
+WORKDIR /usr/src/app
+
+COPY api/package*.json ./
+RUN npm install
+
+COPY api .
+
+RUN npm run build
+
+EXPOSE 3001
+
+CMD ["sh", "-c", "npm run db:migrate && npm run start"]

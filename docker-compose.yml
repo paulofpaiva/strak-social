@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: strak-social-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: strak_social
+    ports:
+      - "8002:5432"
+    volumes:
+      - strak-social-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  api:
+    build:
+      context: .
+      dockerfile: dockerfile.api
+    container_name: strak-social-api
+    working_dir: /usr/src/app
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/strak_social
+      PORT: 3001
+    ports:
+      - "8001:3001"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  app:
+    build:
+      context: .
+      dockerfile: dockerfile.app
+    container_name: strak-social-app
+    ports:
+      - "8000:80"
+    depends_on:
+      - api
+
+volumes:
+  strak-social-pgdata:
