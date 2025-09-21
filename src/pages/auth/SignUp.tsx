@@ -1,14 +1,16 @@
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft } from "lucide-react"
+import { AvatarInput } from "@/components/ui/avatar-input"
+import { AuthLayout } from "@/layouts"
 import { Link, useNavigate } from "react-router"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { signUpSchema, type SignUpFormData } from "@/schemas/auth"
-import { useSignUp } from "@/hooks/useAuth"
+import { useSignUp } from "@/hooks"
 import { useTogglePassword } from "@/hooks"
+import { uploadAvatar } from "@/api/upload"
 import { Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
 
@@ -16,6 +18,8 @@ export function SignUp() {
   const navigate = useNavigate()
   const { signUp, isLoading } = useSignUp()
   const [error, setError] = useState<string>("")
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [avatarPreview, setAvatarPreview] = useState<string | undefined>(undefined)
 
   const {
     register,
@@ -30,38 +34,40 @@ export function SignUp() {
   const onSubmit = async (data: SignUpFormData) => {
     try {
       setError("")
-      await signUp(data)
-      navigate("/app/dashboard", { replace: true })
+      
+      let avatarUrl: string | undefined = undefined
+      if (avatarFile) {
+        const uploadResult = await uploadAvatar(avatarFile)
+        avatarUrl = uploadResult.url
+      }
+      
+      await signUp({ ...data, avatar: avatarUrl })
+      navigate("/dashboard", { replace: true })
     } catch (error: any) {
-      setError(error.message || "Erro ao criar conta")
+      setError(error.message || "Error creating account")
     }
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-4 relative">
-      <div className="absolute top-6 left-6">
-        <Button asChild variant="ghost" className="text-white">
-          <Link to="/" className="flex items-center space-x-2">
-            <ArrowLeft className="h-4 w-4" />
-            <span>Voltar</span>
-          </Link>
-        </Button>
-      </div>
-      <Card className="w-full max-w-md border-gray-900 bg-black">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-              <span className="text-black font-bold text-lg">S</span>
+    <AuthLayout 
+      title="Create Account" 
+      description="Join Strak Social and connect with the world"
+    >
+      <Card className="border-gray-900 bg-black">
+        <CardContent className="p-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Avatar Upload */}
+            <div className="flex justify-center">
+              <AvatarInput
+                value={avatarPreview}
+                onChange={(file, previewUrl) => {
+                  setAvatarFile(file)
+                  setAvatarPreview(previewUrl || undefined)
+                }}
+                size="xl"
+              />
             </div>
-          </div>
-          <CardTitle className="text-2xl font-bold text-white">Create Account</CardTitle>
-          <CardDescription className="text-gray-400">
-            Join Strak Social and connect with the world
-          </CardDescription>
-        </CardHeader>
-        
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+
             <div className="space-y-2">
               <Label htmlFor="name" className="text-white">Name</Label>
               <Input
@@ -118,19 +124,12 @@ export function SignUp() {
               disabled={isLoading}
               className="w-full bg-white text-black hover:bg-gray-200 disabled:opacity-50"
             >
-              {isLoading ? "Criando Conta..." : "Criar Conta"}
+              {isLoading ? "Creating Account..." : "Create Account"}
             </Button>
             
             {error && (
               <div className="text-red-400 text-sm text-center space-y-1">
                 <p>{error}</p>
-                {error.includes('já está cadastrado') && (
-                  <p className="text-xs text-gray-400">
-                    Já tem uma conta? <Button asChild variant="link" className="p-0 h-auto text-blue-400 hover:text-blue-300">
-                      <Link to="/auth/sign-in">Faça login aqui</Link>
-                    </Button>
-                  </p>
-                )}
               </div>
             )}
           </form>
@@ -138,13 +137,13 @@ export function SignUp() {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-400">
               Already have an account?{" "}
-              <Button variant="link" className="p-0 h-auto text-white hover:text-gray-300">
+              <Link to={"/auth/sign-in"} className="p-0 h-auto text-blue-400 hover:text-blue-300">
                 Sign In
-              </Button>
+              </Link>
             </p>
           </div>
         </CardContent>
       </Card>
-    </div>
+    </AuthLayout>
   )
 }

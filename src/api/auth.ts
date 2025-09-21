@@ -33,18 +33,18 @@ export const signUpApi = async (data: SignUpFormData): Promise<ApiResponse> => {
       
       if (apiError.details && Array.isArray(apiError.details)) {
         const validationErrors = apiError.details.map((detail: any) => detail.message).join(', ')
-        throw new Error(`Erro de validação: ${validationErrors}`)
+        throw new Error(`Validation error: ${validationErrors}`)
       }
       
       if (apiError.error) {
         throw new Error(apiError.error)
       }
       
-      throw new Error('Falha no cadastro. Tente novamente.')
+      throw new Error('Sign up failed. Please try again.')
     } else if (error.request) {
-      throw new Error('Erro de conexão. Verifique sua internet e tente novamente.')
+      throw new Error('Connection error. Please check your internet and try again.')
     } else {
-      throw new Error('Ocorreu um erro inesperado')
+      throw new Error('An unexpected error occurred')
     }
   }
 }
@@ -61,11 +61,11 @@ export const signInApi = async (data: SignInFormData): Promise<ApiResponse> => {
         throw new Error(apiError.error)
       }
       
-      throw new Error('Falha no login. Tente novamente.')
+      throw new Error('Login failed. Please try again.')
     } else if (error.request) {
-      throw new Error('Erro de conexão. Verifique sua internet e tente novamente.')
+      throw new Error('Connection error. Please check your internet and try again.')
     } else {
-      throw new Error('Ocorreu um erro inesperado')
+      throw new Error('An unexpected error occurred')
     }
   }
 }
@@ -74,8 +74,7 @@ export const signOutApi = async (): Promise<void> => {
   try {
     await api.post('/auth/sign-out')
   } catch (error: any) {
-    // Mesmo se der erro, consideramos logout realizado
-    console.error('Erro no logout:', error)
+    console.error('Logout error:', error)
   }
 }
 
@@ -84,7 +83,49 @@ export const getSessionApi = async (): Promise<ApiResponse> => {
     const response = await api.get<ApiResponse>('/auth/session')
     return response.data
   } catch (error: any) {
-    throw new Error('Sessão não encontrada')
+    throw new Error('Session not found')
+  }
+}
+
+export const updateProfileApi = async (data: { name?: string; avatar?: string }): Promise<ApiResponse> => {
+  try {
+    const response = await api.put<ApiResponse>('/auth/profile', data)
+    return response.data
+  } catch (error: any) {
+    if (error.response?.data) {
+      const apiError = error.response.data
+      
+      if (apiError.error) {
+        throw new Error(apiError.error)
+      }
+      
+      throw new Error('Profile update failed. Please try again.')
+    } else if (error.request) {
+      throw new Error('Connection error. Please check your internet and try again.')
+    } else {
+      throw new Error('An unexpected error occurred')
+    }
+  }
+}
+
+export const changePasswordApi = async (data: { currentPassword: string; newPassword: string; confirmPassword: string }): Promise<ApiResponse> => {
+  try {
+    const response = await api.put<ApiResponse>('/auth/change-password', data)
+    return response.data
+  } catch (error: any) {
+    if (error.response?.data) {
+      const apiError = error.response.data
+      
+      if (apiError.error) {
+        throw new Error(apiError.error)
+      }
+      
+      throw new Error('Password change failed. Please try again.')
+    } else if (error.request) {
+      throw new Error('Connection error. Please check your internet and try again.')
+    } else {
+      throw new Error('An unexpected error occurred')
+    }
   }
 }
 

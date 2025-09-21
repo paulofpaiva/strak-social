@@ -6,6 +6,7 @@ CREATE TABLE "strak_social"."users" (
 	"email" text NOT NULL,
 	"name" text NOT NULL,
 	"password" text NOT NULL,
+	"avatar" text,
 	"email_verified" boolean DEFAULT false,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,

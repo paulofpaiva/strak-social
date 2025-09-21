@@ -1,7 +1,10 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import path from 'path';
 import { authRoutes } from './routes/auth.js';
+import uploadRoutes from './routes/upload.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -15,12 +18,18 @@ app.use(cors({
 }));
 
 app.use(express.json({ limit: '10mb' }));
+app.use(cookieParser());
+
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 app.get('/', (req, res) => {
   res.json({ message: 'API is running' });
 });
 
+
 app.use('/api/auth', authRoutes);
+app.use('/api', uploadRoutes);
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);

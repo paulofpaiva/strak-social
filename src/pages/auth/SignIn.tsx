@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft } from "lucide-react"
+import { AuthLayout } from "@/layouts"
 import { Link, useNavigate, useLocation } from "react-router"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { signInSchema, type SignInFormData } from "@/schemas/auth"
-import { useLogin } from "@/hooks/useAuth"
+import { useLogin } from "@/hooks"
 import { useState } from "react"
 
 export function SignIn() {
@@ -29,46 +29,27 @@ export function SignIn() {
       setError("")
       await login(data.email, data.password)
       
-      // Redirecionar para a página que tentou acessar ou dashboard
-      const from = location.state?.from?.pathname || "/app/dashboard"
+      const from = location.state?.from?.pathname || "/dashboard"
       navigate(from, { replace: true })
     } catch (error: any) {
-      setError(error.message || "Erro ao fazer login")
+      setError(error.message || "Login error")
     }
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-4 relative">
-      <div className="absolute top-6 left-6">
-        <Button asChild variant="ghost" className="text-white">
-          <Link to="/" className="flex items-center space-x-2">
-            <ArrowLeft className="h-4 w-4" />
-            <span>Voltar</span>
-          </Link>
-        </Button>
-      </div>
-      
-      <Card className="w-full max-w-md border-gray-900 bg-black">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-              <span className="text-black font-bold text-lg">S</span>
-            </div>
-          </div>
-          <CardTitle className="text-2xl font-bold text-white">Entrar</CardTitle>
-          <CardDescription className="text-gray-400">
-            Acesse sua conta no Strak Social
-          </CardDescription>
-        </CardHeader>
-        
-        <CardContent>
+    <AuthLayout 
+      title="Sign In" 
+      description="Access your Strak Social account"
+    >
+      <Card className="border-gray-900 bg-black">
+        <CardContent className="p-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-white">Email</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="Digite seu email"
+                placeholder="Enter your email"
                 className="border-gray-600 bg-gray-800 text-white placeholder:text-gray-400 focus:border-white focus:ring-white"
                 {...register("email")}
               />
@@ -78,11 +59,11 @@ export function SignIn() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-white">Senha</Label>
+              <Label htmlFor="password" className="text-white">Password</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Digite sua senha"
+                placeholder="Enter your password"
                 className="border-gray-600 bg-gray-800 text-white placeholder:text-gray-400 focus:border-white focus:ring-white"
                 {...register("password")}
               />
@@ -96,24 +77,23 @@ export function SignIn() {
               disabled={isLoading}
               className="w-full bg-white text-black hover:bg-gray-200 disabled:opacity-50"
             >
-              {isLoading ? "Entrando..." : "Entrar"}
+              {isLoading ? "Signing in..." : "Sign in"}
             </Button>
             
             {error && (
               <p className="text-red-400 text-sm text-center">{error}</p>
             )}
           </form>
-          
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-400">
-              Não tem uma conta?{" "}
-              <Button asChild variant="link" className="p-0 h-auto text-white hover:text-gray-300">
-                <Link to="/auth/sign-up">Criar conta</Link>
-              </Button>
+              Don't have an account?{" "}
+              <Link to={"/auth/sign-up"} className="p-0 h-auto text-blue-400 hover:text-blue-300">
+              Create account
+              </Link>
             </p>
           </div>
         </CardContent>
       </Card>
-    </div>
+    </AuthLayout>
   )
 }

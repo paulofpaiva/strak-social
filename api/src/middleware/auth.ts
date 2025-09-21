@@ -26,7 +26,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
     const token = req.cookies.auth_token
 
     if (!token) {
-      return res.status(401).json({ error: 'Token de acesso não fornecido' })
+      return res.status(401).json({ error: 'Access token not provided' })
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload
@@ -36,27 +36,33 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
         id: users.id,
         email: users.email,
         name: users.name,
+        avatar: users.avatar,
       })
       .from(users)
       .where(eq(users.id, decoded.userId))
       .limit(1)
 
     if (userResult.length === 0) {
-      return res.status(401).json({ error: 'Usuário não encontrado' })
+      return res.status(401).json({ error: 'User not found' })
+    }
+
+    if (userResult[0].avatar && !userResult[0].avatar.startsWith('http')) {
+      const baseUrl = process.env.API_BASE_URL || 'http://localhost:3001';
+      userResult[0].avatar = `${baseUrl}${userResult[0].avatar}`;
     }
 
     req.user = userResult[0]
     next()
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {
-      return res.status(401).json({ error: 'Token inválido' })
+      return res.status(401).json({ error: 'Invalid token' })
     }
     if (error instanceof jwt.TokenExpiredError) {
-      return res.status(401).json({ error: 'Token expirado' })
+      return res.status(401).json({ error: 'Token expired' })
     }
     
-    console.error('Erro na autenticação:', error)
-    return res.status(500).json({ error: 'Erro interno do servidor' })
+    console.error('Authentication error:', error)
+    return res.status(500).json({ error: 'Internal server error' })
   }
 }
 
@@ -72,19 +78,23 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
           id: users.id,
           email: users.email,
           name: users.name,
+          avatar: users.avatar,
         })
         .from(users)
         .where(eq(users.id, decoded.userId))
         .limit(1)
 
       if (userResult.length > 0) {
+        if (userResult[0].avatar && !userResult[0].avatar.startsWith('http')) {
+          const baseUrl = process.env.API_BASE_URL || 'http://localhost:3001';
+          userResult[0].avatar = `${baseUrl}${userResult[0].avatar}`;
+        }
         req.user = userResult[0]
       }
     }
     
     next()
   } catch (error) {
-    // Se houver erro, continua sem autenticação
     next()
   }
 }

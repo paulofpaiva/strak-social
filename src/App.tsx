@@ -1,40 +1,83 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { AuthProvider } from '@/contexts/AuthContext'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { ThemeProvider } from '@/contexts/ThemeContext'
+import { ToastProvider } from '@/contexts/ToastContext'
+import { ToastContainer } from '@/components/ToastContainer'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { useNProgress } from '@/hooks/useNProgress'
 import Landing from "@/pages/landing/Landing"
 import { SignUp } from "@/pages/auth/SignUp"
 import { SignIn } from "@/pages/auth/SignIn"
 import { Dashboard } from "@/pages/app/Dashboard"
-
-const queryClient = new QueryClient()
+import { Profile } from "@/pages/app/Profile"
+import { Account } from "@/pages/app/Account"
+import { Appearance } from "@/pages/app/Appearance"
+import { queryClient } from '@/lib/query-client'
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/auth/sign-up" element={<SignUp />} />
-            <Route path="/auth/sign-in" element={<SignIn />} />
-            
-            <Route 
-              path="/app/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } 
-            />
-            
-            <Route path="/app/*" element={<Navigate to="/app/dashboard" replace />} />
-            
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Router>
-      </AuthProvider>
+      <ThemeProvider>
+        <ToastProvider>
+          <Router>
+            <AppRoutes />
+            <ToastContainer />
+          </Router>
+        </ToastProvider>
+      </ThemeProvider>
     </QueryClientProvider>
+  )
+}
+
+function AppRoutes() {
+  useNProgress()
+  
+  return (
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/auth/sign-up" element={<SignUp />} />
+      <Route path="/auth/sign-in" element={<SignIn />} />
+        
+      <Route 
+        path="/dashboard" 
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } 
+      />
+        
+      <Route 
+        path="/profile" 
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } 
+      />
+        
+      <Route 
+        path="/profile/account" 
+        element={
+          <ProtectedRoute>
+            <Account />
+          </ProtectedRoute>
+        } 
+      />
+        
+      <Route 
+        path="/profile/appearance" 
+        element={
+          <ProtectedRoute>
+            <Appearance />
+          </ProtectedRoute>
+        } 
+      />
+        
+      <Route path="/app/*" element={<Navigate to="/dashboard" replace />} />
+      
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   )
 }
 
