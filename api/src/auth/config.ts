@@ -7,9 +7,9 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',
     schema: {
-      users,
-      sessions,
-      accounts,
+      user: users,
+      session: sessions,
+      account: accounts,
     },
     usePlural: false,
   }),
@@ -22,7 +22,7 @@ export const auth = betterAuth({
     updateAge: 60 * 60 * 24,
   },
   trustedOrigins: [
-    'http://localhost:3000',
+    'http://localhost:5173',
     'http://localhost:8000'
   ],
 });

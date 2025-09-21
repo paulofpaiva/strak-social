@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {serial, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { posts } from "./posts.js";
 import { users, strakSchema } from "./auth.js";
 

@@ -4,7 +4,6 @@ import { signUpSchema, signInSchema } from '../schemas/auth.js';
 
 const router = Router();
 
-// Rota de registro
 router.post('/sign-up', async (req, res) => {
   try {
     const validatedData = signUpSchema.parse(req.body);
@@ -12,31 +11,28 @@ router.post('/sign-up', async (req, res) => {
     const result = await auth.api.signUpEmail({
       body: validatedData,
     });
-
-    // O better-auth retorna sucesso ou lança erro, não tem propriedade error
     res.status(201).json({ 
-      message: 'Usuário criado com sucesso',
+      message: 'User created successfully',
       user: result.user 
     });
   } catch (error: any) {
+    console.log(error);
     if (error.name === 'ZodError') {
       return res.status(400).json({ 
-        error: 'Dados inválidos',
+        error: 'Invalid data',
         details: error.errors 
       });
     }
     
-    // Tratar erros específicos do better-auth
     if (error.message) {
       return res.status(400).json({ error: error.message });
     }
     
-    console.error('Erro no registro:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    console.error('Registration error:', error);
+    res.status(500).json({ error: 'Internal server error'});
   }
 });
 
-// Rota de login
 router.post('/sign-in', async (req, res) => {
   try {
     const validatedData = signInSchema.parse(req.body);
@@ -45,7 +41,6 @@ router.post('/sign-in', async (req, res) => {
       body: validatedData,
     });
 
-    // Definir cookie de sessão
     if (result.token) {
       res.cookie('better-auth.session_token', result.token, {
         httpOnly: true,
@@ -56,34 +51,32 @@ router.post('/sign-in', async (req, res) => {
     }
 
     res.json({ 
-      message: 'Login realizado com sucesso',
+      message: 'Login successful',
       user: result.user 
     });
   } catch (error: any) {
     if (error.name === 'ZodError') {
       return res.status(400).json({ 
-        error: 'Dados inválidos',
+        error: 'Invalid data',
         details: error.errors 
       });
     }
     
-    // Tratar erros específicos do better-auth
     if (error.message) {
       return res.status(401).json({ error: error.message });
     }
     
-    console.error('Erro no login:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Rota de logout
 router.post('/sign-out', async (req, res) => {
   try {
     const sessionToken = req.cookies['better-auth.session_token'];
     
     if (!sessionToken) {
-      return res.status(401).json({ error: 'Não há sessão ativa' });
+      return res.status(401).json({ error: 'No active session' });
     }
 
     await auth.api.signOut({
@@ -93,20 +86,19 @@ router.post('/sign-out', async (req, res) => {
     });
 
     res.clearCookie('better-auth.session_token');
-    res.json({ message: 'Logout realizado com sucesso' });
+    res.json({ message: 'Logout successful' });
   } catch (error) {
-    console.error('Erro no logout:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    console.error('Logout error:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Rota para obter sessão atual
 router.get('/session', async (req, res) => {
   try {
     const sessionToken = req.cookies['better-auth.session_token'];
     
     if (!sessionToken) {
-      return res.status(401).json({ error: 'Não há sessão ativa' });
+      return res.status(401).json({ error: 'No active session' });
     }
 
     const result = await auth.api.getSession({
@@ -117,8 +109,8 @@ router.get('/session', async (req, res) => {
 
     res.json({ user: result.user });
   } catch (error) {
-    console.error('Erro ao obter sessão:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    console.error('Error getting session:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

@@ -1,14 +1,22 @@
 import express from 'express';
 import cors from 'cors';
+import { config } from 'dotenv';
 import { auth } from './auth/config.js';
 import { authRoutes } from './routes/auth.js';
+
+// Carregar variáveis de ambiente
+config({ path: './.env' });
+
+// Debug: verificar se as variáveis estão sendo carregadas
+console.log('DATABASE_URL:', process.env.DATABASE_URL);
+console.log('NODE_ENV:', process.env.NODE_ENV);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(cors({
   origin: [
-    'http://localhost:3000',
+    'http://localhost:5173',
     'http://localhost:8000'
   ],
   credentials: true,
