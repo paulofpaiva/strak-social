@@ -3,38 +3,38 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ArrowLeft } from "lucide-react"
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query"
 import { signUpSchema, type SignUpFormData } from "@/schemas/auth"
-import { signUpApi } from "@/api/auth"
+import { useSignUp } from "@/hooks/useAuth"
 import { useTogglePassword } from "@/hooks"
 import { Eye, EyeOff } from "lucide-react"
+import { useState } from "react"
 
 export function SignUp() {
+  const navigate = useNavigate()
+  const { signUp, isLoading } = useSignUp()
+  const [error, setError] = useState<string>("")
+
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
   })
 
   const { showPassword, togglePassword } = useTogglePassword()
 
-  const signUpMutation = useMutation({
-    mutationFn: signUpApi,
-    onSuccess: (data) => {
-      console.log("User created successfully:", data)
-    },
-    onError: (error) => {
-      console.error("Sign up failed:", error.message)
-    },
-  })
-
-  const onSubmit = (data: SignUpFormData) => {
-    signUpMutation.mutate(data)
+  const onSubmit = async (data: SignUpFormData) => {
+    try {
+      setError("")
+      await signUp(data)
+      navigate("/app/dashboard", { replace: true })
+    } catch (error: any) {
+      setError(error.message || "Erro ao criar conta")
+    }
   }
 
   return (
@@ -115,20 +115,23 @@ export function SignUp() {
             
             <Button 
               type="submit" 
-              disabled={isSubmitting || signUpMutation.isPending}
+              disabled={isLoading}
               className="w-full bg-white text-black hover:bg-gray-200 disabled:opacity-50"
             >
-              {signUpMutation.isPending ? "Creating Account..." : "Create Account"}
+              {isLoading ? "Criando Conta..." : "Criar Conta"}
             </Button>
-            {signUpMutation.error && (
-              <p className="text-red-400 text-sm text-center">
-                {signUpMutation.error.message}
-              </p>
-            )}
-            {signUpMutation.isSuccess && (
-              <p className="text-green-400 text-sm text-center">
-                Account created successfully!
-              </p>
+            
+            {error && (
+              <div className="text-red-400 text-sm text-center space-y-1">
+                <p>{error}</p>
+                {error.includes('já está cadastrado') && (
+                  <p className="text-xs text-gray-400">
+                    Já tem uma conta? <Button asChild variant="link" className="p-0 h-auto text-blue-400 hover:text-blue-300">
+                      <Link to="/auth/sign-in">Faça login aqui</Link>
+                    </Button>
+                  </p>
+                )}
+              </div>
             )}
           </form>
           

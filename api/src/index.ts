@@ -1,6 +1,6 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import { auth } from './auth/config.js';
 import { authRoutes } from './routes/auth.js';
 
 const app = express();
@@ -13,14 +13,14 @@ app.use(cors({
   ],
   credentials: true,
 }));
-app.use(express.json());
+
+app.use(express.json({ limit: '10mb' }));
 
 app.get('/', (req, res) => {
   res.json({ message: 'API is running' });
 });
 
-app.use('/api/auth', auth.handler);
-app.use('/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);
