@@ -42,7 +42,6 @@ export function AppHeader() {
           <h1 className="text-2xl font-bold">Strak</h1>
         </Link>
         
-        {/* Desktop Menu */}
         {!isMobile && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -90,7 +89,6 @@ export function AppHeader() {
           </DropdownMenu>
         )}
 
-        {/* Mobile Menu */}
         {isMobile && (
           <Dialog>
             <DialogTrigger asChild>
@@ -113,7 +111,6 @@ export function AppHeader() {
               </DialogHeader>
               
               <div className="space-y-6">
-                {/* User Info */}
                 <div className="flex items-center space-x-3 p-3 bg-muted rounded-lg">
                   <Avatar 
                     src={user?.avatar} 
@@ -126,7 +123,6 @@ export function AppHeader() {
                   </div>
                 </div>
 
-                {/* Navigation */}
                 <div className="space-y-3">
                   <Button asChild variant="ghost" className="w-full justify-start h-12 text-base font-medium">
                     <Link to="/dashboard">

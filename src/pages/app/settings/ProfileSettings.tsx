@@ -89,7 +89,6 @@ export function ProfileSettings() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Avatar Upload */}
         <div className="flex flex-col items-center space-y-0">
           <AvatarInput
             value={avatarPreview}
@@ -103,7 +102,6 @@ export function ProfileSettings() {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Username Field */}
           <div className="space-y-2">
             <Label htmlFor="name">
               Username
@@ -123,7 +121,6 @@ export function ProfileSettings() {
             )}
           </div>
 
-          {/* Email Field (Read-only) */}
           <div className="space-y-2">
             <Label htmlFor="email">
               Email
@@ -143,7 +140,6 @@ export function ProfileSettings() {
             </p>
           </div>
 
-          {/* Member Since */}
           <div className="space-y-2">
             <Label>Member since</Label>
             <div className="flex items-center space-x-2">
@@ -159,7 +155,6 @@ export function ProfileSettings() {
           </div>
 
 
-          {/* Submit Button */}
           <div className="flex justify-end">
             <Button
               type="submit"

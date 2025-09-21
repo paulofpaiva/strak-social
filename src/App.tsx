@@ -6,8 +6,7 @@ import { ToastContainer } from '@/components/ToastContainer'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { useNProgress } from '@/hooks/useNProgress'
 import Landing from "@/pages/landing/Landing"
-import { SignUp } from "@/pages/auth/SignUp"
-import { SignIn } from "@/pages/auth/SignIn"
+import { Auth } from "@/pages/auth/Auth"
 import { Dashboard } from "@/pages/app/Dashboard"
 import { Profile } from "@/pages/app/Profile"
 import { Account } from "@/pages/app/Account"
@@ -35,8 +34,9 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
-      <Route path="/auth/sign-up" element={<SignUp />} />
-      <Route path="/auth/sign-in" element={<SignIn />} />
+      <Route path="/auth" element={<Auth />} />
+      <Route path="/auth/sign-in" element={<Auth />} />
+      <Route path="/auth/sign-up" element={<Auth />} />
         
       <Route 
         path="/dashboard" 

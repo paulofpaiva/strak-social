@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { AvatarInput } from "@/components/ui/avatar-input"
-import { AuthLayout } from "@/layouts"
+import { AuthLayout02 } from "@/layouts/AuthLayout02"
 import { Link, useNavigate } from "react-router"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -49,101 +48,94 @@ export function SignUp() {
   }
 
   return (
-    <AuthLayout 
+    <AuthLayout02 
       title="Create Account" 
       description="Join Strak Social and connect with the world"
     >
-      <Card className="border-gray-900 bg-black">
-        <CardContent className="p-6">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Avatar Upload */}
-            <div className="flex justify-center">
-              <AvatarInput
-                value={avatarPreview}
-                onChange={(file, previewUrl) => {
-                  setAvatarFile(file)
-                  setAvatarPreview(previewUrl || undefined)
-                }}
-                size="xl"
-              />
-            </div>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div className="flex justify-center">
+          <AvatarInput
+            value={avatarPreview}
+            onChange={(file, previewUrl) => {
+              setAvatarFile(file)
+              setAvatarPreview(previewUrl || undefined)
+            }}
+            size="xl"
+          />
+        </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-white">Name</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Enter your name"
-                className="border-gray-600 bg-gray-800 text-white placeholder:text-gray-400 focus:border-white focus:ring-white"
-                {...register("name")}
-              />
-              {errors.name && (
-                <p className="text-red-400 text-sm">{errors.name.message}</p>
-              )}
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-white">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                className="border-gray-600 bg-gray-800 text-white placeholder:text-gray-400 focus:border-white focus:ring-white"
-                {...register("email")}
-              />
-              {errors.email && (
-                <p className="text-red-400 text-sm">{errors.email.message}</p>
-              )}
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-white">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  className="border-gray-600 bg-gray-800 text-white placeholder:text-gray-400 focus:border-white focus:ring-white pr-10"
-                  {...register("password")}
-                />
-                <button
-                  type="button"
-                  onClick={togglePassword}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="text-red-400 text-sm">{errors.password.message}</p>
-              )}
-            </div>
-            
-            <Button 
-              type="submit" 
-              disabled={isLoading}
-              className="w-full bg-white text-black hover:bg-gray-200 disabled:opacity-50"
+        <div className="space-y-2">
+          <Label htmlFor="name">Name</Label>
+          <Input
+            id="name"
+            type="text"
+            placeholder="Enter your name"
+            {...register("name")}
+          />
+          {errors.name && (
+            <p className="text-destructive text-sm">{errors.name.message}</p>
+          )}
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="Enter your email"
+            {...register("email")}
+          />
+          {errors.email && (
+            <p className="text-destructive text-sm">{errors.email.message}</p>
+          )}
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <div className="relative">
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter your password"
+              className="pr-10"
+              {...register("password")}
+            />
+            <button
+              type="button"
+              onClick={togglePassword}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
             >
-              {isLoading ? "Creating Account..." : "Create Account"}
-            </Button>
-            
-            {error && (
-              <div className="text-red-400 text-sm text-center space-y-1">
-                <p>{error}</p>
-              </div>
-            )}
-          </form>
-          
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-400">
-              Already have an account?{" "}
-              <Link to={"/auth/sign-in"} className="p-0 h-auto text-blue-400 hover:text-blue-300">
-                Sign In
-              </Link>
-            </p>
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
           </div>
-        </CardContent>
-      </Card>
-    </AuthLayout>
+          {errors.password && (
+            <p className="text-destructive text-sm">{errors.password.message}</p>
+          )}
+        </div>
+        
+        <Button 
+          type="submit" 
+          disabled={isLoading}
+          className="w-full disabled:opacity-50"
+        >
+          {isLoading ? "Creating Account..." : "Create Account"}
+        </Button>
+        
+        {error && (
+          <div className="text-destructive text-sm text-center space-y-1">
+            <p>{error}</p>
+          </div>
+        )}
+      </form>
+      
+      <div className="mt-6 text-center">
+        <p className="text-sm text-muted-foreground">
+          Already have an account?{" "}
+          <Link to={"/auth/sign-in"} className="font-medium text-primary hover:text-primary/80">
+            Sign In
+          </Link>
+        </p>
+      </div>
+    </AuthLayout02>
   )
 }

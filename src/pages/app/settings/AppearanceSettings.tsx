@@ -67,9 +67,7 @@ export function AppearanceSettings() {
                     <span className="font-medium">{themeOption.name}</span>
                   </div>
                   
-                  {/* Preview Card */}
                   <div className={`w-full h-20 rounded border ${themeOption.preview} relative overflow-hidden`}>
-                    {/* Simulated UI elements */}
                     <div className="absolute top-2 left-2 right-2 h-2 bg-gray-300 rounded"></div>
                     <div className="absolute top-6 left-2 w-8 h-8 bg-gray-400 rounded-full"></div>
                     <div className="absolute top-6 left-12 right-2 h-2 bg-gray-300 rounded"></div>

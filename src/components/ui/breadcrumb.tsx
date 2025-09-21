@@ -16,7 +16,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
   className 
 }) => {
   return (
-    <Button asChild variant="ghost" className={cn("text-white", className)}>
+    <Button asChild variant="ghost" className={cn("", className)}>
       <Link to={to} className="flex items-center space-x-2">
         <ArrowLeft className="h-4 w-4" />
         <span>{label}</span>
