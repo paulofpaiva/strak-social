@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { AvatarInput } from "@/components/ui/avatar-input"
-import { AuthLayout02 } from "@/layouts/AuthLayout02"
 import { Link, useNavigate } from "react-router"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -48,10 +47,7 @@ export function SignUp() {
   }
 
   return (
-    <AuthLayout02 
-      title="Create Account" 
-      description="Join Strak Social and connect with the world"
-    >
+    <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex justify-center">
           <AvatarInput
@@ -136,6 +132,6 @@ export function SignUp() {
           </Link>
         </p>
       </div>
-    </AuthLayout02>
+    </>
   )
 }

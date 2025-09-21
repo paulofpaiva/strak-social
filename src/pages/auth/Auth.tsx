@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react"
 import { useLocation, useNavigate } from "react-router"
-import { AuthLayout02 } from "@/layouts/AuthLayout02"
-import { SignInForm } from "@/components/auth/SignInForm"
-import { SignUpForm } from "@/components/auth/SignUpForm"
+import { AuthLayout02 } from "@/layouts/AuthLayout"
+import { SignIn } from "./SignIn"
+import { SignUp } from "./SignUp"
 import { cn } from "@/lib/utils"
 
 type AuthTab = "signin" | "signup"
@@ -76,17 +76,13 @@ export function Auth() {
             "transition-opacity duration-300",
             activeTab === "signin" ? "opacity-100" : "opacity-0 absolute"
           )}>
-            {activeTab === "signin" && (
-              <SignInForm onSwitchToSignUp={handleSwitchToSignUp} />
-            )}
+            {activeTab === "signin" && <SignIn />}
           </div>
           <div className={cn(
             "transition-opacity duration-300",
             activeTab === "signup" ? "opacity-100" : "opacity-0 absolute"
           )}>
-            {activeTab === "signup" && (
-              <SignUpForm onSwitchToSignIn={handleSwitchToSignIn} />
-            )}
+            {activeTab === "signup" && <SignUp />}
           </div>
         </div>
 

@@ -3,7 +3,7 @@ import { Avatar } from "@/components/ui/avatar"
 import { useAuth } from "@/hooks"
 import { useIsMobile } from "@/hooks"
 import { Link } from "react-router"
-import { Menu, LogOut, User, Settings } from "lucide-react"
+import { LogOut, User, Settings } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -66,9 +66,9 @@ export function AppHeader() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to="/profile" className="flex items-center cursor-pointer">
+                <Link to="/settings" className="flex items-center cursor-pointer">
                   <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
+                  <span>Settings</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
@@ -130,8 +130,8 @@ export function AppHeader() {
                     </Link>
                   </Button>
                   <Button asChild variant="ghost" className="w-full justify-start h-12 text-base font-medium">
-                    <Link to="/profile">
-                      Profile
+                    <Link to="/settings">
+                      Settings
                     </Link>
                   </Button>
                   <Button 

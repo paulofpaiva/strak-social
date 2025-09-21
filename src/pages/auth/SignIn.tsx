@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { AuthLayout02 } from "@/layouts/AuthLayout02"
 import { Link, useNavigate, useLocation } from "react-router"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -36,10 +35,7 @@ export function SignIn() {
   }
 
   return (
-    <AuthLayout02 
-      title="Sign In" 
-      description="Access your Strak Social account"
-    >
+    <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
@@ -88,6 +84,6 @@ export function SignIn() {
           </Link>
         </p>
       </div>
-    </AuthLayout02>
+    </>
   )
 }
