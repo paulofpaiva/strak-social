@@ -46,26 +46,26 @@ export function AccountSettings() {
   }
 
   return (
-    <Card className="border-gray-800 bg-gray-900">
+    <Card>
       <CardHeader>
-        <CardTitle className="text-white flex items-center">
+        <CardTitle className="flex items-center">
           <Shield className="h-5 w-5 mr-2" />
           Account
         </CardTitle>
-        <CardDescription className="text-gray-400">
+        <CardDescription>
           Manage your account settings and security preferences.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div>
-          <h3 className="text-lg font-medium text-white mb-4">Change Password</h3>
-          <p className="text-sm text-gray-400 mb-6">
+          <h3 className="text-lg font-medium mb-4">Change Password</h3>
+          <p className="text-sm text-muted-foreground mb-6">
             Update your password to keep your account secure.
           </p>
           
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="currentPassword" className="text-white">
+              <Label htmlFor="currentPassword">
                 Current Password
               </Label>
               <div className="relative">
@@ -73,24 +73,24 @@ export function AccountSettings() {
                   id="currentPassword"
                   type={showPasswords.current ? "text" : "password"}
                   placeholder="Enter your current password"
-                  className="border-gray-600 bg-gray-800 text-white placeholder:text-gray-400 focus:border-white focus:ring-white pr-10"
+                  className="pr-10"
                   {...register('currentPassword')}
                 />
                 <button
                   type="button"
                   onClick={() => togglePasswordVisibility('current')}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
                   {showPasswords.current ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               {errors.currentPassword && (
-                <p className="text-red-400 text-sm">{errors.currentPassword.message}</p>
+                <p className="text-destructive text-sm">{errors.currentPassword.message}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="newPassword" className="text-white">
+              <Label htmlFor="newPassword">
                 New Password
               </Label>
               <div className="relative">
@@ -98,24 +98,24 @@ export function AccountSettings() {
                   id="newPassword"
                   type={showPasswords.new ? "text" : "password"}
                   placeholder="Enter your new password"
-                  className="border-gray-600 bg-gray-800 text-white placeholder:text-gray-400 focus:border-white focus:ring-white pr-10"
+                  className="pr-10"
                   {...register('newPassword')}
                 />
                 <button
                   type="button"
                   onClick={() => togglePasswordVisibility('new')}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
                   {showPasswords.new ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               {errors.newPassword && (
-                <p className="text-red-400 text-sm">{errors.newPassword.message}</p>
+                <p className="text-destructive text-sm">{errors.newPassword.message}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-white">
+              <Label htmlFor="confirmPassword">
                 Confirm New Password
               </Label>
               <div className="relative">
@@ -123,19 +123,19 @@ export function AccountSettings() {
                   id="confirmPassword"
                   type={showPasswords.confirm ? "text" : "password"}
                   placeholder="Confirm your new password"
-                  className="border-gray-600 bg-gray-800 text-white placeholder:text-gray-400 focus:border-white focus:ring-white pr-10"
+                  className="pr-10"
                   {...register('confirmPassword')}
                 />
                 <button
                   type="button"
                   onClick={() => togglePasswordVisibility('confirm')}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
                   {showPasswords.confirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className="text-red-400 text-sm">{errors.confirmPassword.message}</p>
+                <p className="text-destructive text-sm">{errors.confirmPassword.message}</p>
               )}
             </div>
 
@@ -143,7 +143,7 @@ export function AccountSettings() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="bg-white text-black hover:bg-gray-200 disabled:opacity-50"
+                className="disabled:opacity-50"
               >
                 {isLoading ? 'Changing...' : 'Change Password'}
               </Button>

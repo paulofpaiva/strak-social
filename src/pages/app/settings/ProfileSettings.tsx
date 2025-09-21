@@ -68,9 +68,9 @@ export function ProfileSettings() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-foreground text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p>Loading...</p>
         </div>
       </div>
@@ -78,13 +78,13 @@ export function ProfileSettings() {
   }
 
   return (
-    <Card className="border-gray-800 bg-gray-900">
+    <Card>
       <CardHeader>
-        <CardTitle className="text-white flex items-center">
+        <CardTitle className="flex items-center">
           <User className="h-5 w-5 mr-2" />
           Profile
         </CardTitle>
-        <CardDescription className="text-gray-400">
+        <CardDescription>
           Manage your account settings and set e-mail preferences.
         </CardDescription>
       </CardHeader>
@@ -97,7 +97,7 @@ export function ProfileSettings() {
             size="xl"
             name={user.name}
           />
-          <p className="text-sm text-gray-400 text-center">
+          <p className="text-sm text-muted-foreground text-center">
             Click the photo to change your avatar
           </p>
         </div>
@@ -105,17 +105,17 @@ export function ProfileSettings() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Username Field */}
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-white">
+            <Label htmlFor="name">
               Username
             </Label>
             <Input
               id="name"
               type="text"
               placeholder="Enter your username"
-              className="border-gray-600 bg-gray-800 text-white placeholder:text-gray-400 focus:border-white focus:ring-white"
+              className=""
               {...register('name')}
             />
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-muted-foreground">
               This is your public display name. It can be your real name or a pseudonym. You can only change this once every 30 days.
             </p>
             {errors.name && (
@@ -125,30 +125,30 @@ export function ProfileSettings() {
 
           {/* Email Field (Read-only) */}
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-white">
+            <Label htmlFor="email">
               Email
             </Label>
             <div className="flex items-center space-x-2">
-              <Mail className="h-4 w-4 text-gray-400" />
+              <Mail className="h-4 w-4 text-muted-foreground" />
               <Input
                 id="email"
                 type="email"
                 value={user.email}
                 disabled
-                className="border-gray-600 bg-gray-700 text-gray-300 cursor-not-allowed"
+                className="cursor-not-allowed opacity-50"
               />
             </div>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-muted-foreground">
               You can manage verified email addresses in your email settings.
             </p>
           </div>
 
           {/* Member Since */}
           <div className="space-y-2">
-            <Label className="text-white">Member since</Label>
+            <Label>Member since</Label>
             <div className="flex items-center space-x-2">
-              <Calendar className="h-4 w-4 text-gray-400" />
-              <span className="text-gray-300">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <span>
                 {new Date(user.createdAt).toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
@@ -164,7 +164,7 @@ export function ProfileSettings() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="bg-white text-black hover:bg-gray-200 disabled:opacity-50"
+              className="disabled:opacity-50"
             >
               {isLoading ? 'Updating...' : 'Update profile'}
             </Button>

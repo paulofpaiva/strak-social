@@ -30,20 +30,20 @@ export function AppearanceSettings() {
   ]
 
   return (
-    <Card className="border-gray-800 bg-gray-900">
+    <Card>
       <CardHeader>
-        <CardTitle className="text-white flex items-center">
+        <CardTitle className="flex items-center">
           <Monitor className="h-5 w-5 mr-2" />
           Appearance
         </CardTitle>
-        <CardDescription className="text-gray-400">
+        <CardDescription>
           Customize how the application looks and feels.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div>
-          <h3 className="text-lg font-medium text-white mb-4">Theme</h3>
-          <p className="text-sm text-gray-400 mb-6">
+          <h3 className="text-lg font-medium mb-4">Theme</h3>
+          <p className="text-sm text-muted-foreground mb-6">
             Select the theme for the dashboard.
           </p>
           
@@ -57,14 +57,14 @@ export function AppearanceSettings() {
                   key={themeOption.id}
                   className={`relative cursor-pointer rounded-lg border-2 p-4 transition-all ${
                     isSelected 
-                      ? 'border-white ring-2 ring-white ring-opacity-50' 
-                      : 'border-gray-600 hover:border-gray-400'
+                      ? 'border-primary ring-2 ring-primary ring-opacity-50' 
+                      : 'border-border hover:border-primary/50'
                   }`}
                   onClick={() => setTheme(themeOption.id)}
                 >
                   <div className="flex items-center space-x-3 mb-3">
-                    <Icon className="h-5 w-5 text-white" />
-                    <span className="font-medium text-white">{themeOption.name}</span>
+                    <Icon className="h-5 w-5" />
+                    <span className="font-medium">{themeOption.name}</span>
                   </div>
                   
                   {/* Preview Card */}
@@ -78,11 +78,11 @@ export function AppearanceSettings() {
                     <div className="absolute top-14 left-10 right-2 h-2 bg-gray-300 rounded"></div>
                   </div>
                   
-                  <p className="text-xs text-gray-400 mt-2">{themeOption.description}</p>
+                  <p className="text-xs text-muted-foreground mt-2">{themeOption.description}</p>
                   
                   {isSelected && (
-                    <div className="absolute top-2 right-2 w-4 h-4 bg-white rounded-full flex items-center justify-center">
-                      <div className="w-2 h-2 bg-gray-900 rounded-full"></div>
+                    <div className="absolute top-2 right-2 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                      <div className="w-2 h-2 bg-primary-foreground rounded-full"></div>
                     </div>
                   )}
                 </div>

@@ -33,13 +33,13 @@ export function AppHeader() {
   }
 
   return (
-    <header className="border-b border-gray-800 bg-black">
+    <header className="border-b bg-background">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link to="/dashboard" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-          <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-            <span className="text-black font-bold text-sm">S</span>
+          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+            <span className="text-primary-foreground font-bold text-sm">S</span>
           </div>
-          <h1 className="text-2xl font-bold text-white">Strak</h1>
+          <h1 className="text-2xl font-bold">Strak</h1>
         </Link>
         
         {/* Desktop Menu */}
@@ -54,34 +54,34 @@ export function AppHeader() {
                 />
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 bg-gray-900 border-gray-700" align="end" forceMount>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none text-white">
+                  <p className="text-sm font-medium leading-none">
                     {user?.name}
                   </p>
-                  <p className="text-xs leading-none text-gray-400">
+                  <p className="text-xs leading-none text-muted-foreground">
                     {user?.email}
                   </p>
                 </div>
               </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-gray-700" />
+              <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to="/profile" className="flex items-center cursor-pointer text-white hover:bg-gray-800 hover:text-white focus:bg-gray-800 focus:text-white">
-                  <User className="mr-2 h-4 w-4 text-gray-400" />
+                <Link to="/profile" className="flex items-center cursor-pointer">
+                  <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/dashboard" className="flex items-center cursor-pointer text-white hover:bg-gray-800 hover:text-white focus:bg-gray-800 focus:text-white">
-                  <Settings className="mr-2 h-4 w-4 text-gray-400" />
+                <Link to="/dashboard" className="flex items-center cursor-pointer">
+                  <Settings className="mr-2 h-4 w-4" />
                   <span>Dashboard</span>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-gray-700" />
+              <DropdownMenuSeparator />
               <DropdownMenuItem 
                 onClick={handleLogout}
-                className="flex items-center cursor-pointer text-red-400 hover:bg-red-900/20 hover:text-red-300 focus:bg-red-900/20 focus:text-red-300"
+                className="flex items-center cursor-pointer text-destructive hover:bg-destructive/10 focus:bg-destructive/10"
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Log out</span>
@@ -102,45 +102,45 @@ export function AppHeader() {
                 />
               </div>
             </DialogTrigger>
-            <DialogContent className="bg-black border-gray-800 text-white max-w-[400px] w-[90vw]">
+            <DialogContent className="max-w-[400px] w-[90vw]">
               <DialogHeader>
                 <div className="flex items-center space-x-3 mb-2">
-                  <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                    <span className="text-black font-bold text-sm">S</span>
+                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                    <span className="text-primary-foreground font-bold text-sm">S</span>
                   </div>
-                  <DialogTitle className="text-xl font-bold text-white">Strak</DialogTitle>
+                  <DialogTitle className="text-xl font-bold">Strak</DialogTitle>
                 </div>
               </DialogHeader>
               
               <div className="space-y-6">
                 {/* User Info */}
-                <div className="flex items-center space-x-3 p-3 bg-gray-900 rounded-lg">
+                <div className="flex items-center space-x-3 p-3 bg-muted rounded-lg">
                   <Avatar 
                     src={user?.avatar} 
                     name={user?.name || 'User'} 
                     size="md" 
                   />
                   <div>
-                    <p className="text-white font-medium">{user?.name}</p>
-                    <p className="text-gray-400 text-sm">{user?.email}</p>
+                    <p className="font-medium">{user?.name}</p>
+                    <p className="text-muted-foreground text-sm">{user?.email}</p>
                   </div>
                 </div>
 
                 {/* Navigation */}
                 <div className="space-y-3">
-                  <Button asChild variant="ghost" className="w-full justify-start h-12 text-base font-medium text-white hover:bg-gray-800">
+                  <Button asChild variant="ghost" className="w-full justify-start h-12 text-base font-medium">
                     <Link to="/dashboard">
                       Dashboard
                     </Link>
                   </Button>
-                  <Button asChild variant="ghost" className="w-full justify-start h-12 text-base font-medium text-white hover:bg-gray-800">
+                  <Button asChild variant="ghost" className="w-full justify-start h-12 text-base font-medium">
                     <Link to="/profile">
                       Profile
                     </Link>
                   </Button>
                   <Button 
                     variant="ghost" 
-                    className="w-full justify-start h-12 text-base font-medium text-red-400 hover:bg-gray-800 hover:text-red-300"
+                    className="w-full justify-start h-12 text-base font-medium text-destructive hover:bg-destructive/10"
                     onClick={handleLogout}
                   >
                     <LogOut className="h-5 w-5 mr-3" />
@@ -149,8 +149,8 @@ export function AppHeader() {
                 </div>
               </div>
               
-              <div className="pt-6 border-t border-gray-800">
-                <p className="text-xs text-gray-400 text-center">
+              <div className="pt-6 border-t">
+                <p className="text-xs text-muted-foreground text-center">
                   © 2025 Strak Social
                 </p>
               </div>

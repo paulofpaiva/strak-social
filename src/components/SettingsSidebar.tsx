@@ -32,9 +32,10 @@ const settingsItems: SettingsItem[] = [
 
 interface SettingsSidebarProps {
   className?: string
+  onItemClick?: () => void
 }
 
-export function SettingsSidebar({ className }: SettingsSidebarProps) {
+export function SettingsSidebar({ className, onItemClick }: SettingsSidebarProps) {
   const location = useLocation()
   const currentPath = location.pathname
 
@@ -48,11 +49,12 @@ export function SettingsSidebar({ className }: SettingsSidebarProps) {
           <Link
             key={item.id}
             to={item.path}
+            onClick={onItemClick}
             className={cn(
               "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
               isActive
-                ? "bg-gray-800 text-white"
-                : "text-gray-400 hover:text-white hover:bg-gray-800"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent"
             )}
           >
             <Icon className="mr-3 h-4 w-4" />
