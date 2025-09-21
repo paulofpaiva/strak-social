@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 
-interface AuthLayout02Props {
+interface AuthLayoutProps {
   children: ReactNode
   title: string
   description?: string
 }
 
-export function AuthLayout02({ children, title, description }: AuthLayout02Props) {
+export function AuthLayout({ children, title, description }: AuthLayoutProps) {
   const navigate = useNavigate()
 
   const handleBackToLanding = () => {

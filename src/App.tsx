@@ -5,7 +5,7 @@ import { ToastProvider } from '@/contexts/ToastContext'
 import { ToastContainer } from '@/components/ToastContainer'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { useNProgress } from '@/hooks/useNProgress'
-import { AuthLayout02 } from '@/layouts/AuthLayout'
+import { AuthLayout } from '@/layouts/AuthLayout'
 import { FeedLayout } from '@/layouts/FeedLayout'
 import Landing from "@/pages/landing/Landing"
 import { Auth } from "@/pages/auth/Auth"
@@ -41,23 +41,23 @@ function AppRoutes() {
       <Route 
         path="/auth/sign-in" 
         element={
-          <AuthLayout02 
+          <AuthLayout 
             title="Sign In" 
             description="Access your Strak Social account"
           >
             <SignIn />
-          </AuthLayout02>
+          </AuthLayout>
         } 
       />
       <Route 
         path="/auth/sign-up" 
         element={
-          <AuthLayout02 
+          <AuthLayout 
             title="Create Account" 
             description="Join Strak Social and connect with the world"
           >
             <SignUp />
-          </AuthLayout02>
+          </AuthLayout>
         } 
       />
         

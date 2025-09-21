@@ -1,6 +1,6 @@
 import { uuid, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
-import { posts } from "./posts.js";
-import { users, strakSchema } from "./auth.js";
+import { posts } from "./posts";
+import { users, strakSchema } from "./auth";
 
 export const likes = strakSchema.table("likes", {
   id: uuid("id").primaryKey().defaultRandom(),

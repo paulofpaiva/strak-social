@@ -1,6 +1,6 @@
 import { useAuthStore } from '@/stores/authStore'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { signUpApi, signInApi, signOutApi, getSessionApi, updateProfileApi, changePasswordApi } from '@/api/auth'
+import { signUpApi, signInApi, signOutApi, getSessionApi, updateProfileApi, changePasswordApi, checkUsernameApi } from '@/api/auth'
 import { useEffect, useState } from 'react'
 
 export const useAuth = () => {
@@ -21,7 +21,8 @@ export const useAuth = () => {
   })
 
   const loginMutation = useMutation({
-    mutationFn: ({ email, password }: { email: string; password: string }) => signInApi({ email, password }),
+    mutationFn: ({ emailOrUsername, password }: { emailOrUsername: string; password: string }) => 
+      signInApi({ emailOrUsername, password }),
     onSuccess: (data) => {
       setUser(data.user)
     },
@@ -31,7 +32,7 @@ export const useAuth = () => {
   })
 
   const signUpMutation = useMutation({
-    mutationFn: (data: { name: string; email: string; password: string; avatar?: string }) =>
+    mutationFn: (data: { name: string; email: string; username: string; password: string; avatar?: string }) =>
       signUpApi(data),
     onSuccess: (data) => {
       setUser(data.user)
@@ -55,7 +56,7 @@ export const useAuth = () => {
   })
 
   const updateProfileMutation = useMutation({
-    mutationFn: (data: { name?: string; avatar?: string }) => updateProfileApi(data),
+    mutationFn: (data: { name?: string; avatar?: string; cover?: string }) => updateProfileApi(data),
     onSuccess: (data) => {
       setUser(data.user)
       queryClient.invalidateQueries({ queryKey: ['session'] })
@@ -81,11 +82,11 @@ export const useAuth = () => {
     }
   }, [sessionData, error, isLoadingSession, user, setUser])
 
-  const login = async (email: string, password: string) => {
-    await loginMutation.mutateAsync({ email, password })
+  const login = async (emailOrUsername: string, password: string) => {
+    await loginMutation.mutateAsync({ emailOrUsername, password })
   }
 
-  const signUp = async (data: { name: string; email: string; password: string; avatar?: string }) => {
+  const signUp = async (data: { name: string; email: string; username: string; password: string; avatar?: string }) => {
     await signUpMutation.mutateAsync(data)
   }
 
@@ -93,7 +94,7 @@ export const useAuth = () => {
     await logoutMutation.mutateAsync()
   }
 
-  const updateProfile = async (data: { name?: string; avatar?: string }) => {
+  const updateProfile = async (data: { name?: string; avatar?: string; cover?: string }) => {
     await updateProfileMutation.mutateAsync(data)
   }
 
@@ -141,4 +142,19 @@ export const useUpdateProfile = () => {
 export const useChangePassword = () => {
   const { changePassword, changePasswordMutation } = useAuth()
   return { changePassword, isLoading: changePasswordMutation.isPending }
+}
+
+export const useCheckUsername = () => {
+  const checkUsernameMutation = useMutation({
+    mutationFn: checkUsernameApi,
+    onError: (error: any) => {
+      throw new Error(error.message || 'Username check failed')
+    },
+  })
+
+  const checkUsername = async (username: string) => {
+    return await checkUsernameMutation.mutateAsync(username)
+  }
+
+  return { checkUsername, isLoading: checkUsernameMutation.isPending }
 }

@@ -25,7 +25,7 @@ export function SignIn() {
   const onSubmit = async (data: SignInFormData) => {
     try {
       setError("")
-      await login(data.email, data.password)
+      await login(data.emailOrUsername, data.password)
       
       const from = location.state?.from?.pathname || "/dashboard"
       navigate(from, { replace: true })
@@ -38,15 +38,15 @@ export function SignIn() {
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="emailOrUsername">Email or Username</Label>
           <Input
-            id="email"
-            type="email"
-            placeholder="Enter your email"
-            {...register("email")}
+            id="emailOrUsername"
+            type="text"
+            placeholder="Enter your email or username"
+            {...register("emailOrUsername")}
           />
-          {errors.email && (
-            <p className="text-destructive text-sm">{errors.email.message}</p>
+          {errors.emailOrUsername && (
+            <p className="text-destructive text-sm">{errors.emailOrUsername.message}</p>
           )}
         </div>
         

@@ -87,7 +87,28 @@ export const getSessionApi = async (): Promise<ApiResponse> => {
   }
 }
 
-export const updateProfileApi = async (data: { name?: string; avatar?: string }): Promise<ApiResponse> => {
+export const checkUsernameApi = async (username: string): Promise<{ available: boolean; message: string }> => {
+  try {
+    const response = await api.get<{ available: boolean; message: string }>(`/auth/check-username?username=${encodeURIComponent(username)}`)
+    return response.data
+  } catch (error: any) {
+    if (error.response?.data) {
+      const apiError = error.response.data
+      
+      if (apiError.available === false) {
+        return { available: false, message: apiError.message }
+      }
+      
+      throw new Error(apiError.error || 'Username check failed')
+    } else if (error.request) {
+      throw new Error('Connection error. Please check your internet and try again.')
+    } else {
+      throw new Error('An unexpected error occurred')
+    }
+  }
+}
+
+export const updateProfileApi = async (data: { name?: string; avatar?: string; cover?: string }): Promise<ApiResponse> => {
   try {
     const response = await api.put<ApiResponse>('/auth/profile', data)
     return response.data

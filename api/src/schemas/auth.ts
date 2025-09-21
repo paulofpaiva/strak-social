@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { pgTable, text, timestamp, uuid, boolean } from 'drizzle-orm/pg-core';
+import { text, timestamp, uuid, boolean } from 'drizzle-orm/pg-core';
 import { pgSchema } from 'drizzle-orm/pg-core';
 
 export const strakSchema = pgSchema('strak_social');
@@ -7,9 +7,11 @@ export const strakSchema = pgSchema('strak_social');
 export const users = strakSchema.table('users', {
   id: uuid('id').primaryKey().defaultRandom(),
   email: text('email').notNull().unique(),
+  username: text('username').notNull().unique(),
   name: text('name').notNull(),
-  password: text('password').notNull(), // Password hash
-  avatar: text('avatar'), // User avatar URL
+  password: text('password').notNull(),
+  avatar: text('avatar'), 
+  cover: text('cover'),
   emailVerified: boolean('email_verified').default(false),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
@@ -17,13 +19,18 @@ export const users = strakSchema.table('users', {
 
 export const signUpSchema = z.object({
   email: z.string().email('Invalid email'),
+  username: z.string()
+    .min(3, 'Username must have at least 3 characters')
+    .max(15, 'Username must have at most 15 characters')
+    .regex(/^[a-zA-Z0-9_.]+$/, 'Username can only contain letters, numbers, underscores, and dots'),
   password: z.string().min(6, 'Password must have at least 6 characters'),
   name: z.string().min(2, 'Name must have at least 2 characters'),
   avatar: z.string().optional(),
+  cover: z.string().optional(),
 });
 
 export const signInSchema = z.object({
-  email: z.string().email('Invalid email'),
+  emailOrUsername: z.string().min(1, 'Email or username is required'),
   password: z.string().min(1, 'Password is required'),
 });
 
@@ -35,11 +42,19 @@ export const changePasswordSchema = z.object({
     .max(100, 'Password must be at most 100 characters')
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain at least one lowercase letter, one uppercase letter, and one number'),
   confirmPassword: z.string().min(1, "Please confirm your password")
-}).refine((data) => data.newPassword === data.confirmPassword, {
+}).refine((data: { newPassword: string; confirmPassword: string }) => data.newPassword === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
+});
+
+export const checkUsernameSchema = z.object({
+  username: z.string()
+    .min(3, 'Username must have at least 3 characters')
+    .max(15, 'Username must have at most 15 characters')
+    .regex(/^[a-zA-Z0-9_.]+$/, 'Username can only contain letters, numbers, underscores, and dots'),
 });
 
 export type SignUpInput = z.infer<typeof signUpSchema>;
 export type SignInInput = z.infer<typeof signInSchema>;
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
+export type CheckUsernameInput = z.infer<typeof checkUsernameSchema>;

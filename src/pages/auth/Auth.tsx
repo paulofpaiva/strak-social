@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useLocation, useNavigate } from "react-router"
-import { AuthLayout02 } from "@/layouts/AuthLayout"
+import { AuthLayout } from "@/layouts/AuthLayout"
 import { SignIn } from "./SignIn"
 import { SignUp } from "./SignUp"
 import { cn } from "@/lib/utils"
@@ -41,7 +41,7 @@ export function Auth() {
   }
 
   return (
-    <AuthLayout02 
+    <AuthLayout 
       title={getTitle()}
       description={getDescription()}
     >
@@ -112,6 +112,6 @@ export function Auth() {
           </p>
         </div>
       </div>
-    </AuthLayout02>
+    </AuthLayout>
   )
 }

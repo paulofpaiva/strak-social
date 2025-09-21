@@ -1,11 +1,11 @@
-import { Router } from 'express';
+﻿import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { db } from '../db/index.js';
 import { users } from '../schemas/auth.js';
-import { signUpSchema, signInSchema, changePasswordSchema } from '../schemas/auth.js';
+import { signUpSchema, signInSchema, changePasswordSchema, checkUsernameSchema } from '../schemas/auth.js';
 import { authenticateToken, optionalAuth } from '../middleware/auth.js';
-import { eq } from 'drizzle-orm';
+import { eq, or } from 'drizzle-orm';
 
 const router = Router();
 
@@ -13,15 +13,27 @@ router.post('/sign-up', async (req, res) => {
   try {
     const validatedData = signUpSchema.parse(req.body);
     
-    const existingUser = await db
+    const existingEmail = await db
       .select({ id: users.id })
       .from(users)
       .where(eq(users.email, validatedData.email))
       .limit(1);
 
-    if (existingUser.length > 0) {
+    if (existingEmail.length > 0) {
       return res.status(400).json({ 
         error: 'This email is already registered. Try logging in or use another email.' 
+      });
+    }
+
+    const existingUsername = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.username, validatedData.username))
+      .limit(1);
+
+    if (existingUsername.length > 0) {
+      return res.status(400).json({ 
+        error: 'This username is already taken. Please choose another username.' 
       });
     }
 
@@ -32,15 +44,19 @@ router.post('/sign-up', async (req, res) => {
       .insert(users)
       .values({
         email: validatedData.email,
+        username: validatedData.username,
         name: validatedData.name,
         password: hashedPassword,
         avatar: validatedData.avatar,
+        cover: validatedData.cover,
       })
       .returning({
         id: users.id,
         email: users.email,
+        username: users.username,
         name: users.name,
         avatar: users.avatar,
+        cover: users.cover,
         emailVerified: users.emailVerified,
         createdAt: users.createdAt,
         updatedAt: users.updatedAt,
@@ -49,6 +65,11 @@ router.post('/sign-up', async (req, res) => {
     if (newUser[0].avatar && !newUser[0].avatar.startsWith('http')) {
       const baseUrl = process.env.API_BASE_URL || 'http://localhost:3001';
       newUser[0].avatar = `${baseUrl}${newUser[0].avatar}`;
+    }
+
+    if (newUser[0].cover && !newUser[0].cover.startsWith('http')) {
+      const baseUrl = process.env.API_BASE_URL || 'http://localhost:3001';
+      newUser[0].cover = `${baseUrl}${newUser[0].cover}`;
     }
 
     const token = jwt.sign(
@@ -93,19 +114,24 @@ router.post('/sign-in', async (req, res) => {
       .select({
         id: users.id,
         email: users.email,
+        username: users.username,
         name: users.name,
         password: users.password,
         avatar: users.avatar,
+        cover: users.cover,
         emailVerified: users.emailVerified,
         createdAt: users.createdAt,
         updatedAt: users.updatedAt,
       })
       .from(users)
-      .where(eq(users.email, validatedData.email))
+      .where(or(
+        eq(users.email, validatedData.emailOrUsername),
+        eq(users.username, validatedData.emailOrUsername)
+      ))
       .limit(1);
 
     if (userResult.length === 0) {
-      return res.status(401).json({ error: 'Incorrect email or password' });
+      return res.status(401).json({ error: 'Incorrect email/username or password' });
     }
 
     const user = userResult[0];
@@ -113,7 +139,7 @@ router.post('/sign-in', async (req, res) => {
     const isPasswordValid = await bcrypt.compare(validatedData.password, user.password);
     
     if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Incorrect email or password' });
+      return res.status(401).json({ error: 'Incorrect email/username or password' });
     }
 
     const token = jwt.sign(
@@ -152,6 +178,50 @@ router.post('/sign-in', async (req, res) => {
   }
 });
 
+router.get('/check-username', async (req, res) => {
+  try {
+    const { username } = req.query;
+    
+    if (!username || typeof username !== 'string') {
+      return res.status(400).json({ 
+        available: false,
+        message: 'Username is required' 
+      });
+    }
+    
+    // Validate username format
+    const validation = checkUsernameSchema.safeParse({ username });
+    if (!validation.success) {
+      return res.status(400).json({ 
+        available: false,
+        message: 'Invalid username format' 
+      });
+    }
+    
+    const existingUser = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.username, username))
+      .limit(1);
+
+    if (existingUser.length > 0) {
+      return res.json({ 
+        available: false,
+        message: 'This username is already taken' 
+      });
+    }
+
+    res.json({
+      available: true,
+      message: 'Username is available'
+    });
+
+  } catch (error: any) {
+    console.error('Username check error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 router.post('/sign-out', (req, res) => {
   res.clearCookie('auth_token');
   res.json({ message: 'Logout successful' });
@@ -174,17 +244,18 @@ router.get('/profile', authenticateToken, (req, res) => {
 
 router.put('/profile', authenticateToken, async (req, res) => {
   try {
-    const { name, avatar } = req.body;
+    const { name, avatar, cover } = req.body;
     
-    if (!name && !avatar) {
+    if (!name && !avatar && !cover) {
       return res.status(400).json({ 
-        error: 'At least one field (name or avatar) must be provided' 
+        error: 'At least one field (name, avatar, or cover) must be provided' 
       });
     }
 
     const updateData: any = {};
     if (name) updateData.name = name;
     if (avatar) updateData.avatar = avatar;
+    if (cover) updateData.cover = cover;
     updateData.updatedAt = new Date();
 
     const updatedUser = await db
@@ -194,8 +265,10 @@ router.put('/profile', authenticateToken, async (req, res) => {
       .returning({
         id: users.id,
         email: users.email,
+        username: users.username,
         name: users.name,
         avatar: users.avatar,
+        cover: users.cover,
         emailVerified: users.emailVerified,
         createdAt: users.createdAt,
         updatedAt: users.updatedAt,
@@ -204,6 +277,11 @@ router.put('/profile', authenticateToken, async (req, res) => {
     if (updatedUser[0].avatar && !updatedUser[0].avatar.startsWith('http')) {
       const baseUrl = process.env.API_BASE_URL || 'http://localhost:3001';
       updatedUser[0].avatar = `${baseUrl}${updatedUser[0].avatar}`;
+    }
+
+    if (updatedUser[0].cover && !updatedUser[0].cover.startsWith('http')) {
+      const baseUrl = process.env.API_BASE_URL || 'http://localhost:3001';
+      updatedUser[0].cover = `${baseUrl}${updatedUser[0].cover}`;
     }
 
     res.json({

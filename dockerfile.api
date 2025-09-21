@@ -5,6 +5,9 @@ WORKDIR /usr/src/app
 COPY api/package*.json ./
 RUN npm install
 
+COPY api/tsconfig*.json ./
+COPY api/drizzle.config.ts ./
+
 COPY api .
 RUN rm -f .env
 

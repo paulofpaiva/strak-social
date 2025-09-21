@@ -1,16 +1,18 @@
-DROP SCHEMA IF EXISTS "strak_social" CASCADE;
 CREATE SCHEMA "strak_social";
 --> statement-breakpoint
 CREATE TABLE "strak_social"."users" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"email" text NOT NULL,
+	"username" text NOT NULL,
 	"name" text NOT NULL,
 	"password" text NOT NULL,
 	"avatar" text,
+	"cover" text,
 	"email_verified" boolean DEFAULT false,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
-	CONSTRAINT "users_email_unique" UNIQUE("email")
+	CONSTRAINT "users_email_unique" UNIQUE("email"),
+	CONSTRAINT "users_username_unique" UNIQUE("username")
 );
 --> statement-breakpoint
 CREATE TABLE "strak_social"."comments" (

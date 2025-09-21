@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { AvatarInput } from "@/components/ui/avatar-input"
+import { Spinner } from "@/components/ui/spinner"
 import { Link, useNavigate } from "react-router"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -9,8 +10,9 @@ import { signUpSchema, type SignUpFormData } from "@/schemas/auth"
 import { useSignUp } from "@/hooks"
 import { useTogglePassword } from "@/hooks"
 import { uploadAvatar } from "@/api/upload"
-import { Eye, EyeOff } from "lucide-react"
-import { useState } from "react"
+import { checkUsernameApi } from "@/api/auth"
+import { Eye, EyeOff, Check, X } from "lucide-react"
+import { useState, useEffect } from "react"
 
 export function SignUp() {
   const navigate = useNavigate()
@@ -18,27 +20,65 @@ export function SignUp() {
   const [error, setError] = useState<string>("")
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [avatarPreview, setAvatarPreview] = useState<string | undefined>(undefined)
+  const [usernameStatus, setUsernameStatus] = useState<{
+    available: boolean | null
+    message: string
+  }>({ available: null, message: "" })
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false)
 
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
   })
 
   const { showPassword, togglePassword } = useTogglePassword()
+  const watchedUsername = watch("username")
+
+  // Check username availability when username changes
+  useEffect(() => {
+    const checkUsernameAvailability = async () => {
+      if (watchedUsername && watchedUsername.length >= 3) {
+        setIsCheckingUsername(true)
+        try {
+          const result = await checkUsernameApi(watchedUsername)
+          setUsernameStatus(result)
+        } catch (error: any) {
+          const message = error.message.includes('Invalid username format') 
+            ? 'Username can only contain letters (a-z, A-Z), numbers (0-9), underscores (_), and dots (.)'
+            : error.message
+          setUsernameStatus({ available: false, message })
+        } finally {
+          setIsCheckingUsername(false)
+        }
+      } else {
+        setUsernameStatus({ available: null, message: "" })
+        setIsCheckingUsername(false)
+      }
+    }
+
+    const timeoutId = setTimeout(checkUsernameAvailability, 500)
+    return () => clearTimeout(timeoutId)
+  }, [watchedUsername])
 
   const onSubmit = async (data: SignUpFormData) => {
     try {
       setError("")
+      
+      if (usernameStatus.available === false) {
+        setError("Username is not available. Please choose another one.")
+        return
+      }
       
       let avatarUrl: string | undefined = undefined
       if (avatarFile) {
         const uploadResult = await uploadAvatar(avatarFile)
         avatarUrl = uploadResult.url
       }
-      
+
       await signUp({ ...data, avatar: avatarUrl })
       navigate("/dashboard", { replace: true })
     } catch (error: any) {
@@ -85,6 +125,39 @@ export function SignUp() {
             <p className="text-destructive text-sm">{errors.email.message}</p>
           )}
         </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="username">Username</Label>
+          <div className="relative">
+            <Input
+              id="username"
+              type="text"
+              placeholder="Enter your username"
+              {...register("username")}
+              className={usernameStatus.available === false ? "border-destructive" : 
+                       usernameStatus.available === true ? "border-green-500" : ""}
+            />
+            {isCheckingUsername && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <Spinner size="sm" className="text-muted-foreground" />
+              </div>
+            )}
+            {!isCheckingUsername && usernameStatus.available === true && (
+              <Check className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-500" />
+            )}
+            {!isCheckingUsername && usernameStatus.available === false && (
+              <X className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-destructive" />
+            )}
+          </div>
+          {errors.username && (
+            <p className="text-destructive text-sm">{errors.username.message}</p>
+          )}
+          {usernameStatus.message && (
+            <p className={`text-sm ${usernameStatus.available ? "text-green-600" : "text-destructive"}`}>
+              {usernameStatus.message}
+            </p>
+          )}
+        </div>
         
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
@@ -108,6 +181,7 @@ export function SignUp() {
             <p className="text-destructive text-sm">{errors.password.message}</p>
           )}
         </div>
+
         
         <Button 
           type="submit" 

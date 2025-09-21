@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 import NProgress from 'nprogress'
-
 import '@/styles/nprogress.css'
 
 NProgress.configure({

@@ -1,1 +1,0 @@
-ALTER TABLE "strak_social"."users" ADD COLUMN "avatar" text;
