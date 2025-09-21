@@ -28,6 +28,9 @@ services:
     environment:
       DATABASE_URL: postgres://postgres:postgres@db:5432/strak_social
       PORT: 3001
+      NODE_ENV: production
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-fffb1ff6de2a143eb47ebc8f94b3144f2eeae2730bdb2666dcb2b4f54c58b481}
+      BETTER_AUTH_URL: http://localhost:8001
     ports:
       - "8001:3001"
     depends_on:

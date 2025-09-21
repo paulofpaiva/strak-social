@@ -1,5 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { v4 as uuidv4 } from 'uuid';
 import { db } from '../db/index.js';
 import { users, sessions, accounts } from '../schemas/auth.js';
 
@@ -13,6 +14,11 @@ export const auth = betterAuth({
     },
     usePlural: false,
   }),
+  advanced: {
+    database: {
+      generateId: uuidv4,
+    },
+  },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,

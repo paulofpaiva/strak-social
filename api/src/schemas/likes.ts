@@ -1,10 +1,10 @@
-import { serial, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import { uuid, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 import { posts } from "./posts.js";
 import { users, strakSchema } from "./auth.js";
 
 export const likes = strakSchema.table("likes", {
-  id: serial("id").primaryKey(),
-  postId: serial("post_id").references(() => posts.id).notNull(),
+  id: uuid("id").primaryKey().defaultRandom(),
+  postId: uuid("post_id").references(() => posts.id).notNull(),
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({

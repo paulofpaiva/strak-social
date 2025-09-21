@@ -1,8 +1,8 @@
-import { serial, varchar, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { uuid, varchar, text, timestamp } from "drizzle-orm/pg-core";
 import { users, strakSchema } from "./auth.js";
 
 export const posts = strakSchema.table("posts", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
   title: varchar("title", { length: 150 }).notNull(),
   content: text("content").notNull(),

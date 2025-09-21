@@ -1,7 +1,7 @@
 {
   "name": "strak-social-api",
   "version": "1.0.0",
-  "description": "API Express para Strak Social",
+  "description": "API Express for Strak Social",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
@@ -19,6 +19,7 @@
     "drizzle-orm": "^0.36.4",
     "express": "^4.21.2",
     "pg": "^8.13.1",
+    "uuid": "^13.0.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {
@@ -26,6 +27,7 @@
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.2",
     "@types/pg": "^8.11.10",
+    "@types/uuid": "^10.0.0",
     "drizzle-kit": "^0.30.0",
     "tsx": "^4.19.2",
     "typescript": "~5.8.3"

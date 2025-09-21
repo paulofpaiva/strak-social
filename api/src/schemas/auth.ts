@@ -2,10 +2,8 @@ import { z } from 'zod';
 import { pgTable, text, timestamp, uuid, boolean } from 'drizzle-orm/pg-core';
 import { pgSchema } from 'drizzle-orm/pg-core';
 
-// Definir o schema personalizado
 export const strakSchema = pgSchema('strak_social');
 
-// Schemas do Better Auth
 export const users = strakSchema.table('users', {
   id: uuid('id').primaryKey().defaultRandom(),
   email: text('email').notNull().unique(),
@@ -20,6 +18,8 @@ export const sessions = strakSchema.table('sessions', {
   userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   expiresAt: timestamp('expires_at').notNull(),
   token: text('token').notNull().unique(),
+  ipAddress: text('ip_address'),
+  userAgent: text('user_agent'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -40,7 +40,6 @@ export const accounts = strakSchema.table('accounts', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
-// Schemas de validação Zod
 export const signUpSchema = z.object({
   email: z.string().email('Email inválido'),
   password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),

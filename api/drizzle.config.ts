@@ -1,17 +1,15 @@
-import { defineConfig } from 'drizzle-kit';
+import type { Config } from 'drizzle-kit';
+import dotenv from "dotenv";
 
-export default defineConfig({
-  schema: [
-    './src/schemas/auth.ts',
-    './src/schemas/posts.ts',
-    './src/schemas/comments.ts',
-    './src/schemas/likes.ts',
-  ],
+dotenv.config({
+  path: ".env",
+});
+
+export default {
+  schema: './src/schemas/*.ts',
   out: './drizzle',
   dialect: 'postgresql',
-  schemaFilter: ['strak_social'],
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
-  strict: false,
-});
+} satisfies Config;
