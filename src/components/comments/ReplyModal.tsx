@@ -12,7 +12,6 @@ import { useIsMobile } from "@/hooks/useIsMobile"
 import { useToastContext } from "@/contexts/ToastContext"
 import { createCommentApi, type CreateCommentMedia } from "@/api/posts"
 import { ImageUpload } from "@/components/posts/ImageUpload"
-import { Loader2 } from "lucide-react"
 
 const replySchema = z.object({
   content: z.string()
@@ -67,7 +66,7 @@ export function CreateCommentModal({ isOpen, onClose, parentCommentId, postId }:
       queryClient.invalidateQueries({ queryKey: ['comment-replies', parentCommentId] })
       queryClient.invalidateQueries({ queryKey: ['comment', parentCommentId] })
       
-      navigate(`/comment/${parentCommentId}`)
+      navigate(`/post/${postId}/comment/${parentCommentId}`)
     },
     onError: (error: any) => {
       toastError(error.message || 'Error posting reply')
@@ -197,8 +196,7 @@ export function CreateCommentModal({ isOpen, onClose, parentCommentId, postId }:
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Posting...
+                    Post
                   </>
                 ) : (
                   'Reply'
@@ -220,8 +218,7 @@ export function CreateCommentModal({ isOpen, onClose, parentCommentId, postId }:
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Posting...
+                Post
               </>
             ) : (
               'Reply'

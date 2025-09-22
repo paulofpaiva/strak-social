@@ -9,7 +9,7 @@ import { Avatar } from '@/components/ui/avatar'
 import { useAuth } from '@/hooks'
 import { useToast } from '@/hooks/useToast'
 import { createCommentApi } from '@/api/posts'
-import { Loader2, Image, X } from 'lucide-react'
+import { Image, X } from 'lucide-react'
 
 const commentSchema = z.object({
   content: z.string()
@@ -180,7 +180,6 @@ export function CommentForm({ postId, parentCommentId, onCommentAdded, isReplyFo
                 disabled={!isValid || isSubmitting || (watchedContent?.trim().length === 0 && images.length === 0)}
                 className="px-6"
               >
-                {isSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                 Reply
               </Button>
             </div>

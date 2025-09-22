@@ -252,7 +252,6 @@ export function EditProfileModal({ isOpen, onClose, currentUser }: EditProfileMo
             Cancel
           </Button>
           <Button type="submit" form="edit-profile-form" disabled={isUpdating || !isValid}>
-            {isUpdating && <Loader2 className="h-4 w-4 animate-spin" />}
             Save
           </Button>
         </DialogFooter>

@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { likePostApi } from '@/api/posts'
 import { Avatar } from '@/components/ui/avatar'
-import { Heart, MessageCircle, Share, Trash2, MoreHorizontal, Edit } from 'lucide-react'
+import { Heart, MessageCircle, Trash2, MoreHorizontal, Edit } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks'
 import { useToast } from '@/hooks/useToast'
@@ -14,6 +14,7 @@ import { ImageModal } from './ImageModal'
 import { PostComments } from './PostComments'
 import { CreateCommentModal } from '../comments/CreateCommentModal'
 import { formatTimeAgo } from '@/utils/formatting'
+import { format } from 'date-fns'
 
 interface PostCardProps {
   post: {
@@ -42,6 +43,7 @@ interface PostCardProps {
   showComments?: boolean
   onPostDeleted?: () => void
   disableHover?: boolean
+  showDetailedTimestamp?: boolean
 }
 
 export function PostCard({ 
@@ -49,7 +51,8 @@ export function PostCard({
   className, 
   showComments = false,
   onPostDeleted,
-  disableHover = false
+  disableHover = false,
+  showDetailedTimestamp = false
 }: PostCardProps) {
   const { user: currentUser } = useAuth()
   const { error: toastError } = useToast()
@@ -102,6 +105,7 @@ export function PostCard({
   }
 
   const isMyPost = currentUser && currentUser.id === post.userId
+  const isEdited = post.updatedAt !== post.createdAt
 
   return (
     <>
@@ -116,54 +120,60 @@ export function PostCard({
             className="w-10 h-10"
           />
           <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between mb-2">
-              <div className="flex-1 min-w-0">
+            <div className="grid grid-cols-[1fr_auto] gap-3 items-start mb-2">
+              <div className="min-w-0 overflow-hidden">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-                  <h3 className="font-semibold text-foreground overflow-hidden text-ellipsis whitespace-nowrap">
+                  <h3 className="font-semibold text-foreground truncate">
                     {post.user.name}
                   </h3>
-                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                    <span className="overflow-hidden text-ellipsis whitespace-nowrap">@{post.user.username}</span>
-                    <span>·</span>
-                    <span className="whitespace-nowrap">{formatTimeAgo(post.createdAt)}</span>
+                  <div className="flex items-center gap-2 text-muted-foreground text-sm min-w-0">
+                    <span className="truncate">@{post.user.username}</span>
+                    {!showDetailedTimestamp && (
+                      <>
+                        <span>·</span>
+                        <span className="whitespace-nowrap">{formatTimeAgo(post.createdAt)}</span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
               
               {isMyPost && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-8 w-8 p-0"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setShowEditModal(true)
-                      }}
-                    >
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleDeletePost()
-                      }}
-                      className="text-destructive focus:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="shrink-0">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-8 w-8 p-0"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setShowEditModal(true)
+                        }}
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleDeletePost()
+                        }}
+                        className="text-destructive focus:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               )}
             </div>
             
@@ -177,21 +187,56 @@ export function PostCard({
                   <img
                     src={post.media[0].mediaUrl}
                     alt="Post media"
-                    className="w-full max-w-md rounded-lg border border-border cursor-pointer hover:opacity-90 transition-opacity"
+                    className="w-full max-w-md rounded-xl cursor-pointer hover:opacity-90 transition-opacity"
                     onClick={(e) => handleImageClick(post.media![0].mediaUrl, e)}
                   />
+                ) : post.media.length === 2 ? (
+                  <div className="grid grid-cols-2 max-w-md rounded-xl overflow-hidden">
+                    {post.media.slice(0, 2).map((media, index) => (
+                      <img
+                        key={index}
+                        src={media.mediaUrl}
+                        alt={`Post media ${index + 1}`}
+                        className="w-full h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={(e) => handleImageClick(media.mediaUrl, e)}
+                      />
+                    ))}
+                  </div>
+                ) : post.media.length === 3 ? (
+                  <div className="grid grid-cols-2 max-w-md rounded-xl overflow-hidden">
+                    <img
+                      src={post.media[0].mediaUrl}
+                      alt="Post media 1"
+                      className="w-full h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                      onClick={(e) => handleImageClick(post.media![0].mediaUrl, e)}
+                    />
+                    <div className="grid grid-rows-2">
+                      <img
+                        src={post.media[1].mediaUrl}
+                        alt="Post media 2"
+                        className="w-full h-24 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={(e) => handleImageClick(post.media![1].mediaUrl, e)}
+                      />
+                      <img
+                        src={post.media[2].mediaUrl}
+                        alt="Post media 3"
+                        className="w-full h-24 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={(e) => handleImageClick(post.media![2].mediaUrl, e)}
+                      />
+                    </div>
+                  </div>
                 ) : (
-                  <div className="grid grid-cols-2 gap-2 max-w-md">
+                  <div className="grid grid-cols-2 max-w-md rounded-xl overflow-hidden">
                     {post.media.slice(0, 4).map((media, index) => (
                       <div key={index} className="relative">
                         <img
                           src={media.mediaUrl}
                           alt={`Post media ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-lg border border-border cursor-pointer hover:opacity-90 transition-opacity"
+                          className="w-full h-32 object-cover cursor-pointer hover:opacity-90 transition-opacity"
                           onClick={(e) => handleImageClick(media.mediaUrl, e)}
                         />
                         {post.media && post.media.length > 4 && index === 3 && (
-                          <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                             <span className="text-white font-semibold">
                               +{post.media.length - 4}
                             </span>
@@ -204,6 +249,19 @@ export function PostCard({
               </div>
             )}
 
+            {showDetailedTimestamp && (
+              <div className="mb-3 pb-3 border-b border-border">
+                <p className="text-muted-foreground text-sm">
+                  {format(new Date(post.createdAt), 'HH:mm · MMM d, yyyy')}
+                  {isEdited && (
+                    <>
+                      <span className="mx-2">·</span>
+                      <span>Edited</span>
+                    </>
+                  )}
+                </p>
+              </div>
+            )}
 
             <div className="flex items-center space-x-6 text-muted-foreground">
               <Button 
@@ -230,15 +288,6 @@ export function PostCard({
               >
                 <MessageCircle className="h-4 w-4 mr-1" />
                 <span className="text-sm">{post.commentsCount || 0}</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-8 px-2"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Share className="h-4 w-4 mr-1" />
-                <span className="text-sm">Share</span>
               </Button>
             </div>
           </div>

@@ -80,7 +80,7 @@ export function SignUp() {
       }
 
       await signUp({ ...data, avatar: avatarUrl })
-      navigate("/dashboard", { replace: true })
+      navigate("/feed", { replace: true })
     } catch (error: any) {
       setError(error.message || "Error creating account")
     }

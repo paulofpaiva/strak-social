@@ -14,13 +14,13 @@ import Landing from "@/pages/landing/Landing"
 import { Auth } from "@/pages/auth/Auth"
 import { SignIn } from "@/pages/auth/SignIn"
 import { SignUp } from "@/pages/auth/SignUp"
-import { Dashboard } from "@/pages/app/Dashboard"
+import { Feed } from "@/pages/app/Feed"
 import { Explore } from "@/pages/app/Explore"
 import { Settings } from "@/pages/app/settings/Settings"
 import { Profile } from "@/pages/app/profile/Profile"
 import { UserProfile } from "@/pages/app/users/[username]/index"
-import { PostView } from "@/pages/app/posts/PostView"
-import { CommentView } from "@/pages/app/posts/CommentView"
+import { PostView } from "@/pages/app/posts/[id]"
+import { CommentView } from "@/pages/app/posts/comments/[id]"
 import { queryClient } from '@/lib/query-client'
 
 function App() {
@@ -72,11 +72,11 @@ function AppRoutes() {
       />
         
       <Route 
-        path="/dashboard" 
+        path="/feed" 
         element={
           <ProtectedRoute>
             <FeedLayout>
-              <Dashboard />
+              <Feed />
             </FeedLayout>
           </ProtectedRoute>
         } 
@@ -116,7 +116,7 @@ function AppRoutes() {
       />
         
       <Route 
-        path="/post/:postId" 
+        path="/post/:id" 
         element={
           <ProtectedRoute>
             <AppLayout>
@@ -127,7 +127,7 @@ function AppRoutes() {
       />
         
       <Route 
-        path="/comment/:commentId" 
+        path="/post/:postId/comment/:id" 
         element={
           <ProtectedRoute>
             <AppLayout>
@@ -148,7 +148,7 @@ function AppRoutes() {
         } 
       />
         
-      <Route path="/app/*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/app/*" element={<Navigate to="/feed" replace />} />
       
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

@@ -11,7 +11,6 @@ import { useIsMobile } from "@/hooks/useIsMobile"
 import { useToastContext } from "@/contexts/ToastContext"
 import { createPostApi, type CreatePostMedia } from "@/api/posts"
 import { ImageUpload } from "@/components/posts/ImageUpload"
-import { Loader2 } from "lucide-react"
 
 const createPostSchema = z.object({
   content: z.string()
@@ -93,7 +92,6 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
       disabled={isSubmitting || !isValid}
       className="w-full"
     >
-      {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
       Post
     </Button>
   ) : undefined
@@ -145,7 +143,6 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
             form="create-post-form" 
             disabled={isSubmitting || !isValid}
           >
-            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
             Post
           </Button>
         </DialogFooter>

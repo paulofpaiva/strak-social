@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/useToast'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { ResponsiveModal } from '@/components/ui/responsive-modal'
 import { updateCommentApi, type Comment } from '@/api/posts'
-import { Loader2, Image, X } from 'lucide-react'
+import { Image, X } from 'lucide-react'
 
 const editCommentSchema = z.object({
   content: z.string()
@@ -115,7 +115,6 @@ export function EditCommentModal({ comment, isOpen, onClose }: EditCommentModalP
           disabled={!isValid || isSubmitting || (watchedContent?.trim().length === 0 && images.length === 0)}
           className="min-w-20"
         >
-          {isSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
           Update
         </Button>
       }
@@ -217,7 +216,6 @@ export function EditCommentModal({ comment, isOpen, onClose }: EditCommentModalP
               onClick={(e) => e.stopPropagation()}
               disabled={!isValid || isSubmitting || (watchedContent?.trim().length === 0 && images.length === 0)}
             >
-              {isSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
               Update
             </Button>
           </div>

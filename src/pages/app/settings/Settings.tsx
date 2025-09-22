@@ -1,16 +1,31 @@
-import { AccountSettings } from "./components/AccountSettings"
-import { AppearanceSettings } from "./components/AppearanceSettings"
+import { AccountSettings } from "../../../components/settings/AccountSettings"
+import { AppearanceSettings } from "../../../components/settings/AppearanceSettings"
 import { SettingsTabs } from "@/components/navigation/SettingsTabs"
 import { SettingsSidebar } from "@/components/navigation/SettingsSidebar"
-import { Breadcrumb } from "@/components/ui/breadcrumb"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import { useIsMobile } from "@/hooks/useIsMobile"
 import { useState } from "react"
+import { useNavigationTracking, createSmartNavigationHandler } from '@/utils/navigation'
 
 type SettingsTab = "account" | "appearance"
 
 export function Settings() {
   const isMobile = useIsMobile()
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<SettingsTab>("account")
+  
+  useNavigationTracking('/settings')
+  
+  const handleBack = () => {
+    const smartHandler = createSmartNavigationHandler(
+      navigate,
+      '/settings',
+      '/feed'
+    )
+    smartHandler([])
+  }
 
   const renderContent = () => {
     switch (activeTab) {
@@ -50,7 +65,15 @@ export function Settings() {
       <>
         <div className="mb-4">
           <div className="flex items-center space-x-4 mb-3">
-            <Breadcrumb to="/dashboard" label="Back" className="h-12 px-6 text-base" />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleBack}
+              className="h-8 w-8 p-0"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <h1 className="text-xl font-semibold text-foreground">Settings</h1>
           </div>
           <h2 className="text-2xl font-bold mb-2">{getTitle()}</h2>
           <p className="text-muted-foreground text-sm">{getDescription()}</p>
@@ -70,7 +93,15 @@ export function Settings() {
     <>
       <div className="mb-8">
         <div className="flex items-center space-x-4 mb-4">
-          <Breadcrumb to="/dashboard" label="Back" className="h-12 px-6 text-base" />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBack}
+            className="h-8 w-8 p-0"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h1 className="text-xl font-semibold text-foreground">Settings</h1>
         </div>
         <h2 className="text-3xl font-bold mb-2">{getTitle()}</h2>
         <p className="text-muted-foreground">{getDescription()}</p>

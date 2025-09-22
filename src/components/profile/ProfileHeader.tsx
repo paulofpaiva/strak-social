@@ -79,20 +79,21 @@ export function ProfileHeader({
         </div>
 
         <div className="space-y-4">
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">
+          <div className="grid grid-cols-[1fr_auto] gap-4 items-start">
+            <div className="min-w-0 overflow-hidden">
+              <h1 className="text-2xl font-bold text-foreground truncate pr-2">
                 {user.name || 'No name set'}
               </h1>
-              <p className="text-muted-foreground">@{user.username}</p>
+              <p className="text-muted-foreground truncate pr-2">@{user.username}</p>
               {user.bio && (
-                <p className="text-foreground mt-2 leading-relaxed">
+                <p className="text-foreground mt-2 leading-relaxed truncate pr-2">
                   {user.bio}
                 </p>
               )}
             </div>
 
-            {isOwnProfile ? (
+            <div className="shrink-0">
+              {isOwnProfile ? (
               <Button
                 variant="outline"
                 size="sm"
@@ -126,7 +127,8 @@ export function ProfileHeader({
                   </Button>
                 )}
               </div>
-            )}
+              )}
+            </div>
           </div>
 
           {meta && (

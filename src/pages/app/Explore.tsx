@@ -1,12 +1,36 @@
-import { Breadcrumb } from "@/components/ui/breadcrumb"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import { UserSearch } from "@/components/search/UserSearch"
+import { useNavigationTracking, createSmartNavigationHandler } from '@/utils/navigation'
 
 export function Explore() {
+  const navigate = useNavigate()
+  
+  useNavigationTracking('/explore')
+  
+  const handleBack = () => {
+    const smartHandler = createSmartNavigationHandler(
+      navigate,
+      '/explore',
+      '/feed'
+    )
+    smartHandler([])
+  }
+  
   return (
     <>
       <div className="mb-4">
         <div className="flex items-center space-x-4 mb-3">
-          <Breadcrumb to="/dashboard" label="Back" className="h-12 px-6 text-base" />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBack}
+            className="h-8 w-8 p-0"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h1 className="text-xl font-semibold text-foreground">Explore</h1>
         </div>
       </div>
       

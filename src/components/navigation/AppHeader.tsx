@@ -35,7 +35,7 @@ export function AppHeader() {
   return (
     <header className="border-b bg-background">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link to="/dashboard" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+        <Link to="/feed" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
           <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
             <span className="text-primary-foreground font-bold text-sm">S</span>
           </div>
@@ -72,9 +72,9 @@ export function AppHeader() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/dashboard" className="flex items-center cursor-pointer">
+                <Link to="/feed" className="flex items-center cursor-pointer">
                   <Settings className="mr-2 h-4 w-4" />
-                  <span>Dashboard</span>
+                  <span>Feed</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -125,8 +125,8 @@ export function AppHeader() {
 
                 <div className="space-y-3">
                   <Button asChild variant="ghost" className="w-full justify-start h-12 text-base font-medium">
-                    <Link to="/dashboard">
-                      Dashboard
+                    <Link to="/feed">
+                      Feed
                     </Link>
                   </Button>
                   <Button asChild variant="ghost" className="w-full justify-start h-12 text-base font-medium">

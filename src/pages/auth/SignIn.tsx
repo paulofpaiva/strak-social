@@ -27,7 +27,7 @@ export function SignIn() {
       setError("")
       await login(data.emailOrUsername, data.password)
       
-      const from = location.state?.from?.pathname || "/dashboard"
+      const from = location.state?.from?.pathname || "/feed"
       navigate(from, { replace: true })
     } catch (error: any) {
       setError(error.message || "Login error")

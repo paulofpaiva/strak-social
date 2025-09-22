@@ -12,7 +12,6 @@ import { useIsMobile } from "@/hooks/useIsMobile"
 import { useToastContext } from "@/contexts/ToastContext"
 import { createCommentApi, type CreateCommentMedia } from "@/api/posts"
 import { ImageUpload } from "@/components/posts/ImageUpload"
-import { Loader2 } from "lucide-react"
 
 const replySchema = z.object({
   content: z.string()
@@ -79,7 +78,7 @@ export function CreateCommentModal({ isOpen, onClose, parentCommentId, postId, r
         if (redirectTo === 'post') {
           navigate(`/post/${postId}`)
         } else if (parentCommentId) {
-          navigate(`/comment/${parentCommentId}`)
+          navigate(`/post/${postId}/comment/${parentCommentId}`)
         } else {
           navigate(`/post/${postId}`)
         }
@@ -213,7 +212,6 @@ export function CreateCommentModal({ isOpen, onClose, parentCommentId, postId, r
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     Post
                   </>
                 ) : (
@@ -236,7 +234,6 @@ export function CreateCommentModal({ isOpen, onClose, parentCommentId, postId, r
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 Post
               </>
             ) : (

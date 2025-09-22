@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import { formatDateForInput } from "@/utils/formatting"
 import { useAuth } from "@/hooks"
+import { useNavigationTracking, createSmartNavigationHandler } from '@/utils/navigation'
 import { EditProfileModal } from "../../../components/profile/EditProfileModal"
 import { AvatarEditor } from "../../../components/profile/AvatarEditor"
 import { CoverEditor } from "../../../components/profile/CoverEditor"
@@ -16,6 +17,17 @@ export function Profile() {
   const { user } = useAuth()
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const navigate = useNavigate()
+  
+  useNavigationTracking('/profile')
+  
+  const handleBack = () => {
+    const smartHandler = createSmartNavigationHandler(
+      navigate,
+      '/profile',
+      '/feed'
+    )
+    smartHandler([])
+  }
   
 
   if (!user) {
@@ -33,14 +45,15 @@ export function Profile() {
     <>
       <div className="mb-4">
         <div className="flex items-center space-x-4 mb-3">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate(-1)}
-            className="h-12 px-6 text-base"
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBack}
+            className="h-8 w-8 p-0"
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
+            <ArrowLeft className="h-4 w-4" />
           </Button>
+          <h1 className="text-xl font-semibold text-foreground">Profile</h1>
         </div>
       </div>
       

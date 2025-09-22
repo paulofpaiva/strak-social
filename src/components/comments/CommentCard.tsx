@@ -62,7 +62,7 @@ export function CommentCard({
   }
 
   const handleViewComment = (commentId: string) => {
-    navigate(`/comment/${commentId}`)
+    navigate(`/post/${postId}/comment/${commentId}`)
   }
 
   const handleReplyClick = () => {

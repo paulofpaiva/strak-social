@@ -44,7 +44,7 @@ export function UserCard({ user, className, showFollowButton = true, onClick }: 
     
     if (isLoadingStatus) {
       return (
-        <Button size="sm" variant="outline" disabled className="ml-2 shrink-0">
+        <Button size="sm" variant="outline" disabled className="shrink-0">
           <Loader2 className="h-4 w-4 animate-spin" />
         </Button>
       )
@@ -56,9 +56,9 @@ export function UserCard({ user, className, showFollowButton = true, onClick }: 
         variant="default"
         onClick={isFollowing ? handleUnfollow : handleFollow}
         disabled={isProcessing}
-        className="ml-2 shrink-0 rounded-full"
+        className="shrink-0 rounded-full"
       >
-        <span className="hidden sm:inline">
+        <span>
           {isFollowing ? 'Following' : 'Follow'}
         </span>
       </Button>
@@ -74,28 +74,26 @@ export function UserCard({ user, className, showFollowButton = true, onClick }: 
 
   return (
     <div 
-      className={`flex items-center justify-between p-3 border border-border rounded-lg hover:bg-accent/50 transition-colors ${onClick ? 'cursor-pointer' : ''} ${className}`}
+      className={`grid grid-cols-[auto_1fr_auto] gap-3 p-3 border border-border rounded-lg hover:bg-accent/50 transition-colors items-center ${onClick ? 'cursor-pointer' : ''} ${className}`}
       onClick={handleCardClick}
     >
-      <div className="flex items-center space-x-3 min-w-0 flex-1">
-        <Avatar
-          src={user.avatar || undefined}
-          name={user.name}
-          className="w-10 h-10 shrink-0"
-        />
-        <div className="flex-1 min-w-0 pr-2">
-          <h4 className="font-semibold text-foreground truncate max-w-[200px] sm:max-w-[250px]">
-            {user.name}
-          </h4>
-          <span className="text-muted-foreground text-sm truncate block max-w-[180px] sm:max-w-[220px]">
-            @{user.username}
-          </span>
-          {user.bio && (
-            <p className="text-sm text-muted-foreground truncate mt-1 max-w-[200px] sm:max-w-none">
-              {user.bio}
-            </p>
-          )}
-        </div>
+      <Avatar
+        src={user.avatar || undefined}
+        name={user.name}
+        className="w-10 h-10"
+      />
+      <div className="min-w-0 overflow-hidden">
+        <h4 className="font-semibold text-foreground truncate">
+          {user.name}
+        </h4>
+        <span className="text-muted-foreground text-sm truncate block">
+          @{user.username}
+        </span>
+        {user.bio && (
+          <p className="text-sm text-muted-foreground truncate mt-1">
+            {user.bio}
+          </p>
+        )}
       </div>
       <FollowButton />
     </div>

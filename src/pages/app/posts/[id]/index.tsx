@@ -5,15 +5,27 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import { PostCard } from '@/components/posts/PostCard'
 import { PostLoadingSkeleton } from '@/components/posts/PostLoadingSkeleton'
+import { createSmartNavigationHandler, useNavigationTracking } from '@/utils/navigation'
 
 export function PostView() {
-  const { postId } = useParams<{ postId: string }>()
+  const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  
+  useNavigationTracking(`/post/${id}`)
+  
+  const handleBack = () => {
+    const smartHandler = createSmartNavigationHandler(
+      navigate,
+      `/post/${id}`,
+      '/feed'
+    )
+    smartHandler([`/post/${id}/comment/`])
+  }
 
   const { data: postData, isLoading: postLoading, error: postError } = useQuery({
-    queryKey: ['post', postId],
-    queryFn: () => getPostApi(postId!),
-    enabled: !!postId,
+    queryKey: ['post', id],
+    queryFn: () => getPostApi(id!),
+    enabled: !!id,
   })
 
 
@@ -54,7 +66,7 @@ export function PostView() {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => navigate(-1)}
+          onClick={handleBack}
           className="h-8 w-8 p-0"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -67,10 +79,13 @@ export function PostView() {
           post={post} 
           className="mb-6"
           showComments={true}
-          onPostDeleted={() => navigate('/dashboard')}
+          onPostDeleted={() => navigate('/feed')}
           disableHover={true}
+          showDetailedTimestamp={true}
         />
       </div>
     </>
   )
 }
+
+export default PostView

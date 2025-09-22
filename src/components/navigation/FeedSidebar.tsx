@@ -37,7 +37,7 @@ const feedItems: FeedItem[] = [
     id: 'home',
     label: 'Home',
     icon: Home,
-    href: '/dashboard'
+    href: '/feed'
   },
   {
     id: 'explore',

@@ -11,7 +11,6 @@ import { useIsMobile } from "@/hooks/useIsMobile"
 import { useToastContext } from "@/contexts/ToastContext"
 import { updatePostApi, type Post } from "@/api/posts"
 import { ImageUpload } from "@/components/posts/ImageUpload"
-import { Loader2 } from "lucide-react"
 
 const editPostSchema = z.object({
   content: z.string()
@@ -99,8 +98,7 @@ export function EditPostModal({ isOpen, onClose, post }: EditPostModalProps) {
       disabled={updatePostMutation.isPending || !isValid}
       className="w-full"
     >
-      {updatePostMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-      Update Post
+      Update
     </Button>
   ) : undefined
 
@@ -145,8 +143,7 @@ export function EditPostModal({ isOpen, onClose, post }: EditPostModalProps) {
               type="submit" 
               disabled={updatePostMutation.isPending || !isValid}
             >
-              {updatePostMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-              Update Post
+              Update
             </Button>
           </DialogFooter>
         )}

@@ -6,12 +6,24 @@ import { ProfileHeader } from "@/components/profile/ProfileHeader"
 import { ProfileMeta } from "@/components/profile/ProfileMeta"
 import { useAuth } from "@/hooks"
 import { useUser } from "@/hooks/useAuthStore"
+import { useNavigationTracking, createSmartNavigationHandler } from '@/utils/navigation'
 
 export function UserProfile() {
   const { username } = useParams<{ username: string }>()
   const { user: currentUser } = useAuth()
   const { data: userData, isLoading, error } = useUser(username || '')
   const navigate = useNavigate()
+  
+  useNavigationTracking(`/${username}`)
+  
+  const handleBack = () => {
+    const smartHandler = createSmartNavigationHandler(
+      navigate,
+      `/${username}`,
+      '/feed'
+    )
+    smartHandler([])
+  }
   
   if (!username) {
     return (
@@ -68,14 +80,15 @@ export function UserProfile() {
     <>
       <div className="mb-4">
         <div className="flex items-center space-x-4 mb-3">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate(-1)}
-            className="h-12 px-6 text-base"
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBack}
+            className="h-8 w-8 p-0"
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
+            <ArrowLeft className="h-4 w-4" />
           </Button>
+          <h1 className="text-xl font-semibold text-foreground">@{username}</h1>
         </div>
       </div>
       

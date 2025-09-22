@@ -32,8 +32,8 @@ export function Header() {
     }
   }
 
-  const handleDashboardClick = () => {
-    navigate('/dashboard')
+  const handleFeedClick = () => {
+    navigate('/feed')
   }
 
   return (
@@ -49,8 +49,8 @@ export function Header() {
         {user ? (
           <div className="flex items-center space-x-4">
             {!isMobile && (
-              <Button onClick={handleDashboardClick} variant="ghost">
-                Dashboard
+              <Button onClick={handleFeedClick} variant="ghost">
+                Feed
               </Button>
             )}
             <DropdownMenu>
@@ -67,9 +67,9 @@ export function Header() {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem onClick={handleDashboardClick}>
+                <DropdownMenuItem onClick={handleFeedClick}>
                   <User className="mr-2 h-4 w-4" />
-                  <span>Dashboard</span>
+                  <span>Feed</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Settings className="mr-2 h-4 w-4" />

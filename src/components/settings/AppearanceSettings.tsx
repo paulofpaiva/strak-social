@@ -44,7 +44,7 @@ export function AppearanceSettings() {
         <div>
           <h3 className="text-lg font-medium mb-4">Theme</h3>
           <p className="text-sm text-muted-foreground mb-6">
-            Select the theme for the dashboard.
+            Select the theme for the feed.
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
