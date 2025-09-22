@@ -5,9 +5,8 @@ import { z } from "zod"
 import { ResponsiveModal } from "@/components/ui/responsive-modal"
 import { DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { FloatingInput } from "@/components/ui/floating-input"
+import { FloatingTextarea } from "@/components/ui/floating-textarea"
 import { useUpdateProfile } from "@/hooks"
 import { useToastContext } from "@/contexts/ToastContext"
 import { checkUsernameApi } from "@/api/auth"
@@ -166,13 +165,12 @@ export function EditProfileModal({ isOpen, onClose, currentUser }: EditProfileMo
       description="Make changes to your profile here."
       actionButton={actionButton}
     >
-      <form id="edit-profile-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="name">Name</Label>
-          <Input
+      <form id="edit-profile-form" onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <div className="space-y-1">
+          <FloatingInput
             id="name"
+            label="Name"
             {...register("name")}
-            placeholder="Enter your name"
             autoFocus={false}
           />
           {errors.name && (
@@ -180,28 +178,23 @@ export function EditProfileModal({ isOpen, onClose, currentUser }: EditProfileMo
           )}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="username">Username</Label>
-          <div className="relative">
-            <Input
-              id="username"
-              {...register("username")}
-              placeholder="Enter your username"
-              className={usernameStatus.available === false ? "border-destructive" : 
-                usernameStatus.available === true ? "border-green-500" : ""}
-            />
-            {isCheckingUsername && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+        <div className="space-y-1">
+          <FloatingInput
+            id="username"
+            label="Username"
+            {...register("username")}
+            className={usernameStatus.available === false ? "border-destructive" : 
+              usernameStatus.available === true ? "border-green-500" : ""}
+            hintRight={
+              isCheckingUsername ? (
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-              </div>
-            )}
-            {!isCheckingUsername && usernameStatus.available === true && (
-              <Check className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-500" />
-            )}
-            {!isCheckingUsername && usernameStatus.available === false && (
-              <X className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-destructive" />
-            )}
-          </div>
+              ) : usernameStatus.available === true ? (
+                <Check className="h-4 w-4 text-green-500" />
+              ) : usernameStatus.available === false ? (
+                <X className="h-4 w-4 text-destructive" />
+              ) : undefined
+            }
+          />
           {errors.username && (
             <p className="text-sm text-destructive">{errors.username.message}</p>
           )}
@@ -212,14 +205,12 @@ export function EditProfileModal({ isOpen, onClose, currentUser }: EditProfileMo
           )}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="bio">Bio</Label>
-          <Textarea
+        <div className="space-y-1">
+          <FloatingTextarea
             id="bio"
+            label="Bio"
             {...register("bio")}
-            placeholder="Tell us about yourself"
-            rows={3}
-            className="resize-none"
+            rows={4}
             maxLength={160}
           />
           <div className="flex justify-between items-center">
@@ -232,10 +223,10 @@ export function EditProfileModal({ isOpen, onClose, currentUser }: EditProfileMo
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="birthDate">Birth Date</Label>
-          <Input
+        <div className="space-y-1">
+          <FloatingInput
             id="birthDate"
+            label="Birth Date"
             type="date"
             {...register("birthDate")}
           />

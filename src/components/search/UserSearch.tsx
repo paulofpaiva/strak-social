@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { searchUsersApi } from '@/api/search'
-import { Input } from '@/components/ui/input'
+import { FloatingInput } from '@/components/ui/floating-input'
 import { Search } from 'lucide-react'
 import { UserCard } from '@/components/profile/UserCard'
 
@@ -43,12 +43,12 @@ export function UserSearch({ className }: UserSearchProps) {
       <div className="flex justify-center">
         <div className="relative w-full max-w-2xl">
           <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 h-6 w-6 text-muted-foreground" />
-          <Input
+          <FloatingInput
             type="text"
-            placeholder="Search users..."
+            label="Search users..."
             value={searchQuery}
             onChange={handleSearchChange}
-            className="pl-16 pr-6 py-4 text-xl rounded-full border-2 focus:border-primary transition-colors"
+            className="pl-16 pr-6 text-xl rounded-full border-2 focus:border-primary"
           />
         </div>
       </div>

@@ -1,27 +1,22 @@
 import { cn } from '@/lib/utils'
-import { FileText, Heart, MessageCircle } from 'lucide-react'
 
 interface ProfileTab {
   id: string
   label: string
-  icon: React.ComponentType<{ className?: string }>
 }
 
 const profileTabs: ProfileTab[] = [
   {
     id: 'posts',
-    label: 'Posts',
-    icon: FileText
+    label: 'Posts'
   },
   {
     id: 'likes',
-    label: 'Likes',
-    icon: Heart
+    label: 'Likes'
   },
   {
     id: 'comments',
-    label: 'Comments',
-    icon: MessageCircle
+    label: 'Comments'
   }
 ]
 
@@ -38,7 +33,6 @@ export function ProfileTabs({ className, activeTab, onTabChange }: ProfileTabsPr
     <div className={cn("border-b", className)}>
       <nav className="flex space-x-8 overflow-x-auto">
         {profileTabs.map((tab) => {
-          const Icon = tab.icon
           const isActive = activeTab === (tab.id as TabId)
           
           return (
@@ -52,8 +46,7 @@ export function ProfileTabs({ className, activeTab, onTabChange }: ProfileTabsPr
                   : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground"
               )}
             >
-              <Icon className="h-4 w-4" />
-              <span className='hidden sm:block'>{tab.label}</span>
+              <span>{tab.label}</span>
             </button>
           )
         })}

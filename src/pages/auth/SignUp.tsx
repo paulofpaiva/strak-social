@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { FloatingInput } from "@/components/ui/floating-input"
 import { AvatarInput } from "@/components/ui/avatar-input"
 import { Spinner } from "@/components/ui/spinner"
 import { Link, useNavigate } from "react-router"
@@ -100,12 +99,11 @@ export function SignUp() {
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="name">Name</Label>
-          <Input
+        <div className="space-y-1">
+          <FloatingInput
             id="name"
             type="text"
-            placeholder="Enter your name"
+            label="Name"
             {...register("name")}
           />
           {errors.name && (
@@ -113,12 +111,11 @@ export function SignUp() {
           )}
         </div>
         
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
+        <div className="space-y-1">
+          <FloatingInput
             id="email"
             type="email"
-            placeholder="Enter your email"
+            label="Email"
             {...register("email")}
           />
           {errors.email && (
@@ -126,29 +123,24 @@ export function SignUp() {
           )}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="username">Username</Label>
-          <div className="relative">
-            <Input
-              id="username"
-              type="text"
-              placeholder="Enter your username"
-              {...register("username")}
-              className={usernameStatus.available === false ? "border-destructive" : 
-                       usernameStatus.available === true ? "border-green-500" : ""}
-            />
-            {isCheckingUsername && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+        <div className="space-y-1">
+          <FloatingInput
+            id="username"
+            type="text"
+            label="Username"
+            {...register("username")}
+            className={usernameStatus.available === false ? "border-destructive" : 
+                     usernameStatus.available === true ? "border-green-500" : ""}
+            hintRight={
+              isCheckingUsername ? (
                 <Spinner size="sm" className="text-muted-foreground" />
-              </div>
-            )}
-            {!isCheckingUsername && usernameStatus.available === true && (
-              <Check className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-500" />
-            )}
-            {!isCheckingUsername && usernameStatus.available === false && (
-              <X className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-destructive" />
-            )}
-          </div>
+              ) : usernameStatus.available === true ? (
+                <Check className="h-4 w-4 text-green-500" />
+              ) : usernameStatus.available === false ? (
+                <X className="h-4 w-4 text-destructive" />
+              ) : undefined
+            }
+          />
           {errors.username && (
             <p className="text-destructive text-sm">{errors.username.message}</p>
           )}
@@ -159,34 +151,33 @@ export function SignUp() {
           )}
         </div>
         
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <div className="relative">
-            <Input
-              id="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
-              className="pr-10"
-              {...register("password")}
-            />
-            <button
-              type="button"
-              onClick={togglePassword}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            >
-              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            </button>
-          </div>
+        <div className="space-y-1">
+          <FloatingInput
+            id="password"
+            type={showPassword ? "text" : "password"}
+            label="Password"
+            className="pr-10"
+            {...register("password")}
+            hintRight={
+              <button
+                type="button"
+                onClick={togglePassword}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            }
+          />
           {errors.password && (
             <p className="text-destructive text-sm">{errors.password.message}</p>
           )}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="birthDate">Birth Date</Label>
-          <Input
+        <div className="space-y-1">
+          <FloatingInput
             id="birthDate"
             type="date"
+            label="Birth Date"
             {...register("birthDate")}
           />
           {errors.birthDate && (

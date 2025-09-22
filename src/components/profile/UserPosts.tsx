@@ -25,6 +25,7 @@ export function UserPosts({ userId }: UserPostsProps) {
     initialPageParam: 1,
     enabled: !!userId,
     staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnMount: 'always',
   })
 
   const setSentinelRef = useInfiniteScroll(

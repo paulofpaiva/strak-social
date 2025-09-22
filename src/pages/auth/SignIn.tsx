@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { FloatingInput } from "@/components/ui/floating-input"
 import { Link, useNavigate, useLocation } from "react-router"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -37,12 +36,11 @@ export function SignIn() {
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="emailOrUsername">Email or Username</Label>
-          <Input
+        <div className="space-y-1">
+          <FloatingInput
             id="emailOrUsername"
             type="text"
-            placeholder="Enter your email or username"
+            label="Email or Username"
             {...register("emailOrUsername")}
           />
           {errors.emailOrUsername && (
@@ -50,12 +48,11 @@ export function SignIn() {
           )}
         </div>
         
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input
+        <div className="space-y-1">
+          <FloatingInput
             id="password"
             type="password"
-            placeholder="Enter your password"
+            label="Password"
             {...register("password")}
           />
           {errors.password && (

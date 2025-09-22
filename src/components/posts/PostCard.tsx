@@ -128,7 +128,7 @@ export function PostCard({
           <div className="flex-1 min-w-0">
             <div className="grid grid-cols-[1fr_auto] gap-3 items-start mb-2">
               <div className="min-w-0 overflow-hidden">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                <div className={`flex ${showDetailedTimestamp ? 'flex-col' : 'flex-col sm:flex-row sm:items-center sm:gap-2'}`}>
                   <h3 className="font-semibold text-foreground truncate">
                     {post.user.name}
                   </h3>
@@ -164,7 +164,7 @@ export function PostCard({
             />
 
             {showDetailedTimestamp && (
-              <div className="mb-3 pb-3 border-b border-border">
+              <div className="mb-3">
                 <p className="text-muted-foreground text-sm">
                   {format(new Date(post.createdAt), 'HH:mm · MMM d, yyyy')}
                   {isEdited && (
