@@ -7,14 +7,14 @@ import { useIsMobile } from '@/hooks/useIsMobile'
 import { ResponsiveModal } from '@/components/ui/responsive-modal'
 import { AlertTriangle } from 'lucide-react'
 
-interface DeleteUserPostProps {
+interface DeletePostModalProps {
   postId: string
   isOpen: boolean
   onClose: () => void
   onDeleteSuccess?: () => void
 }
 
-export function DeleteUserPost({ postId, isOpen, onClose, onDeleteSuccess }: DeleteUserPostProps) {
+export function DeletePostModal({ postId, isOpen, onClose, onDeleteSuccess }: DeletePostModalProps) {
   const { success, error: toastError } = useToast()
   const queryClient = useQueryClient()
   const [isDeleting, setIsDeleting] = useState(false)

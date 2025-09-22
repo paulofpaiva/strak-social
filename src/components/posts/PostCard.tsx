@@ -3,17 +3,17 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { likePostApi } from '@/api/posts'
 import { Avatar } from '@/components/ui/avatar'
-import { format } from 'date-fns'
 import { Heart, MessageCircle, Share, Trash2, MoreHorizontal, Edit } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks'
 import { useToast } from '@/hooks/useToast'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { DeleteUserPost } from '@/pages/app/profile/components/DeleteUserPost'
+import { DeletePostModal } from '@/components/posts/DeletePostModal'
 import { EditPostModal } from './EditPostModal'
 import { ImageModal } from './ImageModal'
 import { PostComments } from './PostComments'
 import { CreateCommentModal } from '../comments/CreateCommentModal'
+import { formatTimeAgo } from '@/utils/formatting'
 
 interface PostCardProps {
   post: {
@@ -61,7 +61,6 @@ export function PostCard({
   const [selectedImage, setSelectedImage] = useState<string>('')
   const [showCreateCommentModal, setShowCreateCommentModal] = useState(false)
 
-  const isEdited = new Date(post.updatedAt).getTime() > new Date(post.createdAt).getTime()
 
   const likePostMutation = useMutation({
     mutationFn: likePostApi,
@@ -107,7 +106,7 @@ export function PostCard({
   return (
     <>
       <div 
-        className={`border border-border rounded-lg p-4 ${disableHover ? '' : 'cursor-pointer hover:bg-muted/50 transition-colors'} ${className}`}
+        className={`w-full py-4 pr-4 ${disableHover ? '' : 'cursor-pointer'} ${className}`}
         onClick={disableHover ? undefined : handlePostClick}
       >
         <div className="flex space-x-3">
@@ -119,12 +118,16 @@ export function PostCard({
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between mb-2">
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-foreground truncate">
-                  {post.user.name}
-                </h3>
-                <p className="text-muted-foreground text-sm truncate">
-                  @{post.user.username}
-                </p>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                  <h3 className="font-semibold text-foreground overflow-hidden text-ellipsis whitespace-nowrap">
+                    {post.user.name}
+                  </h3>
+                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                    <span className="overflow-hidden text-ellipsis whitespace-nowrap">@{post.user.username}</span>
+                    <span>·</span>
+                    <span className="whitespace-nowrap">{formatTimeAgo(post.createdAt)}</span>
+                  </div>
+                </div>
               </div>
               
               {isMyPost && (
@@ -201,17 +204,6 @@ export function PostCard({
               </div>
             )}
 
-            <div className="flex items-center space-x-2 text-muted-foreground text-sm mb-3">
-              <span>
-                {format(new Date(post.createdAt), 'MMM d, yyyy · h:mm a')}
-              </span>
-              {isEdited && (
-                <>
-                  <span>·</span>
-                  <span>Edited</span>
-                </>
-              )}
-            </div>
 
             <div className="flex items-center space-x-6 text-muted-foreground">
               <Button 
@@ -260,7 +252,7 @@ export function PostCard({
       </div>
 
       {showDeleteModal && (
-        <DeleteUserPost
+        <DeletePostModal
           postId={post.id}
           isOpen={showDeleteModal}
           onClose={handleCloseDeleteModal}

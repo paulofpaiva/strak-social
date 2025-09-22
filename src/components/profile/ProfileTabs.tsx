@@ -25,10 +25,12 @@ const profileTabs: ProfileTab[] = [
   }
 ]
 
+type TabId = 'posts' | 'likes' | 'comments'
+
 interface ProfileTabsProps {
   className?: string
-  activeTab: string
-  onTabChange: (tab: string) => void
+  activeTab: TabId
+  onTabChange: (tab: TabId) => void
 }
 
 export function ProfileTabs({ className, activeTab, onTabChange }: ProfileTabsProps) {
@@ -37,12 +39,12 @@ export function ProfileTabs({ className, activeTab, onTabChange }: ProfileTabsPr
       <nav className="flex space-x-8 overflow-x-auto">
         {profileTabs.map((tab) => {
           const Icon = tab.icon
-          const isActive = activeTab === tab.id
+          const isActive = activeTab === (tab.id as TabId)
           
           return (
             <button
               key={tab.id}
-              onClick={() => onTabChange(tab.id)}
+              onClick={() => onTabChange(tab.id as TabId)}
               className={cn(
                 "flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors cursor-pointer",
                 isActive

@@ -61,6 +61,11 @@ export const updateProfileSchema = z.object({
   name: z.string().min(2, 'Name must have at least 2 characters').optional(),
   bio: z.string().max(160, 'Bio must have at most 160 characters').optional(),
   birthDate: z.string().optional(),
+  username: z.string()
+    .min(3, 'Username must have at least 3 characters')
+    .max(15, 'Username must have at most 15 characters')
+    .regex(/^[a-zA-Z0-9_.]+$/, 'Username can only contain letters, numbers, underscores, and dots')
+    .optional(),
 });
 
 export type SignUpInput = z.infer<typeof signUpSchema>;

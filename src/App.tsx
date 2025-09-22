@@ -18,6 +18,7 @@ import { Dashboard } from "@/pages/app/Dashboard"
 import { Explore } from "@/pages/app/Explore"
 import { Settings } from "@/pages/app/settings/Settings"
 import { Profile } from "@/pages/app/profile/Profile"
+import { UserProfile } from "@/pages/app/users/[username]/index"
 import { PostView } from "@/pages/app/posts/PostView"
 import { CommentView } from "@/pages/app/posts/CommentView"
 import { queryClient } from '@/lib/query-client'
@@ -131,6 +132,17 @@ function AppRoutes() {
           <ProtectedRoute>
             <AppLayout>
               <CommentView />
+            </AppLayout>
+          </ProtectedRoute>
+        } 
+      />
+        
+      <Route 
+        path="/:username" 
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <UserProfile />
             </AppLayout>
           </ProtectedRoute>
         } 

@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import { searchUsersApi } from '@/api/search'
-import { Avatar } from '@/components/ui/avatar'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Search, UserPlus } from 'lucide-react'
-import { formatDistanceToNow } from 'date-fns'
+import { Search } from 'lucide-react'
+import { UserCard } from '@/components/profile/UserCard'
 
 interface UserSearchProps {
   className?: string
@@ -14,6 +13,7 @@ interface UserSearchProps {
 export function UserSearch({ className }: UserSearchProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
+  const navigate = useNavigate()
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -34,8 +34,8 @@ export function UserSearch({ className }: UserSearchProps) {
     setSearchQuery(e.target.value)
   }
 
-  const handleFollow = (userId: string) => {
-    console.log('Follow user:', userId)
+  const handleUserClick = (username: string) => {
+    navigate(`/${username}`)
   }
 
   return (
@@ -83,42 +83,11 @@ export function UserSearch({ className }: UserSearchProps) {
                 Found {searchResults.users.length} user{searchResults.users.length !== 1 ? 's' : ''}
               </h3>
               {searchResults.users.map((user) => (
-                <div key={user.id} className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-accent/50 transition-colors">
-                  <div className="flex items-center space-x-3">
-                    <Avatar
-                      src={user.avatar || undefined}
-                      name={user.name}
-                      className="w-10 h-10"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-2">
-                        <h4 className="font-semibold text-foreground truncate">
-                          {user.name}
-                        </h4>
-                        <span className="text-muted-foreground text-sm">
-                          @{user.username}
-                        </span>
-                      </div>
-                      {user.bio && (
-                        <p className="text-sm text-muted-foreground truncate">
-                          {user.bio}
-                        </p>
-                      )}
-                      <p className="text-xs text-muted-foreground">
-                        Joined {formatDistanceToNow(new Date(user.createdAt), { addSuffix: true })}
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleFollow(user.id)}
-                    className="ml-2"
-                  >
-                    <UserPlus className="h-4 w-4 mr-1" />
-                    Follow
-                  </Button>
-                </div>
+                <UserCard 
+                  key={user.id} 
+                  user={user} 
+                  onClick={() => handleUserClick(user.username)}
+                />
               ))}
             </div>
           )}

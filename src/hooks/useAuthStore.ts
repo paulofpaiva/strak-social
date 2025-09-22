@@ -1,6 +1,7 @@
 import { useAuthStore } from '@/stores/authStore'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { signUpApi, signInApi, signOutApi, getSessionApi, updateProfileApi, updateAvatarApi, updateCoverApi, changePasswordApi, checkUsernameApi } from '@/api/auth'
+import { getUserByUsernameApi } from '@/api/users'
 import { useEffect, useState } from 'react'
 
 export const useAuth = () => {
@@ -8,7 +9,7 @@ export const useAuth = () => {
   const queryClient = useQueryClient()
   const [hasCheckedSession, setHasCheckedSession] = useState(false)
 
-  const shouldCheckSession = !user && !hasCheckedSession
+  const shouldCheckSession = !hasCheckedSession
 
   const { data: sessionData, isLoading: isLoadingSession, error } = useQuery({
     queryKey: ['session'],
@@ -23,8 +24,12 @@ export const useAuth = () => {
   const loginMutation = useMutation({
     mutationFn: ({ emailOrUsername, password }: { emailOrUsername: string; password: string }) => 
       signInApi({ emailOrUsername, password }),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       setUser(data.user)
+      try {
+        const refreshed = await queryClient.fetchQuery({ queryKey: ['session'], queryFn: getSessionApi })
+        if (refreshed?.user) setUser(refreshed.user)
+      } catch {}
     },
     onError: (error: any) => {
       throw new Error(error.message || 'Login failed')
@@ -56,10 +61,13 @@ export const useAuth = () => {
   })
 
   const updateProfileMutation = useMutation({
-    mutationFn: (data: { name?: string; bio?: string; birthDate?: string }) => updateProfileApi(data),
+    mutationFn: (data: { name?: string; bio?: string; birthDate?: string; username?: string }) => updateProfileApi(data),
     onSuccess: (data) => {
       setUser(data.user)
       queryClient.invalidateQueries({ queryKey: ['session'] })
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
+      queryClient.invalidateQueries({ queryKey: ['user-posts'] })
+      queryClient.invalidateQueries({ queryKey: ['comments'] })
     },
     onError: (error: any) => {
       throw new Error(error.message || 'Profile update failed')
@@ -96,13 +104,13 @@ export const useAuth = () => {
   })
 
   useEffect(() => {
-    if (sessionData?.user && !user) {
+    if (sessionData?.user) {
       setUser(sessionData.user)
       setHasCheckedSession(true)
-    } else if (error || (!isLoadingSession && !user)) {
+    } else if (error || !isLoadingSession) {
       setHasCheckedSession(true)
     }
-  }, [sessionData, error, isLoadingSession, user, setUser])
+  }, [sessionData, error, isLoadingSession, setUser])
 
   const login = async (emailOrUsername: string, password: string) => {
     await loginMutation.mutateAsync({ emailOrUsername, password })
@@ -116,7 +124,7 @@ export const useAuth = () => {
     await logoutMutation.mutateAsync()
   }
 
-  const updateProfile = async (data: { name?: string; bio?: string; birthDate?: string }) => {
+  const updateProfile = async (data: { name?: string; bio?: string; birthDate?: string; username?: string }) => {
     await updateProfileMutation.mutateAsync(data)
   }
 
@@ -201,4 +209,13 @@ export const useCheckUsername = () => {
   }
 
   return { checkUsername, isLoading: checkUsernameMutation.isPending }
+}
+
+export const useUser = (username: string) => {
+  return useQuery({
+    queryKey: ['user', username],
+    queryFn: () => getUserByUsernameApi(username),
+    enabled: !!username,
+    retry: false,
+  })
 }

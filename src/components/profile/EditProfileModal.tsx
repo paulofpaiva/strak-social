@@ -64,9 +64,20 @@ export function EditProfileModal({ isOpen, onClose, currentUser }: EditProfileMo
     },
     mode: "onChange"
   })
+  
 
   const watchedUsername = watch("username")
   const watchedBio = watch("bio")
+
+  useEffect(() => {
+    reset({
+      name: currentUser.name,
+      bio: currentUser.bio || "",
+      birthDate: currentUser.birthDate || "",
+      username: currentUser.username,
+    })
+    setUsernameStatus({ available: null, message: "" })
+  }, [currentUser, reset])
 
   useEffect(() => {
     if (watchedUsername && watchedUsername.length >= 3 && watchedUsername !== currentUser.username) {
@@ -117,6 +128,7 @@ export function EditProfileModal({ isOpen, onClose, currentUser }: EditProfileMo
         name: data.name,
         bio: data.bio || undefined,
         birthDate: data.birthDate,
+        username: data.username,
       })
 
       toastSuccess("Profile updated successfully!")
@@ -128,7 +140,12 @@ export function EditProfileModal({ isOpen, onClose, currentUser }: EditProfileMo
   }
 
   const handleClose = () => {
-    reset()
+    reset({
+      name: currentUser.name,
+      bio: currentUser.bio || "",
+      birthDate: currentUser.birthDate || "",
+      username: currentUser.username,
+    })
     setUsernameStatus({ available: null, message: "" })
     clearErrors()
     onClose()

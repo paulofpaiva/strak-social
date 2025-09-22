@@ -8,6 +8,8 @@ import uploadRoutes from './routes/upload.js';
 import { postsRoutes } from './routes/posts.js';
 import { commentsRoutes } from './routes/comments.js';
 import { searchRoutes } from './routes/search.js';
+import followRoutes from './routes/follow.js';
+import usersRoutes from './routes/users.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -35,6 +37,8 @@ app.use('/api', uploadRoutes);
 app.use('/api/posts', postsRoutes);
 app.use('/api/comments', commentsRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/follow', followRoutes);
+app.use('/api/users', usersRoutes);
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);

@@ -6,7 +6,7 @@ import { users } from '../schemas/auth.js';
 import { followers } from '../schemas/followers.js';
 import { signUpSchema, signInSchema, changePasswordSchema, checkUsernameSchema, updateProfileSchema } from '../schemas/auth.js';
 import { authenticateToken, optionalAuth } from '../middleware/auth.js';
-import { eq, or, sql } from 'drizzle-orm';
+import { eq, or, sql, and, ne } from 'drizzle-orm';
 
 const router = Router();
 
@@ -229,9 +229,30 @@ router.post('/sign-out', (req, res) => {
   res.json({ message: 'Logout successful' });
 });
 
-router.get('/session', optionalAuth, (req, res) => {
+router.get('/session', optionalAuth, async (req, res) => {
   if (req.user) {
-    res.json({ user: req.user });
+    try {
+      const followersCount = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(followers)
+        .where(eq(followers.followingId, req.user.id));
+
+      const followingCount = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(followers)
+        .where(eq(followers.followerId, req.user.id));
+
+      res.json({ 
+        user: {
+          ...req.user,
+          followersCount: followersCount[0]?.count || 0,
+          followingCount: followingCount[0]?.count || 0
+        }
+      });
+    } catch (error) {
+      console.error('Session fetch error:', error);
+      res.json({ user: req.user });
+    }
   } else {
     res.status(401).json({ error: 'Not authenticated' });
   }
@@ -266,18 +287,34 @@ router.get('/profile', authenticateToken, async (req, res) => {
 router.put('/profile', authenticateToken, async (req, res) => {
   try {
     const validatedData = updateProfileSchema.parse(req.body);
-    const { name, bio, birthDate } = validatedData;
+    const { name, bio, birthDate, username } = validatedData;
     
-    if (!name && !bio && !birthDate) {
+    if (!name && !bio && !birthDate && !username) {
       return res.status(400).json({ 
-        error: 'At least one field (name, bio, or birthDate) must be provided' 
+        error: 'At least one field (name, bio, birthDate, or username) must be provided' 
       });
+    }
+
+    // Check if username is already taken (if provided and different from current)
+    if (username) {
+      const existingUser = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(and(eq(users.username, username), ne(users.id, req.user!.id)))
+        .limit(1);
+
+      if (existingUser.length > 0) {
+        return res.status(400).json({ 
+          error: 'Username is already taken' 
+        });
+      }
     }
 
     const updateData: any = {};
     if (name !== undefined) updateData.name = name;
     if (bio !== undefined) updateData.bio = bio;
     if (birthDate !== undefined) updateData.birthDate = new Date(birthDate);
+    if (username !== undefined) updateData.username = username;
     updateData.updatedAt = new Date();
 
     const updatedUser = await db
