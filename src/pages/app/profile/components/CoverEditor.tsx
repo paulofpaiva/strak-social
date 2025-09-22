@@ -76,7 +76,6 @@ export function CoverEditor({ cover }: CoverEditorProps) {
           </div>
         )}
         
-        {/* Loading Overlay */}
         {isUpdatingCover && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
             <Spinner size="lg" className="text-white" />

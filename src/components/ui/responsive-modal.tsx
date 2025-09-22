@@ -34,7 +34,10 @@ export function ResponsiveModal({
             <Button
               variant="ghost"
               size="sm"
-              onClick={onClose}
+              onClick={(e) => {
+                e.stopPropagation()
+                onClose()
+              }}
               className="mr-2 p-2"
             >
               <ArrowLeft className="h-5 w-5" />

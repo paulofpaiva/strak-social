@@ -4,7 +4,7 @@ import { ThemeProvider } from '@/contexts/ThemeContext'
 import { ToastProvider } from '@/contexts/ToastContext'
 import { CreatePostProvider } from '@/contexts/CreatePostContext'
 import { ToastContainer } from '@/components/ToastContainer'
-import { GlobalCreatePostModal } from '@/components/GlobalCreatePostModal'
+import { GlobalCreatePostModal } from '@/components/posts/GlobalCreatePostModal'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { useNProgress } from '@/hooks/useNProgress'
 import { AuthLayout } from '@/layouts/AuthLayout'
@@ -18,6 +18,8 @@ import { Dashboard } from "@/pages/app/Dashboard"
 import { Explore } from "@/pages/app/Explore"
 import { Settings } from "@/pages/app/settings/Settings"
 import { Profile } from "@/pages/app/profile/Profile"
+import { PostView } from "@/pages/app/posts/PostView"
+import { CommentView } from "@/pages/app/posts/CommentView"
 import { queryClient } from '@/lib/query-client'
 
 function App() {
@@ -107,6 +109,28 @@ function AppRoutes() {
           <ProtectedRoute>
             <AppLayout>
               <Settings />
+            </AppLayout>
+          </ProtectedRoute>
+        } 
+      />
+        
+      <Route 
+        path="/post/:postId" 
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <PostView />
+            </AppLayout>
+          </ProtectedRoute>
+        } 
+      />
+        
+      <Route 
+        path="/comment/:commentId" 
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <CommentView />
             </AppLayout>
           </ProtectedRoute>
         } 

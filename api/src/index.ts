@@ -6,6 +6,8 @@ import path from 'path';
 import { authRoutes } from './routes/auth.js';
 import uploadRoutes from './routes/upload.js';
 import { postsRoutes } from './routes/posts.js';
+import { commentsRoutes } from './routes/comments.js';
+import { searchRoutes } from './routes/search.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -31,6 +33,8 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api', uploadRoutes);
 app.use('/api/posts', postsRoutes);
+app.use('/api/comments', commentsRoutes);
+app.use('/api/search', searchRoutes);
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);

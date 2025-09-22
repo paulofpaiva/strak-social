@@ -4,7 +4,7 @@ import { users, strakSchema } from "./auth";
 
 export const likes = strakSchema.table("likes", {
   id: uuid("id").primaryKey().defaultRandom(),
-  postId: uuid("post_id").references(() => posts.id).notNull(),
+  postId: uuid("post_id").references(() => posts.id, { onDelete: 'cascade' }).notNull(),
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({

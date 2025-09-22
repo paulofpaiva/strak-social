@@ -8,6 +8,48 @@
       "when": 1758503439136,
       "tag": "0000_unique_spyke",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1758509677627,
+      "tag": "0001_lovely_gravity",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1758509800000,
+      "tag": "0002_clean_orphaned_data",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1758510298938,
+      "tag": "0003_glorious_onslaught",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1758511554797,
+      "tag": "0004_boring_terror",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1758511726062,
+      "tag": "0005_lovely_nightshade",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1758512003341,
+      "tag": "0006_workable_scarlet_witch",
+      "breakpoints": true
     }
   ]
 }

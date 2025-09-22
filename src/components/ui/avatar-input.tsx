@@ -44,8 +44,6 @@ export const AvatarInput: React.FC<AvatarInputProps> = ({
       setPreview(previewUrl)
       onChange(file, previewUrl)
     } else {
-      // Se não há arquivo selecionado, não faz nada
-      // Mantém o estado atual
     }
   }
 
@@ -56,7 +54,6 @@ export const AvatarInput: React.FC<AvatarInputProps> = ({
     }
   }
 
-  // Durante o loading, não mostra o preview para evitar problemas de redimensionamento
   const currentAvatar = isLoading ? value : (preview || value)
 
   return (
@@ -69,14 +66,12 @@ export const AvatarInput: React.FC<AvatarInputProps> = ({
           className="cursor-pointer transition-opacity group-hover:opacity-80"
         />
         
-        {/* Loading Overlay */}
         {isLoading && (
           <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
             <Spinner size="lg" className="text-white" />
           </div>
         )}
         
-        {/* Camera Overlay - only when not loading */}
         {!disabled && !isLoading && (
           <div className="absolute inset-0 rounded-full bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                onClick={handleClick}>

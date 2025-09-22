@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useChangePassword } from "@/hooks"
 import { useToastContext } from "@/contexts/ToastContext"
+import { useIsMobile } from "@/hooks/useIsMobile"
 import { changePasswordSchema, type ChangePasswordFormData } from "@/schemas/auth"
 import { Eye, EyeOff } from "lucide-react"
 
@@ -18,6 +19,7 @@ interface ChangePasswordModalProps {
 export function ChangePasswordModal({ isOpen, onClose }: ChangePasswordModalProps) {
   const { changePassword, isLoading } = useChangePassword()
   const { success: toastSuccess, error: toastError } = useToastContext()
+  const isMobile = useIsMobile()
   const [showPasswords, setShowPasswords] = useState({
     current: false,
     new: false,
@@ -58,7 +60,7 @@ export function ChangePasswordModal({ isOpen, onClose }: ChangePasswordModalProp
       disabled={isLoading}
       className="disabled:opacity-50"
     >
-      {isLoading ? 'Changing...' : 'Change Password'}
+      Save
     </Button>
   )
 
@@ -139,6 +141,26 @@ export function ChangePasswordModal({ isOpen, onClose }: ChangePasswordModalProp
             <p className="text-destructive text-sm">{errors.confirmPassword.message}</p>
           )}
         </div>
+
+        {!isMobile && (
+          <div className="flex justify-end space-x-2 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={isLoading}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="disabled:opacity-50"
+            >
+              Save
+            </Button>
+          </div>
+        )}
       </form>
     </ResponsiveModal>
   )

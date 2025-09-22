@@ -5,12 +5,14 @@ import * as authSchema from '../schemas/auth.js';
 import * as postsSchema from '../schemas/posts.js';
 import * as commentsSchema from '../schemas/comments.js';
 import * as likesSchema from '../schemas/likes.js';
+import * as commentLikesSchema from '../schemas/commentLikes.js';
 
 const schema = {
   ...authSchema,
   ...postsSchema,
   ...commentsSchema,
   ...likesSchema,
+  ...commentLikesSchema,
 };
 
 const pool = new Pool({

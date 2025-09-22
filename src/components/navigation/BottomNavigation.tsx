@@ -84,7 +84,6 @@ export function BottomNavigation() {
             )
           })}
           
-          {/* Botão de criar post */}
           <button
             onClick={handleCreatePost}
             className="flex items-center justify-center p-3 rounded-lg transition-colors min-w-0 flex-1 text-primary hover:text-primary/80"

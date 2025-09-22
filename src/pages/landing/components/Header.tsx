@@ -46,7 +46,6 @@ export function Header() {
           <h1 className="text-2xl font-bold">Strak Social</h1>
         </div>
         
-        {/* Authenticated User */}
         {user ? (
           <div className="flex items-center space-x-4">
             {!isMobile && (

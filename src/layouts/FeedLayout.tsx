@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
-import { FeedSidebar } from '../components/FeedSidebar'
-import { BottomNavigation } from '../components/BottomNavigation'
+import { FeedSidebar } from '../components/navigation/FeedSidebar'
+import { BottomNavigation } from '../components/navigation/BottomNavigation'
 import { AdSidebar } from '../components/AdSidebar'
 import { useIsMobile, useIsCompact } from '../hooks/useIsMobile'
 

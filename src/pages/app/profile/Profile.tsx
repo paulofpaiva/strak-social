@@ -6,6 +6,8 @@ import { useIsMobile } from "@/hooks/useIsMobile"
 import { EditProfileModal } from "./components/EditProfileModal"
 import { AvatarEditor } from "./components/AvatarEditor"
 import { CoverEditor } from "./components/CoverEditor"
+import { ProfileTabs } from "@/pages/app/profile/components/ProfileTabs"
+import { UserPosts } from "@/pages/app/profile/components/UserPosts"
 import { Mail, Calendar, Edit } from "lucide-react"
 import { useState } from "react"
 
@@ -13,6 +15,7 @@ export function Profile() {
   const { user } = useAuth()
   const isMobile = useIsMobile()
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState('posts')
 
   if (!user) {
     return (
@@ -101,6 +104,29 @@ export function Profile() {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="mt-6">
+        <ProfileTabs
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
+        
+        <div className="mt-4">
+          {activeTab === 'posts' && user.id && (
+            <UserPosts userId={user.id} />
+          )}
+          {activeTab === 'likes' && (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">Likes coming soon</p>
+            </div>
+          )}
+          {activeTab === 'comments' && (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">Comments coming soon</p>
+            </div>
+          )}
         </div>
       </div>
 
