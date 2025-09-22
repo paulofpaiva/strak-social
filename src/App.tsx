@@ -2,18 +2,22 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { ToastProvider } from '@/contexts/ToastContext'
+import { CreatePostProvider } from '@/contexts/CreatePostContext'
 import { ToastContainer } from '@/components/ToastContainer'
+import { GlobalCreatePostModal } from '@/components/GlobalCreatePostModal'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { useNProgress } from '@/hooks/useNProgress'
 import { AuthLayout } from '@/layouts/AuthLayout'
 import { FeedLayout } from '@/layouts/FeedLayout'
+import { AppLayout } from '@/layouts/AppLayout'
 import Landing from "@/pages/landing/Landing"
 import { Auth } from "@/pages/auth/Auth"
 import { SignIn } from "@/pages/auth/SignIn"
 import { SignUp } from "@/pages/auth/SignUp"
 import { Dashboard } from "@/pages/app/Dashboard"
 import { Explore } from "@/pages/app/Explore"
-import { Profile } from "@/pages/app/Profile"
+import { Settings } from "@/pages/app/settings/Settings"
+import { Profile } from "@/pages/app/profile/Profile"
 import { queryClient } from '@/lib/query-client'
 
 function App() {
@@ -21,10 +25,13 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <ToastProvider>
-          <Router>
-            <AppRoutes />
-            <ToastContainer />
-          </Router>
+          <CreatePostProvider>
+            <Router>
+              <AppRoutes />
+              <ToastContainer />
+              <GlobalCreatePostModal />
+            </Router>
+          </CreatePostProvider>
         </ToastProvider>
       </ThemeProvider>
     </QueryClientProvider>
@@ -76,9 +83,20 @@ function AppRoutes() {
         path="/explore" 
         element={
           <ProtectedRoute>
-            <FeedLayout>
+            <AppLayout>
               <Explore />
-            </FeedLayout>
+            </AppLayout>
+          </ProtectedRoute>
+        } 
+      />
+        
+      <Route 
+        path="/profile" 
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <Profile />
+            </AppLayout>
           </ProtectedRoute>
         } 
       />
@@ -87,9 +105,9 @@ function AppRoutes() {
         path="/settings" 
         element={
           <ProtectedRoute>
-            <FeedLayout>
-              <Profile />
-            </FeedLayout>
+            <AppLayout>
+              <Settings />
+            </AppLayout>
           </ProtectedRoute>
         } 
       />

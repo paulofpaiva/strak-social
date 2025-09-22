@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { User, Shield, Palette } from 'lucide-react'
+import { Shield, Palette } from 'lucide-react'
 
 interface SettingsItem {
   id: string
@@ -8,11 +8,6 @@ interface SettingsItem {
 }
 
 const settingsItems: SettingsItem[] = [
-  {
-    id: 'profile',
-    label: 'Profile',
-    icon: User
-  },
   {
     id: 'account',
     label: 'Account',

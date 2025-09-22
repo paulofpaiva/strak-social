@@ -9,6 +9,7 @@ import {
   LogOut
 } from 'lucide-react'
 import { useAuth } from '@/hooks'
+import { useCreatePost } from '@/contexts/CreatePostContext'
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -27,6 +28,10 @@ interface FeedItem {
   href?: string
 }
 
+interface FeedSidebarProps {
+  isCompact?: boolean
+}
+
 const feedItems: FeedItem[] = [
   {
     id: 'home',
@@ -41,6 +46,12 @@ const feedItems: FeedItem[] = [
     href: '/explore'
   },
   {
+    id: 'profile',
+    label: 'Profile',
+    icon: User,
+    href: '/profile'
+  },
+  {
     id: 'settings',
     label: 'Settings',
     icon: Settings,
@@ -48,10 +59,11 @@ const feedItems: FeedItem[] = [
   }
 ]
 
-export function FeedSidebar() {
+export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const { openModal } = useCreatePost()
 
   const handleLogout = async () => {
     try {
@@ -63,24 +75,26 @@ export function FeedSidebar() {
   }
 
   const handleProfileClick = () => {
-    navigate('/settings')
+    navigate('/profile')
   }
 
   const handleItemClick = (href: string) => {
     navigate(href)
   }
 
+  const handleCreatePost = () => {
+    openModal()
+  }
+
   return (
-    <div className="flex flex-col h-full">
-      {/* Logo */}
-      <div className="flex items-center justify-center p-6">
+    <div className={cn("flex flex-col h-full", isCompact && "w-16")}>
+      <div className={cn("flex items-center justify-center", isCompact ? "p-4" : "p-6")}>
         <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
           <span className="text-primary-foreground font-bold text-lg">S</span>
         </div>
       </div>
 
-      {/* Navigation Items */}
-      <nav className="flex-1 px-4 space-y-1">
+      <nav className={cn("flex-1 space-y-1", isCompact ? "px-2" : "px-4")}>
         {feedItems.map((item) => {
           const Icon = item.icon
           const isActive = location.pathname === item.href
@@ -90,53 +104,72 @@ export function FeedSidebar() {
               key={item.id}
               onClick={() => item.href && handleItemClick(item.href)}
               className={cn(
-                "flex items-center w-full px-4 py-3 text-left rounded-full transition-colors cursor-pointer",
+                "flex items-center w-full text-left rounded-full transition-colors cursor-pointer",
+                isCompact ? "justify-center px-2 py-3" : "px-4 py-3",
                 isActive
                   ? "bg-primary text-primary-foreground font-semibold"
                   : "text-foreground hover:bg-accent hover:text-accent-foreground"
               )}
+              title={isCompact ? item.label : undefined}
             >
-              <Icon className="mr-4 h-6 w-6" />
-              <span className="text-lg">{item.label}</span>
+              <Icon className={cn("h-6 w-6", !isCompact && "mr-4")} />
+              {!isCompact && <span className="text-lg">{item.label}</span>}
             </button>
           )
         })}
       </nav>
 
-      <div className="p-4">
-        <Button className="w-full h-12 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold">
-          <Plus className="mr-2 h-5 w-5" />
-          Post
+      <div className={cn("", isCompact ? "p-2" : "p-4")}>
+        <Button 
+          onClick={handleCreatePost}
+          className={cn(
+            "w-full h-12 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold",
+            isCompact && "justify-center"
+          )}
+          title={isCompact ? "Post" : undefined}
+        >
+          <Plus className={cn("h-5 w-5", !isCompact && "mr-2")} />
+          {!isCompact && "Post"}
         </Button>
       </div>
 
       {user && (
-        <div className="p-4 border-t border-border">
+        <div className={cn("border-t border-border", isCompact ? "p-2" : "p-4")}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center space-x-3 p-3 rounded-full hover:bg-accent cursor-pointer transition-colors w-full text-left">
+              <button 
+                className={cn(
+                  "flex items-center rounded-full hover:bg-accent cursor-pointer transition-colors w-full",
+                  isCompact ? "justify-center p-2" : "space-x-3 p-3 text-left"
+                )}
+                title={isCompact ? user.name : undefined}
+              >
                 <Avatar 
                   src={user.avatar} 
                   name={user.name || 'User'} 
                   size="sm" 
                 />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground truncate">
-                    {user.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground truncate">
-                    @{user.email?.split('@')[0]}
-                  </p>
-                </div>
-                <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                {!isCompact && (
+                  <>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-foreground truncate">
+                        {user.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        @{user.email?.split('@')[0]}
+                      </p>
+                    </div>
+                    <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                  </>
+                )}
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem onClick={handleProfileClick}>
                 <User className="mr-2 h-4 w-4" />
-                <span>Settings</span>
+                <span>Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/settings')}>
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
               </DropdownMenuItem>

@@ -3,9 +3,10 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { db } from '../db/index.js';
 import { users } from '../schemas/auth.js';
-import { signUpSchema, signInSchema, changePasswordSchema, checkUsernameSchema } from '../schemas/auth.js';
+import { followers } from '../schemas/followers.js';
+import { signUpSchema, signInSchema, changePasswordSchema, checkUsernameSchema, updateProfileSchema } from '../schemas/auth.js';
 import { authenticateToken, optionalAuth } from '../middleware/auth.js';
-import { eq, or } from 'drizzle-orm';
+import { eq, or, sql } from 'drizzle-orm';
 
 const router = Router();
 
@@ -49,6 +50,8 @@ router.post('/sign-up', async (req, res) => {
         password: hashedPassword,
         avatar: validatedData.avatar,
         cover: validatedData.cover,
+        bio: validatedData.bio,
+        birthDate: validatedData.birthDate ? new Date(validatedData.birthDate) : undefined,
       })
       .returning({
         id: users.id,
@@ -57,7 +60,8 @@ router.post('/sign-up', async (req, res) => {
         name: users.name,
         avatar: users.avatar,
         cover: users.cover,
-        emailVerified: users.emailVerified,
+        bio: users.bio,
+        birthDate: users.birthDate,
         createdAt: users.createdAt,
         updatedAt: users.updatedAt,
       });
@@ -119,7 +123,6 @@ router.post('/sign-in', async (req, res) => {
         password: users.password,
         avatar: users.avatar,
         cover: users.cover,
-        emailVerified: users.emailVerified,
         createdAt: users.createdAt,
         updatedAt: users.updatedAt,
       })
@@ -189,7 +192,6 @@ router.get('/check-username', async (req, res) => {
       });
     }
     
-    // Validate username format
     const validation = checkUsernameSchema.safeParse({ username });
     if (!validation.success) {
       return res.status(400).json({ 
@@ -235,27 +237,47 @@ router.get('/session', optionalAuth, (req, res) => {
   }
 });
 
-router.get('/profile', authenticateToken, (req, res) => {
-  res.json({ 
-    message: 'User profile',
-    user: req.user 
-  });
+router.get('/profile', authenticateToken, async (req, res) => {
+  try {
+    const followersCount = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(followers)
+      .where(eq(followers.followingId, req.user!.id));
+
+    const followingCount = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(followers)
+      .where(eq(followers.followerId, req.user!.id));
+
+    res.json({ 
+      message: 'User profile',
+      user: {
+        ...req.user,
+        followersCount: followersCount[0]?.count || 0,
+        followingCount: followingCount[0]?.count || 0
+      }
+    });
+  } catch (error) {
+    console.error('Profile fetch error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 router.put('/profile', authenticateToken, async (req, res) => {
   try {
-    const { name, avatar, cover } = req.body;
+    const validatedData = updateProfileSchema.parse(req.body);
+    const { name, bio, birthDate } = validatedData;
     
-    if (!name && !avatar && !cover) {
+    if (!name && !bio && !birthDate) {
       return res.status(400).json({ 
-        error: 'At least one field (name, avatar, or cover) must be provided' 
+        error: 'At least one field (name, bio, or birthDate) must be provided' 
       });
     }
 
     const updateData: any = {};
-    if (name) updateData.name = name;
-    if (avatar) updateData.avatar = avatar;
-    if (cover) updateData.cover = cover;
+    if (name !== undefined) updateData.name = name;
+    if (bio !== undefined) updateData.bio = bio;
+    if (birthDate !== undefined) updateData.birthDate = new Date(birthDate);
     updateData.updatedAt = new Date();
 
     const updatedUser = await db
@@ -269,20 +291,11 @@ router.put('/profile', authenticateToken, async (req, res) => {
         name: users.name,
         avatar: users.avatar,
         cover: users.cover,
-        emailVerified: users.emailVerified,
+        bio: users.bio,
+        birthDate: users.birthDate,
         createdAt: users.createdAt,
         updatedAt: users.updatedAt,
       });
-
-    if (updatedUser[0].avatar && !updatedUser[0].avatar.startsWith('http')) {
-      const baseUrl = process.env.API_BASE_URL || 'http://localhost:3001';
-      updatedUser[0].avatar = `${baseUrl}${updatedUser[0].avatar}`;
-    }
-
-    if (updatedUser[0].cover && !updatedUser[0].cover.startsWith('http')) {
-      const baseUrl = process.env.API_BASE_URL || 'http://localhost:3001';
-      updatedUser[0].cover = `${baseUrl}${updatedUser[0].cover}`;
-    }
 
     res.json({
       message: 'Profile updated successfully',
@@ -295,11 +308,86 @@ router.put('/profile', authenticateToken, async (req, res) => {
   }
 });
 
+router.put('/avatar', authenticateToken, async (req, res) => {
+  try {
+    const { avatar } = req.body;
+    
+    if (!avatar) {
+      return res.status(400).json({ 
+        error: 'Avatar URL is required' 
+      });
+    }
+
+    const updatedUser = await db
+      .update(users)
+      .set({ avatar, updatedAt: new Date() })
+      .where(eq(users.id, req.user!.id))
+      .returning({
+        id: users.id,
+        email: users.email,
+        username: users.username,
+        name: users.name,
+        avatar: users.avatar,
+        cover: users.cover,
+        bio: users.bio,
+        birthDate: users.birthDate,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+      });
+
+    res.json({
+      message: 'Avatar updated successfully',
+      user: updatedUser[0]
+    });
+
+  } catch (error: any) {
+    console.error('Avatar update error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.put('/cover', authenticateToken, async (req, res) => {
+  try {
+    const { cover } = req.body;
+    
+    if (!cover) {
+      return res.status(400).json({ 
+        error: 'Cover URL is required' 
+      });
+    }
+
+    const updatedUser = await db
+      .update(users)
+      .set({ cover, updatedAt: new Date() })
+      .where(eq(users.id, req.user!.id))
+      .returning({
+        id: users.id,
+        email: users.email,
+        username: users.username,
+        name: users.name,
+        avatar: users.avatar,
+        cover: users.cover,
+        bio: users.bio,
+        birthDate: users.birthDate,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+      });
+
+    res.json({
+      message: 'Cover updated successfully',
+      user: updatedUser[0]
+    });
+
+  } catch (error: any) {
+    console.error('Cover update error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 router.put('/change-password', authenticateToken, async (req, res) => {
   try {
     const validatedData = changePasswordSchema.parse(req.body);
     
-    // Get user with password
     const userResult = await db
       .select({
         id: users.id,
@@ -315,18 +403,15 @@ router.put('/change-password', authenticateToken, async (req, res) => {
 
     const user = userResult[0];
 
-    // Verify current password
     const isCurrentPasswordValid = await bcrypt.compare(validatedData.currentPassword, user.password);
     
     if (!isCurrentPasswordValid) {
       return res.status(400).json({ error: 'Current password is incorrect' });
     }
 
-    // Hash new password
     const saltRounds = 12;
     const hashedNewPassword = await bcrypt.hash(validatedData.newPassword, saltRounds);
 
-    // Update password
     await db
       .update(users)
       .set({ 

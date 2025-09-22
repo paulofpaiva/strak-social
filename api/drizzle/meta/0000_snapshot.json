@@ -1,6 +1,6 @@
 {
-  "id": "3edf9c68-ef16-4b69-bca0-f17e9e55c847",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "cfeccf8b-f29d-4117-a6c3-0f5dc65bc261",
+  "prevId": "0000_careful_khan",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -51,12 +51,17 @@
           "primaryKey": false,
           "notNull": false
         },
-        "email_verified": {
-          "name": "email_verified",
-          "type": "boolean",
+        "bio": {
+          "name": "bio",
+          "type": "text",
           "primaryKey": false,
-          "notNull": false,
-          "default": false
+          "notNull": false
+        },
+        "birth_date": {
+          "name": "birth_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -170,6 +175,45 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "strak_social.followers": {
+      "name": "followers",
+      "schema": "strak_social",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "follower_id": {
+          "name": "follower_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "following_id": {
+          "name": "following_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "strak_social.likes": {
       "name": "likes",
       "schema": "strak_social",
@@ -260,6 +304,51 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "strak_social.post_media": {
+      "name": "post_media",
+      "schema": "strak_social",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "post_id": {
+          "name": "post_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "media_url": {
+          "name": "media_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "media_type": {
+          "name": "media_type",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "strak_social.posts": {
       "name": "posts",
       "schema": "strak_social",
@@ -274,12 +363,6 @@
         "user_id": {
           "name": "user_id",
           "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "title": {
-          "name": "title",
-          "type": "varchar(150)",
           "primaryKey": false,
           "notNull": true
         },

@@ -1,6 +1,6 @@
 import { useAuthStore } from '@/stores/authStore'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { signUpApi, signInApi, signOutApi, getSessionApi, updateProfileApi, changePasswordApi, checkUsernameApi } from '@/api/auth'
+import { signUpApi, signInApi, signOutApi, getSessionApi, updateProfileApi, updateAvatarApi, updateCoverApi, changePasswordApi, checkUsernameApi } from '@/api/auth'
 import { useEffect, useState } from 'react'
 
 export const useAuth = () => {
@@ -32,7 +32,7 @@ export const useAuth = () => {
   })
 
   const signUpMutation = useMutation({
-    mutationFn: (data: { name: string; email: string; username: string; password: string; avatar?: string }) =>
+    mutationFn: (data: { name: string; email: string; username: string; password: string; birthDate: string; avatar?: string }) =>
       signUpApi(data),
     onSuccess: (data) => {
       setUser(data.user)
@@ -56,13 +56,35 @@ export const useAuth = () => {
   })
 
   const updateProfileMutation = useMutation({
-    mutationFn: (data: { name?: string; avatar?: string; cover?: string }) => updateProfileApi(data),
+    mutationFn: (data: { name?: string; bio?: string; birthDate?: string }) => updateProfileApi(data),
     onSuccess: (data) => {
       setUser(data.user)
       queryClient.invalidateQueries({ queryKey: ['session'] })
     },
     onError: (error: any) => {
       throw new Error(error.message || 'Profile update failed')
+    },
+  })
+
+  const updateAvatarMutation = useMutation({
+    mutationFn: (avatar: string) => updateAvatarApi(avatar),
+    onSuccess: (data) => {
+      setUser(data.user)
+      queryClient.invalidateQueries({ queryKey: ['session'] })
+    },
+    onError: (error: any) => {
+      throw new Error(error.message || 'Avatar update failed')
+    },
+  })
+
+  const updateCoverMutation = useMutation({
+    mutationFn: (cover: string) => updateCoverApi(cover),
+    onSuccess: (data) => {
+      setUser(data.user)
+      queryClient.invalidateQueries({ queryKey: ['session'] })
+    },
+    onError: (error: any) => {
+      throw new Error(error.message || 'Cover update failed')
     },
   })
 
@@ -86,7 +108,7 @@ export const useAuth = () => {
     await loginMutation.mutateAsync({ emailOrUsername, password })
   }
 
-  const signUp = async (data: { name: string; email: string; username: string; password: string; avatar?: string }) => {
+  const signUp = async (data: { name: string; email: string; username: string; password: string; birthDate: string; avatar?: string }) => {
     await signUpMutation.mutateAsync(data)
   }
 
@@ -94,8 +116,16 @@ export const useAuth = () => {
     await logoutMutation.mutateAsync()
   }
 
-  const updateProfile = async (data: { name?: string; avatar?: string; cover?: string }) => {
+  const updateProfile = async (data: { name?: string; bio?: string; birthDate?: string }) => {
     await updateProfileMutation.mutateAsync(data)
+  }
+
+  const updateAvatar = async (avatar: string) => {
+    await updateAvatarMutation.mutateAsync(avatar)
+  }
+
+  const updateCover = async (cover: string) => {
+    await updateCoverMutation.mutateAsync(cover)
   }
 
   const changePassword = async (data: { currentPassword: string; newPassword: string; confirmPassword: string }) => {
@@ -105,16 +135,20 @@ export const useAuth = () => {
   return {
     user,
     isAuthenticated,
-    isLoading: isLoadingSession || loginMutation.isPending || signUpMutation.isPending || logoutMutation.isPending || updateProfileMutation.isPending || changePasswordMutation.isPending,
+    isLoading: isLoadingSession || loginMutation.isPending || signUpMutation.isPending || logoutMutation.isPending || updateProfileMutation.isPending || updateAvatarMutation.isPending || updateCoverMutation.isPending || changePasswordMutation.isPending,
     login,
     signUp,
     logout,
     updateProfile,
+    updateAvatar,
+    updateCover,
     changePassword,
     loginMutation,
     signUpMutation,
     logoutMutation,
     updateProfileMutation,
+    updateAvatarMutation,
+    updateCoverMutation,
     changePasswordMutation,
   }
 }
@@ -137,6 +171,16 @@ export const useLogout = () => {
 export const useUpdateProfile = () => {
   const { updateProfile, updateProfileMutation } = useAuth()
   return { updateProfile, isLoading: updateProfileMutation.isPending }
+}
+
+export const useUpdateAvatar = () => {
+  const { updateAvatar, updateAvatarMutation } = useAuth()
+  return { updateAvatar, isLoading: updateAvatarMutation.isPending }
+}
+
+export const useUpdateCover = () => {
+  const { updateCover, updateCoverMutation } = useAuth()
+  return { updateCover, isLoading: updateCoverMutation.isPending }
 }
 
 export const useChangePassword = () => {

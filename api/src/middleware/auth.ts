@@ -15,7 +15,14 @@ declare global {
       user?: {
         id: string
         email: string
+        username: string
         name: string
+        avatar: string | null
+        cover: string | null
+        bio: string | null
+        birthDate: Date | null
+        createdAt: Date
+        updatedAt: Date
       }
     }
   }
@@ -35,8 +42,14 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
       .select({
         id: users.id,
         email: users.email,
+        username: users.username,
         name: users.name,
         avatar: users.avatar,
+        cover: users.cover,
+        bio: users.bio,
+        birthDate: users.birthDate,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
       })
       .from(users)
       .where(eq(users.id, decoded.userId))
@@ -49,6 +62,11 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
     if (userResult[0].avatar && !userResult[0].avatar.startsWith('http')) {
       const baseUrl = process.env.API_BASE_URL || 'http://localhost:3001';
       userResult[0].avatar = `${baseUrl}${userResult[0].avatar}`;
+    }
+
+    if (userResult[0].cover && !userResult[0].cover.startsWith('http')) {
+      const baseUrl = process.env.API_BASE_URL || 'http://localhost:3001';
+      userResult[0].cover = `${baseUrl}${userResult[0].cover}`;
     }
 
     req.user = userResult[0]
@@ -77,8 +95,14 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
         .select({
           id: users.id,
           email: users.email,
+          username: users.username,
           name: users.name,
           avatar: users.avatar,
+          cover: users.cover,
+          bio: users.bio,
+          birthDate: users.birthDate,
+          createdAt: users.createdAt,
+          updatedAt: users.updatedAt,
         })
         .from(users)
         .where(eq(users.id, decoded.userId))
@@ -88,6 +112,11 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
         if (userResult[0].avatar && !userResult[0].avatar.startsWith('http')) {
           const baseUrl = process.env.API_BASE_URL || 'http://localhost:3001';
           userResult[0].avatar = `${baseUrl}${userResult[0].avatar}`;
+        }
+
+        if (userResult[0].cover && !userResult[0].cover.startsWith('http')) {
+          const baseUrl = process.env.API_BASE_URL || 'http://localhost:3001';
+          userResult[0].cover = `${baseUrl}${userResult[0].cover}`;
         }
         req.user = userResult[0]
       }

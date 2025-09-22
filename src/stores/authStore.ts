@@ -4,9 +4,14 @@ import { persist } from 'zustand/middleware'
 interface User {
   id: string
   email: string
+  username: string
   name: string
   avatar?: string
-  emailVerified: boolean
+  cover?: string
+  bio?: string
+  birthDate?: string
+  followersCount?: number
+  followingCount?: number
   createdAt: string
   updatedAt: string
 }

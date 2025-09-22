@@ -1,48 +1,41 @@
-import { ProfileSettings } from "./settings/ProfileSettings"
-import { AccountSettings } from "./settings/AccountSettings"
-import { AppearanceSettings } from "./settings/AppearanceSettings"
+import { AccountSettings } from "./components/AccountSettings"
+import { AppearanceSettings } from "./components/AppearanceSettings"
 import { SettingsTabs } from "@/components/SettingsTabs"
 import { SettingsSidebar } from "@/components/SettingsSidebar"
 import { Breadcrumb } from "@/components/ui/breadcrumb"
 import { useIsMobile } from "@/hooks/useIsMobile"
 import { useState } from "react"
 
-type SettingsTab = "profile" | "account" | "appearance"
+type SettingsTab = "account" | "appearance"
 
-export function Profile() {
+export function Settings() {
   const isMobile = useIsMobile()
-  const [activeTab, setActiveTab] = useState<SettingsTab>("profile")
+  const [activeTab, setActiveTab] = useState<SettingsTab>("account")
 
   const renderContent = () => {
     switch (activeTab) {
-      case "profile":
-        return <ProfileSettings />
       case "account":
         return <AccountSettings />
       case "appearance":
         return <AppearanceSettings />
       default:
-        return <ProfileSettings />
+        return <AccountSettings />
     }
   }
 
   const getTitle = () => {
     switch (activeTab) {
-      case "profile":
-        return "Profile Settings"
       case "account":
         return "Account Settings"
       case "appearance":
         return "Appearance Settings"
       default:
-        return "Settings"
+        return "Account Settings"
     }
   }
 
   const getDescription = () => {
     switch (activeTab) {
-      case "profile":
-        return "Manage your profile information and personal details."
       case "account":
         return "Manage your account settings and security preferences."
       case "appearance":
@@ -57,7 +50,7 @@ export function Profile() {
       <>
         <div className="mb-4">
           <div className="flex items-center space-x-4 mb-3">
-            <Breadcrumb to="/dashboard" label="Back" />
+            <Breadcrumb to="/dashboard" label="Back" className="h-12 px-6 text-base" />
           </div>
           <h2 className="text-2xl font-bold mb-2">{getTitle()}</h2>
           <p className="text-muted-foreground text-sm">{getDescription()}</p>
@@ -77,7 +70,7 @@ export function Profile() {
     <>
       <div className="mb-8">
         <div className="flex items-center space-x-4 mb-4">
-          <Breadcrumb to="/dashboard" label="Back" />
+          <Breadcrumb to="/dashboard" label="Back" className="h-12 px-6 text-base" />
         </div>
         <h2 className="text-3xl font-bold mb-2">{getTitle()}</h2>
         <p className="text-muted-foreground">{getDescription()}</p>

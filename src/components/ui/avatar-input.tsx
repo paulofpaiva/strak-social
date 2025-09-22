@@ -1,15 +1,17 @@
 import React, { useRef, useState } from 'react'
 import { Avatar } from './avatar'
 import { Camera } from 'lucide-react'
+import { Spinner } from './spinner'
 import { cn } from '@/lib/utils'
 
 interface AvatarInputProps {
   value?: string
   onChange: (file: File | null, previewUrl?: string) => void
-  size?: 'sm' | 'md' | 'lg' | 'xl'
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
   className?: string
   disabled?: boolean
   name?: string
+  isLoading?: boolean
 }
 
 export const AvatarInput: React.FC<AvatarInputProps> = ({
@@ -18,7 +20,8 @@ export const AvatarInput: React.FC<AvatarInputProps> = ({
   size = 'xl',
   className,
   disabled = false,
-  name = 'User'
+  name = 'User',
+  isLoading = false
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [preview, setPreview] = useState<string | null>(null)
@@ -53,7 +56,8 @@ export const AvatarInput: React.FC<AvatarInputProps> = ({
     }
   }
 
-  const currentAvatar = preview || value
+  // Durante o loading, não mostra o preview para evitar problemas de redimensionamento
+  const currentAvatar = isLoading ? value : (preview || value)
 
   return (
     <div className={cn('flex flex-col items-center space-y-4', className)}>
@@ -65,7 +69,15 @@ export const AvatarInput: React.FC<AvatarInputProps> = ({
           className="cursor-pointer transition-opacity group-hover:opacity-80"
         />
         
-        {!disabled && (
+        {/* Loading Overlay */}
+        {isLoading && (
+          <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
+            <Spinner size="lg" className="text-white" />
+          </div>
+        )}
+        
+        {/* Camera Overlay - only when not loading */}
+        {!disabled && !isLoading && (
           <div className="absolute inset-0 rounded-full bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                onClick={handleClick}>
             <Camera className="h-6 w-6 text-white" />

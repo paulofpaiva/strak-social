@@ -182,6 +182,17 @@ export function SignUp() {
           )}
         </div>
 
+        <div className="space-y-2">
+          <Label htmlFor="birthDate">Birth Date</Label>
+          <Input
+            id="birthDate"
+            type="date"
+            {...register("birthDate")}
+          />
+          {errors.birthDate && (
+            <p className="text-destructive text-sm">{errors.birthDate.message}</p>
+          )}
+        </div>
         
         <Button 
           type="submit" 

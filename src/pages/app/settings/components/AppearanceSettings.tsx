@@ -30,7 +30,7 @@ export function AppearanceSettings() {
   ]
 
   return (
-    <Card>
+    <Card className="bg-background">
       <CardHeader>
         <CardTitle className="flex items-center">
           <Monitor className="h-5 w-5 mr-2" />

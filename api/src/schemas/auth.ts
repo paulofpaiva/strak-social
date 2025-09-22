@@ -12,7 +12,8 @@ export const users = strakSchema.table('users', {
   password: text('password').notNull(),
   avatar: text('avatar'), 
   cover: text('cover'),
-  emailVerified: boolean('email_verified').default(false),
+  bio: text('bio'),
+  birthDate: timestamp('birth_date'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -27,6 +28,8 @@ export const signUpSchema = z.object({
   name: z.string().min(2, 'Name must have at least 2 characters'),
   avatar: z.string().optional(),
   cover: z.string().optional(),
+  bio: z.string().max(160, 'Bio must have at most 160 characters').optional(),
+  birthDate: z.string().min(1, 'Birth date is required'),
 });
 
 export const signInSchema = z.object({
@@ -54,7 +57,14 @@ export const checkUsernameSchema = z.object({
     .regex(/^[a-zA-Z0-9_.]+$/, 'Username can only contain letters, numbers, underscores, and dots'),
 });
 
+export const updateProfileSchema = z.object({
+  name: z.string().min(2, 'Name must have at least 2 characters').optional(),
+  bio: z.string().max(160, 'Bio must have at most 160 characters').optional(),
+  birthDate: z.string().optional(),
+});
+
 export type SignUpInput = z.infer<typeof signUpSchema>;
 export type SignInInput = z.infer<typeof signInSchema>;
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
 export type CheckUsernameInput = z.infer<typeof checkUsernameSchema>;
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
