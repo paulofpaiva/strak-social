@@ -3,12 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Heart, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar } from '@/components/ui/avatar'
-import { formatDistanceToNow } from 'date-fns'
+import { format } from 'date-fns'
 import { getCommentApi, likeCommentApi } from '@/api/posts'
 import { useToast } from '@/hooks/useToast'
 import { CommentActions } from '@/components/comments/CommentActions'
 import { CommentReplies } from '@/components/comments/CommentReplies'
 import { CommentLoadingSkeleton } from '@/components/comments/CommentLoadingSkeleton'
+import { MediaGrid } from '@/components/ui/media-grid'
 import { ImageModal } from '@/components/posts/ImageModal'
 import { useState } from 'react'
 
@@ -136,7 +137,7 @@ export function CommentView() {
                     <div className="flex items-center gap-2 text-muted-foreground text-sm">
                       <span className="overflow-hidden text-ellipsis whitespace-nowrap">@{comment.user.username}</span>
                       <span>·</span>
-                      <span className="whitespace-nowrap">{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}</span>
+                      <span className="whitespace-nowrap">{format(new Date(comment.createdAt), 'HH:mm')}</span>
                     </div>
                   </div>
                 </div>
@@ -147,55 +148,11 @@ export function CommentView() {
                 {comment.content}
               </p>
               
-              {comment.media && comment.media.length > 0 && (
-                <div className="mb-3">
-                  {comment.media.length === 1 ? (
-                    <img
-                      src={comment.media[0].mediaUrl}
-                      alt="Comment media"
-                      className="w-full max-w-xs rounded-lg border border-border cursor-pointer hover:opacity-90 transition-opacity"
-                      onClick={(e) => handleImageClick(comment.media![0].mediaUrl, e)}
-                    />
-                  ) : (
-                    <div className="grid grid-cols-2 gap-2 max-w-xs">
-                      {comment.media.slice(0, 4).map((media, index) => (
-                        <div key={media.id} className="relative">
-                          {media.mediaType === 'image' && (
-                            <img
-                              src={media.mediaUrl}
-                              alt={`Comment media ${index + 1}`}
-                              className="w-full h-20 object-cover rounded-lg border border-border cursor-pointer hover:opacity-90 transition-opacity"
-                              onClick={(e) => handleImageClick(media.mediaUrl, e)}
-                            />
-                          )}
-                          {media.mediaType === 'video' && (
-                            <video
-                              src={media.mediaUrl}
-                              controls
-                              className="w-full h-20 object-cover rounded-lg border border-border"
-                            />
-                          )}
-                          {media.mediaType === 'gif' && (
-                            <img
-                              src={media.mediaUrl}
-                              alt="GIF"
-                              className="w-full h-20 object-cover rounded-lg border border-border cursor-pointer hover:opacity-90 transition-opacity"
-                              onClick={(e) => handleImageClick(media.mediaUrl, e)}
-                            />
-                          )}
-                          {comment.media && comment.media.length > 4 && index === 3 && (
-                            <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
-                              <span className="text-white font-semibold text-sm">
-                                +{comment.media.length - 4}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+              <MediaGrid 
+                media={comment.media || []}
+                onImageClick={handleImageClick}
+                maxWidth="xs"
+              />
 
               <div className="flex items-center space-x-4 mt-2">
                 <Button

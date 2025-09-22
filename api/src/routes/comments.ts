@@ -383,6 +383,10 @@ router.delete('/:commentId', authenticateToken, async (req, res) => {
 
     await db
       .delete(comments)
+      .where(eq(comments.parentCommentId, commentId));
+
+    await db
+      .delete(comments)
       .where(eq(comments.id, commentId));
 
     res.json({

@@ -67,7 +67,7 @@ export function DeletePostModal({ postId, isOpen, onClose, onDeleteSuccess }: De
           variant="destructive"
           className="min-w-20"
         >
-          {isDeleting ? 'Deleting...' : 'Delete'}
+          Delete
         </Button>
       }
     >
@@ -102,7 +102,7 @@ export function DeletePostModal({ postId, isOpen, onClose, onDeleteSuccess }: De
             disabled={isDeleting}
             variant="destructive"
           >
-            {isDeleting ? 'Deleting...' : 'Delete'}
+            Delete
           </Button>
         </div>
       )}

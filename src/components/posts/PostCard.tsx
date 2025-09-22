@@ -3,16 +3,16 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { likePostApi } from '@/api/posts'
 import { Avatar } from '@/components/ui/avatar'
-import { Heart, MessageCircle, Trash2, MoreHorizontal, Edit } from 'lucide-react'
+import { Heart, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useAuth } from '@/hooks'
 import { useToast } from '@/hooks/useToast'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { DeletePostModal } from '@/components/posts/DeletePostModal'
-import { EditPostModal } from './EditPostModal'
+import { PostActions } from './PostActions'
+import { MediaGrid } from '@/components/ui/media-grid'
 import { ImageModal } from './ImageModal'
 import { PostComments } from './PostComments'
 import { CreateCommentModal } from '../comments/CreateCommentModal'
+import { EditPostModal } from './EditPostModal'
+import { DeletePostModal } from './DeletePostModal'
 import { formatTimeAgo } from '@/utils/formatting'
 import { format } from 'date-fns'
 
@@ -54,15 +54,14 @@ export function PostCard({
   disableHover = false,
   showDetailedTimestamp = false
 }: PostCardProps) {
-  const { user: currentUser } = useAuth()
   const { error: toastError } = useToast()
   const queryClient = useQueryClient()
   const navigate = useNavigate()
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [showEditModal, setShowEditModal] = useState(false)
   const [showImageModal, setShowImageModal] = useState(false)
   const [selectedImage, setSelectedImage] = useState<string>('')
   const [showCreateCommentModal, setShowCreateCommentModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
 
 
   const likePostMutation = useMutation({
@@ -81,14 +80,6 @@ export function PostCard({
     likePostMutation.mutate(post.id)
   }
 
-  const handleDeletePost = () => {
-    setShowDeleteModal(true)
-  }
-
-  const handleCloseDeleteModal = () => {
-    setShowDeleteModal(false)
-  }
-
   const handlePostClick = () => {
     navigate(`/post/${post.id}`)
   }
@@ -104,7 +95,22 @@ export function PostCard({
     setSelectedImage('')
   }
 
-  const isMyPost = currentUser && currentUser.id === post.userId
+  const handleEditPost = () => {
+    setShowEditModal(true)
+  }
+
+  const handleDeletePost = () => {
+    setShowDeleteModal(true)
+  }
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false)
+  }
+
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false)
+  }
+
   const isEdited = post.updatedAt !== post.createdAt
 
   return (
@@ -138,116 +144,24 @@ export function PostCard({
                 </div>
               </div>
               
-              {isMyPost && (
-                <div className="shrink-0">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-8 w-8 p-0"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setShowEditModal(true)
-                        }}
-                      >
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleDeletePost()
-                        }}
-                        className="text-destructive focus:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              )}
+              <div className="shrink-0">
+                <PostActions 
+                  post={post} 
+                  onEditPost={handleEditPost}
+                  onDeletePost={handleDeletePost}
+                />
+              </div>
             </div>
             
             <p className="text-foreground mb-3 whitespace-pre-wrap">
               {post.content}
             </p>
 
-            {post.media && post.media.length > 0 && (
-              <div className="mb-3">
-                {post.media.length === 1 ? (
-                  <img
-                    src={post.media[0].mediaUrl}
-                    alt="Post media"
-                    className="w-full max-w-md rounded-xl cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={(e) => handleImageClick(post.media![0].mediaUrl, e)}
-                  />
-                ) : post.media.length === 2 ? (
-                  <div className="grid grid-cols-2 max-w-md rounded-xl overflow-hidden">
-                    {post.media.slice(0, 2).map((media, index) => (
-                      <img
-                        key={index}
-                        src={media.mediaUrl}
-                        alt={`Post media ${index + 1}`}
-                        className="w-full h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                        onClick={(e) => handleImageClick(media.mediaUrl, e)}
-                      />
-                    ))}
-                  </div>
-                ) : post.media.length === 3 ? (
-                  <div className="grid grid-cols-2 max-w-md rounded-xl overflow-hidden">
-                    <img
-                      src={post.media[0].mediaUrl}
-                      alt="Post media 1"
-                      className="w-full h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                      onClick={(e) => handleImageClick(post.media![0].mediaUrl, e)}
-                    />
-                    <div className="grid grid-rows-2">
-                      <img
-                        src={post.media[1].mediaUrl}
-                        alt="Post media 2"
-                        className="w-full h-24 object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                        onClick={(e) => handleImageClick(post.media![1].mediaUrl, e)}
-                      />
-                      <img
-                        src={post.media[2].mediaUrl}
-                        alt="Post media 3"
-                        className="w-full h-24 object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                        onClick={(e) => handleImageClick(post.media![2].mediaUrl, e)}
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 max-w-md rounded-xl overflow-hidden">
-                    {post.media.slice(0, 4).map((media, index) => (
-                      <div key={index} className="relative">
-                        <img
-                          src={media.mediaUrl}
-                          alt={`Post media ${index + 1}`}
-                          className="w-full h-32 object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                          onClick={(e) => handleImageClick(media.mediaUrl, e)}
-                        />
-                        {post.media && post.media.length > 4 && index === 3 && (
-                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                            <span className="text-white font-semibold">
-                              +{post.media.length - 4}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+            <MediaGrid 
+              media={post.media || []}
+              onImageClick={handleImageClick}
+              maxWidth="md"
+            />
 
             {showDetailedTimestamp && (
               <div className="mb-3 pb-3 border-b border-border">
@@ -300,23 +214,6 @@ export function PostCard({
         )}
       </div>
 
-      {showDeleteModal && (
-        <DeletePostModal
-          postId={post.id}
-          isOpen={showDeleteModal}
-          onClose={handleCloseDeleteModal}
-          onDeleteSuccess={onPostDeleted}
-        />
-      )}
-
-      {showEditModal && (
-        <EditPostModal
-          post={post as any}
-          isOpen={showEditModal}
-          onClose={() => setShowEditModal(false)}
-        />
-      )}
-
       {showImageModal && (
         <ImageModal
           imageUrl={selectedImage}
@@ -331,6 +228,23 @@ export function PostCard({
           onClose={() => setShowCreateCommentModal(false)}
           postId={post.id}
           redirectTo="post"
+        />
+      )}
+
+      {showEditModal && (
+        <EditPostModal
+          post={post as any}
+          isOpen={showEditModal}
+          onClose={handleCloseEditModal}
+        />
+      )}
+
+      {showDeleteModal && (
+        <DeletePostModal
+          postId={post.id}
+          isOpen={showDeleteModal}
+          onClose={handleCloseDeleteModal}
+          onDeleteSuccess={onPostDeleted}
         />
       )}
     </>

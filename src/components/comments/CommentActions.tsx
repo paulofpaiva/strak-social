@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { ResponsiveDropdown } from '@/components/ui/responsive-dropdown'
 import { useAuth } from '@/hooks'
 import { MoreHorizontal, Edit, Trash2 } from 'lucide-react'
 import { type Comment } from '@/api/posts'
@@ -24,8 +24,8 @@ export function CommentActions({ comment, postId, redirectToPostOnDelete = false
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+      <ResponsiveDropdown
+        trigger={
           <Button
             variant="ghost"
             size="sm"
@@ -34,27 +34,21 @@ export function CommentActions({ comment, postId, redirectToPostOnDelete = false
           >
             <MoreHorizontal className="h-3 w-3" />
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={(e) => {
-            e.stopPropagation()
-            setShowEditModal(true)
-          }}>
-            <Edit className="h-3 w-3 mr-2" />
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={(e) => {
-              e.stopPropagation()
-              setShowDeleteModal(true)
-            }}
-            className="text-destructive focus:text-destructive"
-          >
-            <Trash2 className="h-3 w-3 mr-2" />
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        }
+        items={[
+          {
+            label: 'Edit',
+            icon: <Edit className="h-4 w-4" />,
+            onClick: () => setShowEditModal(true)
+          },
+          {
+            label: 'Delete',
+            icon: <Trash2 className="h-4 w-4" />,
+            onClick: () => setShowDeleteModal(true),
+            variant: 'destructive'
+          }
+        ]}
+      />
 
       {showEditModal && (
         <EditCommentModal

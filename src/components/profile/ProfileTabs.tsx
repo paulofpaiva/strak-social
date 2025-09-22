@@ -53,7 +53,7 @@ export function ProfileTabs({ className, activeTab, onTabChange }: ProfileTabsPr
               )}
             >
               <Icon className="h-4 w-4" />
-              <span>{tab.label}</span>
+              <span className='hidden sm:block'>{tab.label}</span>
             </button>
           )
         })}

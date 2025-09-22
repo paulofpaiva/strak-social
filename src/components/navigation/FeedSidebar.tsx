@@ -12,13 +12,7 @@ import { useAuth } from '@/hooks'
 import { useCreatePost } from '@/contexts/CreatePostContext'
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+import { ResponsiveDropdown } from '@/components/ui/responsive-dropdown'
 import { useNavigate, useLocation } from 'react-router'
 
 interface FeedItem {
@@ -135,8 +129,8 @@ export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
 
       {user && (
         <div className={cn("border-t border-border", isCompact ? "p-2" : "p-4")}>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+          <ResponsiveDropdown
+            trigger={
               <button 
                 className={cn(
                   "flex items-center rounded-full hover:bg-accent cursor-pointer transition-colors w-full",
@@ -163,23 +157,26 @@ export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
                   </>
                 )}
               </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem onClick={handleProfileClick}>
-                <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/settings')}>
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="text-destructive">
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            }
+            items={[
+              {
+                label: 'Profile',
+                icon: <User className="h-4 w-4" />,
+                onClick: handleProfileClick
+              },
+              {
+                label: 'Settings',
+                icon: <Settings className="h-4 w-4" />,
+                onClick: () => navigate('/settings')
+              },
+              {
+                label: 'Log out',
+                icon: <LogOut className="h-4 w-4" />,
+                onClick: handleLogout,
+                variant: 'destructive'
+              }
+            ]}
+          />
         </div>
       )}
     </div>

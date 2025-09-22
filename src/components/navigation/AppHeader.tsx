@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Avatar } from "@/components/ui/avatar"
 import { useAuth } from "@/hooks"
 import { useIsMobile } from "@/hooks"
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router-dom"
 import { LogOut, User, Settings } from "lucide-react"
 import {
   Dialog,
@@ -11,18 +11,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { ResponsiveDropdown } from "@/components/ui/responsive-dropdown"
 
 export function AppHeader() {
   const { user, logout } = useAuth()
   const isMobile = useIsMobile()
+  const navigate = useNavigate()
 
   const handleLogout = async () => {
     try {
@@ -42,52 +36,35 @@ export function AppHeader() {
           <h1 className="text-2xl font-bold">Strak</h1>
         </Link>
         
-        {!isMobile && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="cursor-pointer hover:opacity-80 transition-opacity">
-                <Avatar 
-                  src={user?.avatar} 
-                  name={user?.name || 'User'} 
-                  size="md" 
-                />
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
-              <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    {user?.name}
-                  </p>
-                  <p className="text-xs leading-none text-muted-foreground">
-                    {user?.email}
-                  </p>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link to="/settings" className="flex items-center cursor-pointer">
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/feed" className="flex items-center cursor-pointer">
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Feed</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                onClick={handleLogout}
-                className="flex items-center cursor-pointer text-destructive hover:bg-destructive/10 focus:bg-destructive/10"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+        <ResponsiveDropdown
+          trigger={
+            <div className="cursor-pointer hover:opacity-80 transition-opacity">
+              <Avatar 
+                src={user?.avatar} 
+                name={user?.name || 'User'} 
+                size="md" 
+              />
+            </div>
+          }
+          items={[
+            {
+              label: 'Settings',
+              icon: <User className="h-4 w-4" />,
+              onClick: () => navigate('/settings')
+            },
+            {
+              label: 'Feed',
+              icon: <Settings className="h-4 w-4" />,
+              onClick: () => navigate('/feed')
+            },
+            {
+              label: 'Log out',
+              icon: <LogOut className="h-4 w-4" />,
+              onClick: handleLogout,
+              variant: 'destructive'
+            }
+          ]}
+        />
 
         {isMobile && (
           <Dialog>
