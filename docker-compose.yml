@@ -1,0 +1,41 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:16
+    container_name: strak-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=strak_social
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  
+  backend:
+    build:
+      context: ./apps/backend
+    container_name: strak-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/strak_social
+    depends_on:
+      - postgres
+  
+  frontend:
+    build:
+      context: ./apps/frontend
+    container_name: strak-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=production
+      - VITE_API_URL=http://backend:3000
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
