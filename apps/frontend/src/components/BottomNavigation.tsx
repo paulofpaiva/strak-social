@@ -8,6 +8,7 @@ interface NavItem {
   label: string
   icon: any
   href: string
+  matchPattern?: 'exact' | 'startsWith'
 }
 
 const navItems: NavItem[] = [
@@ -15,19 +16,29 @@ const navItems: NavItem[] = [
     id: 'home',
     label: 'Home',
     icon: Home,
-    href: '/feed'
+    href: '/feed',
+    matchPattern: 'exact'
+  },
+  {
+    id: 'explore',
+    label: 'Explore',
+    icon: Search,
+    href: '/explore',
+    matchPattern: 'exact'
   },
   {
     id: 'profile',
     label: 'Profile',
     icon: User,
-    href: '/profile'
+    href: '/profile',
+    matchPattern: 'startsWith'
   },
   {
     id: 'settings',
     label: 'Settings',
     icon: Settings,
-    href: '/settings'
+    href: '/settings',
+    matchPattern: 'startsWith'
   }
 ]
 
@@ -54,7 +65,9 @@ export function BottomNavigation() {
         <div className="flex items-center justify-around px-2 py-2">
           {navItems.map((item) => {
             const Icon = item.icon
-            const isActive = location.pathname === item.href
+            const isActive = item.matchPattern === 'startsWith'
+              ? location.pathname.startsWith(item.href)
+              : location.pathname === item.href
             
             return (
               <button

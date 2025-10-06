@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import { getProfileApi } from '@/api/profile'
 import { formatDate } from '@/utils/date'
 import { AvatarEditor } from '@/pages/app/Profile/components/AvatarEditor'
@@ -14,7 +15,8 @@ import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
 
 export function Profile() {
-  const { data: profileData, isLoading, error } = useQuery({
+  const navigate = useNavigate()
+  const { data: profileData, isLoading, error, refetch } = useQuery({
     queryKey: ['profile'],
     queryFn: getProfileApi,
     retry: false,
@@ -32,7 +34,7 @@ export function Profile() {
       <ErrorEmpty
         title="Failed to load profile"
         description="Unable to load profile information. Please check your connection and try again."
-        onRetry={() => window.location.reload()}
+        onRetry={() => refetch()}
         retryText="Try again"
       />
     )
@@ -76,28 +78,32 @@ export function Profile() {
             Edit profile
           </Button>
         </div>
-
-        {/* Stats */}
+        <div className="flex items-center space-x-4 text-sm mb-6">
+          <div className="flex items-center space-x-1">
+            <span className="font-semibold text-foreground">{user.followersCount || 0}</span>
+            <button
+              className="text-muted-foreground hover:underline cursor-pointer"
+              onClick={() => navigate('/profile/followers')}
+            >
+              Followers
+            </button>
+          </div>
+          <div className="flex items-center space-x-1">
+            <span className="font-semibold text-foreground">{user.followingCount || 0}</span>
+            <button
+              className="text-muted-foreground hover:underline cursor-pointer"
+              onClick={() => navigate('/profile/following')}
+            >
+              Following
+            </button>
+          </div>
+        </div>
         <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-4">
           <div className="flex items-center space-x-1">
             <Calendar className="h-4 w-4" />
             <span>Joined {formatDate(user.createdAt)}</span>
           </div>
         </div>
-
-        {/* Follow Stats */}
-        <div className="flex items-center space-x-4 text-sm mb-6">
-          <div className="flex items-center space-x-1">
-            <span className="font-semibold text-foreground">{user.followingCount || 0}</span>
-            <span className="text-muted-foreground">Following</span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <span className="font-semibold text-foreground">{user.followersCount || 0}</span>
-            <span className="text-muted-foreground">Followers</span>
-          </div>
-        </div>
-
-        {/* Navigation Tabs */}
         <div className="border-b border-border">
           <nav className="flex space-x-8">
             {['Posts', 'Replies', 'Highlights', 'Articles', 'Media', 'Likes'].map((tab) => (
@@ -115,7 +121,6 @@ export function Profile() {
           </nav>
         </div>
 
-        {/* Content Area */}
         <div className="py-8 text-center">
           <p className="text-muted-foreground">No posts yet</p>
         </div>

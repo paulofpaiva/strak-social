@@ -3,7 +3,7 @@ import { db } from '../../db/index'
 import { users } from '../../schemas/auth'
 import { followers } from '../../schemas/followers'
 import { authenticateToken } from '../../middleware/auth'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, or, ilike } from 'drizzle-orm'
 import { asyncHandler } from '../../middleware/asyncHandler'
 import { ApiResponse } from '../../utils/response'
 
@@ -14,6 +14,7 @@ router.get('/:userId/following', authenticateToken, asyncHandler(async (req: Req
   const page = parseInt(req.query.page as string) || 1
   const limit = parseInt(req.query.limit as string) || 10
   const offset = (page - 1) * limit
+  const search = (req.query.search as string) || ''
 
   const followingList = await db
     .select({
@@ -27,7 +28,17 @@ router.get('/:userId/following', authenticateToken, asyncHandler(async (req: Req
     })
     .from(followers)
     .innerJoin(users, eq(followers.followingId, users.id))
-    .where(eq(followers.followerId, userId))
+    .where(
+      search
+        ? and(
+            eq(followers.followerId, userId),
+            or(
+              ilike(users.name, `%${search}%`),
+              ilike(users.username, `%${search}%`)
+            )
+          )
+        : eq(followers.followerId, userId)
+    )
     .limit(limit)
     .offset(offset)
 

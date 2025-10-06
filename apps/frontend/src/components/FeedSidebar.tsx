@@ -39,11 +39,18 @@ const feedItems: FeedItem[] = [
     matchPattern: 'exact'
   },
   {
+    id: 'explore',
+    label: 'Explore',
+    icon: Search,
+    href: '/explore',
+    matchPattern: 'exact'
+  },
+  {
     id: 'profile',
     label: 'Profile',
     icon: User,
     href: '/profile',
-    matchPattern: 'exact'
+    matchPattern: 'startsWith'
   },
   {
     id: 'settings',

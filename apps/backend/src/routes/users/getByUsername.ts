@@ -3,7 +3,7 @@ import { db } from '../../db/index'
 import { users } from '../../schemas/auth'
 import { followers } from '../../schemas/followers'
 import { authenticateToken } from '../../middleware/auth'
-import { eq, sql } from 'drizzle-orm'
+import { eq, sql, and } from 'drizzle-orm'
 import { asyncHandler } from '../../middleware/asyncHandler'
 import { ApiResponse } from '../../utils/response'
 import { AppError } from '../../middleware/errorHandler'
@@ -12,6 +12,7 @@ const router = Router()
 
 router.get('/username/:username', authenticateToken, asyncHandler(async (req: Request, res: Response) => {
   const { username } = req.params
+  const currentUserId = req.user!.id
   
   if (!username) {
     throw new AppError('Username is required', 400)
@@ -38,20 +39,40 @@ router.get('/username/:username', authenticateToken, asyncHandler(async (req: Re
 
   const userData = user[0]
 
-  const followersCount = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(followers)
-    .where(eq(followers.followingId, userData.id))
+  const [followersCount, followingCount] = await Promise.all([
+    db.select({ count: sql<number>`count(*)` })
+      .from(followers)
+      .where(eq(followers.followingId, userData.id)),
+    db.select({ count: sql<number>`count(*)` })
+      .from(followers)
+      .where(eq(followers.followerId, userData.id))
+  ])
 
-  const followingCount = await db
-    .select({ count: sql<number>`count(*)` })
+  const isFollowing = await db
+    .select({ id: followers.id })
     .from(followers)
-    .where(eq(followers.followerId, userData.id))
+    .where(and(eq(followers.followerId, currentUserId), eq(followers.followingId, userData.id)))
+    .limit(1)
+
+  const getImageUrl = (src?: string | null) => {
+    if (!src) return null
+    
+    if (src.startsWith('http') || src.startsWith('blob:')) return src
+    
+    if (src.startsWith('/uploads/')) {
+      return `${process.env.API_BASE_URL || 'http://localhost:3001'}${src}`
+    }
+    
+    return `${process.env.API_BASE_URL || 'http://localhost:3001'}/uploads/${src.includes('avatar') ? 'avatars' : 'covers'}/${src}`
+  }
 
   return ApiResponse.success(res, {
     ...userData,
+    avatar: getImageUrl(userData.avatar),
+    cover: getImageUrl(userData.cover),
     followersCount: followersCount[0]?.count || 0,
-    followingCount: followingCount[0]?.count || 0
+    followingCount: followingCount[0]?.count || 0,
+    isFollowing: isFollowing.length > 0
   }, 'User retrieved successfully')
 }))
 

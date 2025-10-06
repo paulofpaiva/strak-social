@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Camera, Loader2 } from 'lucide-react'
 import { uploadCover } from '@/api/upload'
 import { useToastContext } from '@/contexts/ToastContext'
@@ -11,9 +11,16 @@ interface CoverEditorProps {
 
 export function CoverEditor({ src, className }: CoverEditorProps) {
   const [isUploading, setIsUploading] = useState(false)
+  const [imageLoading, setImageLoading] = useState(true)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { success, error } = useToastContext()
   const { updateCover, isLoading: isUpdatingCover } = useUpdateCover()
+
+  useEffect(() => {
+    if (src) {
+      setImageLoading(true)
+    }
+  }, [src])
 
   const handleCoverClick = () => {
     if (!isUploading && !isUpdatingCover) {
@@ -60,13 +67,22 @@ export function CoverEditor({ src, className }: CoverEditorProps) {
         onClick={handleCoverClick}
       >
         {src ? (
-          <img
-            src={src}
-            alt="Cover"
-            className={`object-cover ${className}`}
-          />
+          <>
+            {imageLoading && (
+              <div className={`bg-gradient-to-r from-gray-700 to-gray-600 animate-pulse absolute inset-0 ${className}`}></div>
+            )}
+            <img
+              src={src}
+              alt="Cover"
+              className={`object-cover ${className}`}
+              loading="eager"
+              decoding="async"
+              onLoad={() => setImageLoading(false)}
+              onError={() => setImageLoading(false)}
+            />
+          </>
         ) : (
-          <div className={`bg-gray-200 flex items-center justify-center ${className}`}>
+          <div className={`bg-gradient-to-r from-gray-700 to-gray-600 flex items-center justify-center ${className}`}>
             <span className="text-gray-500 text-sm">No cover image</span>
           </div>
         )}

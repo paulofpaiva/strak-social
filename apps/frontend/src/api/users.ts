@@ -68,3 +68,46 @@ export const getUserByUsernameApi = async (username: string): Promise<User> => {
   }
 }
 
+export interface SearchUsersResponse {
+  success: boolean
+  message: string
+  data: { 
+    users: Array<Pick<User, 'id' | 'name' | 'username' | 'avatar' | 'bio' | 'createdAt' | 'isFollowing'>>
+    pagination: {
+      page: number
+      limit: number
+      hasMore: boolean
+    }
+  }
+}
+
+export const searchUsersApi = async (
+  query: string,
+  page: number = 1,
+  limit: number = 20
+): Promise<{ items: Array<Pick<User, 'id' | 'name' | 'username' | 'avatar' | 'bio' | 'createdAt' | 'isFollowing'>>; page: number; limit: number; hasMore?: boolean }> => {
+  try {
+    const response = await api.get<SearchUsersResponse>(`/search/users`, {
+      params: { q: query, page, limit }
+    })
+    const d = response.data.data
+    if (d?.users && d?.pagination) {
+      return { 
+        items: d.users, 
+        page: d.pagination.page, 
+        limit: d.pagination.limit, 
+        hasMore: d.pagination.hasMore 
+      }
+    }
+    return { items: d?.users || [], page: 1, limit, hasMore: false }
+  } catch (error: any) {
+    if (error.response?.data?.message) {
+      throw new Error(error.response.data.message)
+    }
+    if (error.request) {
+      throw new Error('Connection error. Please check your internet and try again.')
+    }
+    throw new Error('Failed to search users. Please try again.')
+  }
+}
+

@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { ColorProvider } from '@/contexts/ColorContext'
@@ -12,6 +12,10 @@ import { Auth } from "@/pages/auth/Auth"
 import { Feed } from "@/pages/app/Feed"
 import { Settings } from "@/pages/app/Settings/Settings"
 import { Profile } from "@/pages/app/Profile/Profile"
+import { Following } from "@/pages/app/Profile/Following"
+import { Followers } from "@/pages/app/Profile/Followers"
+import { Explore } from "@/pages/app/Explore/Explore"
+import { UserProfile } from "@/pages/app/Explore/UserProfile"
 import { queryClient } from '@/utils/query-client'
 import { AppLayout } from '@/layouts/AppLayout'
 
@@ -83,17 +87,32 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
-      
+
+      <Route 
+        path="/explore" 
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <Explore />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+
       <Route 
         path="/profile" 
         element={
           <ProtectedRoute>
             <AppLayout>
-              <Profile />
+              <Outlet />
             </AppLayout>
           </ProtectedRoute>
-        } 
-      />
+        }
+      >
+        <Route index element={<Profile />} />
+        <Route path="following" element={<Following />} />
+        <Route path="followers" element={<Followers />} />
+      </Route>
       
       <Route 
         path="/settings/:tab" 
@@ -104,6 +123,17 @@ function AppRoutes() {
             </AppLayout>
           </ProtectedRoute>
         } 
+      />
+
+      <Route 
+        path="/:username" 
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <UserProfile />
+            </AppLayout>
+          </ProtectedRoute>
+        }
       />
            
       <Route path="/app/*" element={<Navigate to="/feed" replace />} />
