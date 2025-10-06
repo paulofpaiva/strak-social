@@ -4,11 +4,11 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "concurrently -n backend,frontend -c blue,green \"pnpm run dev:backend\" \"pnpm run dev:frontend\"",
-    "dev:backend": "pnpm --filter @strak/backend run dev",
-    "dev:frontend": "pnpm --filter @strak/frontend run dev",
+    "dev:backend": "pnpm --filter @mono/backend run dev",
+    "dev:frontend": "pnpm --filter @mono/frontend run dev",
     "start": "concurrently -n backend,frontend -c blue,green \"pnpm run start:backend\" \"pnpm run start:frontend\"",
-    "start:backend": "pnpm --filter @strak/backend start",
-    "start:frontend": "pnpm --filter @strak/frontend start",
+    "start:backend": "pnpm --filter @mono/backend start",
+    "start:frontend": "pnpm --filter @mono/frontend start",
     "build": "pnpm -r run build"
   },
   "devDependencies": {
