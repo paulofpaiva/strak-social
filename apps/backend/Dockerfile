@@ -17,9 +17,9 @@ COPY --from=builder /app/package.json ./
 RUN npm install --omit=dev --production || npm install --omit=dev || true
 
 # Copia build compilado, migrations e configuração do drizzle
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/drizzle ./drizzle
-COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
+COPY --from=builder /app/apps/backend/dist ./dist
+COPY --from=builder /app/apps/backend/drizzle ./drizzle
+COPY --from=builder /app/apps/backend/drizzle.config.ts ./drizzle.config.ts
 
 ENV NODE_ENV=production
 ENV PORT=3000
