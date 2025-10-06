@@ -2,6 +2,7 @@ import { drizzle } from 'drizzle-orm/node-postgres'
 import { migrate } from 'drizzle-orm/node-postgres/migrator'
 import { Pool } from 'pg'
 import dotenv from 'dotenv'
+import path from 'path'
 
 dotenv.config()
 
@@ -20,7 +21,8 @@ export const runAutoMigrations = async () => {
   const db = drizzle(pool)
 
   try {
-    await migrate(db, { migrationsFolder: './drizzle' })
+    const migrationsFolder = path.resolve(__dirname, '../../drizzle')
+    await migrate(db, { migrationsFolder })
     console.log('Auto-migrations completed')
     await pool.end()
   } catch (error) {
