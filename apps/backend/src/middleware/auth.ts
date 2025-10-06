@@ -20,6 +20,8 @@ declare global {
         avatar: string | null
         cover: string | null
         bio: string | null
+        location: string | null
+        website: string | null
         birthDate: Date | null
         createdAt: Date
         updatedAt: Date
@@ -50,6 +52,8 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
         avatar: users.avatar,
         cover: users.cover,
         bio: users.bio,
+        location: users.location,
+        website: users.website,
         birthDate: users.birthDate,
         createdAt: users.createdAt,
         updatedAt: users.updatedAt,
@@ -106,6 +110,8 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
           avatar: users.avatar,
           cover: users.cover,
           bio: users.bio,
+          location: users.location,
+          website: users.website,
           birthDate: users.birthDate,
           createdAt: users.createdAt,
           updatedAt: users.updatedAt,

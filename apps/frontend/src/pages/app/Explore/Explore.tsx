@@ -8,12 +8,10 @@ import { UserListSkeleton } from './components/UserListSkeleton'
 import { UserList } from './components/UserList'
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from '@/components/ui/empty'
 import { Search as SearchIcon } from 'lucide-react'
-import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
+import { useInfiniteScroll, useSearchNavigation } from '@/hooks'
 import { Spinner } from '@/components/ui/spinner'
 
 export function Explore() {
-  const [search, setSearch] = useState('')
-  const [page, setPage] = useState(1)
   const [limit] = useState(20)
   const [allUsers, setAllUsers] = useState<Array<{
     id: string
@@ -23,6 +21,14 @@ export function Explore() {
     bio?: string | null
     isFollowing?: boolean
   }>>([])
+  const [page, setPage] = useState(1)
+
+  const { searchParams, navigateWithParams } = useSearchNavigation({
+    basePath: '/explore',
+    defaultReturnPath: '/explore'
+  })
+
+  const search = searchParams.get('q') || ''
 
   const hasQuery = search.trim().length > 0
 
@@ -39,20 +45,28 @@ export function Explore() {
       if (page === 1) {
         setAllUsers(data.items)
       } else {
-        setAllUsers(prev => [...prev, ...data.items])
+        setAllUsers((prev) => {
+          const incomingIds = new Set(data.items.map((u) => u.id))
+          const filteredPrev = prev.filter((u) => !incomingIds.has(u.id))
+          return [...filteredPrev, ...data.items]
+        })
       }
     }
   }, [data?.items, page])
 
   const handleSearchChange = (value: string) => {
-    setSearch(value)
-    setPage(1)
+    if (value.trim()) {
+      navigateWithParams({ q: value })
+    } else {
+      navigateWithParams({ q: null })
+    }
     setAllUsers([])
+    setPage(1)
   }
 
   const loadMore = () => {
     if (data?.hasMore && !isFetching) {
-      setPage(prev => prev + 1)
+      setPage((prev) => prev + 1)
     }
   }
 
@@ -97,7 +111,12 @@ export function Explore() {
         <UserListSkeleton />
       ) : (
         <>
-          <UserList users={allUsers} />
+          <UserList 
+            users={allUsers}
+            onFollowToggled={(userId, isFollowing) => {
+              setAllUsers((prev) => prev.map(u => u.id === userId ? { ...u, isFollowing } : u))
+            }}
+          />
           
           {hasQuery && allUsers.length > 0 && isFetching && (
             <div className="flex justify-center py-4">

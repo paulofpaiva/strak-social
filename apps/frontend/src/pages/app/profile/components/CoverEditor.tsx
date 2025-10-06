@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Camera, Loader2 } from 'lucide-react'
 import { uploadCover } from '@/api/upload'
 import { useToastContext } from '@/contexts/ToastContext'
 import { useUpdateCover } from '@/hooks/useAuthStore'
+import { Button } from '@/components/ui/button'
 
 interface CoverEditorProps {
   src?: string
@@ -11,15 +12,19 @@ interface CoverEditorProps {
 
 export function CoverEditor({ src, className }: CoverEditorProps) {
   const [isUploading, setIsUploading] = useState(false)
-  const [imageLoading, setImageLoading] = useState(true)
+  const [isFakeLoading, setIsFakeLoading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { success, error } = useToastContext()
   const { updateCover, isLoading: isUpdatingCover } = useUpdateCover()
 
   useEffect(() => {
-    if (src) {
-      setImageLoading(true)
+    if (!src) {
+      setIsFakeLoading(false)
+      return
     }
+    setIsFakeLoading(true)
+    const id = setTimeout(() => setIsFakeLoading(false), 0)
+    return () => clearTimeout(id)
   }, [src])
 
   const handleCoverClick = () => {
@@ -67,23 +72,19 @@ export function CoverEditor({ src, className }: CoverEditorProps) {
         onClick={handleCoverClick}
       >
         {src ? (
-          <>
-            {imageLoading && (
-              <div className={`bg-gradient-to-r from-gray-700 to-gray-600 animate-pulse absolute inset-0 ${className}`}></div>
-            )}
+          isFakeLoading ? (
+            <div className={`bg-gradient-to-r from-gray-700 to-gray-600 flex items-center animate-pulse justify-center ${className}`}></div>
+          ) : (
             <img
               src={src}
               alt="Cover"
               className={`object-cover ${className}`}
               loading="eager"
               decoding="async"
-              onLoad={() => setImageLoading(false)}
-              onError={() => setImageLoading(false)}
             />
-          </>
+          )
         ) : (
           <div className={`bg-gradient-to-r from-gray-700 to-gray-600 flex items-center justify-center ${className}`}>
-            <span className="text-gray-500 text-sm">No cover image</span>
           </div>
         )}
         
@@ -100,11 +101,14 @@ export function CoverEditor({ src, className }: CoverEditorProps) {
         )}
       </div>
 
-      {/* Camera button - visible by default, hidden on hover */}
       <div className="absolute top-4 right-4 opacity-100 group-hover:opacity-0 transition-opacity">
-        <button className="p-2 bg-black/50 hover:bg-black/70 rounded-full transition-colors">
+        <Button 
+          variant="secondary"
+          size="icon"
+          className="bg-black/50 hover:bg-black/70 rounded-full"
+        >
           <Camera className="h-4 w-4 text-white" />
-        </button>
+        </Button>
       </div>
 
       <input

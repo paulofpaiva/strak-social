@@ -10,6 +10,8 @@ export const users = pgTable('users', {
   avatar: text('avatar'), 
   cover: text('cover'),
   bio: text('bio'),
+  location: text('location'),
+  website: text('website'),
   birthDate: timestamp('birth_date'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
@@ -56,7 +58,9 @@ export const checkUsernameSchema = z.object({
 
 export const updateProfileSchema = z.object({
   name: z.string().min(2, 'Name must have at least 2 characters').optional(),
-  bio: z.string().max(160, 'Bio must have at most 160 characters').optional(),
+  bio: z.string().max(160, 'Bio must have at most 160 characters').nullable().optional(),
+  location: z.string().max(80, 'Location must have at most 80 characters').nullable().optional(),
+  website: z.string().max(200, 'Website must have at most 200 characters').nullable().optional(),
   birthDate: z.string().optional(),
   username: z.string()
     .min(3, 'Username must have at least 3 characters')

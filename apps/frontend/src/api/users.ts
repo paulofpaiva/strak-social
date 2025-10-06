@@ -8,6 +8,8 @@ export interface User {
   avatar: string | null
   cover: string | null
   bio: string | null
+  location?: string | null
+  website?: string | null
   createdAt: string
   followersCount: number
   followingCount: number

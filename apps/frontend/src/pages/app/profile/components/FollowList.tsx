@@ -1,5 +1,7 @@
 import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { useSearchNavigation } from '@/hooks'
 
 interface FollowersListProps {
   users: Array<{ 
@@ -28,6 +30,15 @@ export function FollowList({
   onRemoveFollower,
   loadingUsers = new Set()
 }: FollowersListProps) {
+  const { navigateToUserProfile } = useSearchNavigation({
+    basePath: `/profile/${variant}`,
+    defaultReturnPath: `/profile/${variant}`
+  })
+
+  const handleUserClick = (username: string) => {
+    navigateToUserProfile(username)
+  }
+
   if (!users || users.length === 0) {
     return (
       <div className={cn('py-12 text-center', className)}>
@@ -46,37 +57,51 @@ export function FollowList({
     <div className={cn('space-y-4 pt-4', className)}>
       {users.map((u) => (
         <div key={u.id} className="flex items-center gap-4">
-          <Avatar src={u.avatar ?? undefined} name={u.name} size="md" />
-          <div className="flex-1 min-w-0">
+          <div 
+            className="cursor-pointer"
+            onClick={() => handleUserClick(u.username)}
+          >
+            <Avatar src={u.avatar ?? undefined} name={u.name} size="md" />
+          </div>
+          <div 
+            className="flex-1 min-w-0 cursor-pointer"
+            onClick={() => handleUserClick(u.username)}
+          >
             <p className="text-sm font-medium truncate">{u.name}</p>
             <p className="text-xs text-muted-foreground truncate">@{u.username}</p>
           </div>
           {variant === 'followers' && onRemoveFollower ? (
-            <button
+            <Button
+              variant="destructive"
+              size="sm"
               onClick={() => onRemoveFollower(u.id)}
               disabled={loadingUsers.has(u.id)}
-              className="px-4 h-8 rounded-full text-xs font-medium transition-colors cursor-pointer bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="rounded-full"
             >
               Remove
-            </button>
+            </Button>
           ) : showFollowButton && onToggleFollow ? (
-            <button
-              onClick={() => onToggleFollow(u.id)}
+            <Button
+              variant={u.isFollowing ? "secondary" : "default"}
+              size="sm"
+              onClick={(e) => {
+                e.preventDefault()
+                onToggleFollow(u.id)
+              }}
               disabled={loadingUsers.has(u.id)}
-              className={cn(
-                "px-4 h-8 rounded-full text-xs font-medium transition-colors cursor-pointer",
-                "disabled:opacity-50 disabled:cursor-not-allowed",
-                u.isFollowing
-                  ? "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                  : "bg-primary text-primary-foreground hover:bg-primary/90"
-              )}
+              className="rounded-full"
             >
               {u.isFollowing ? "Following" : "Follow"}
-            </button>
+            </Button>
           ) : (
-            <button className="px-4 h-8 rounded-full bg-primary text-primary-foreground text-xs font-medium">
+            <Button
+              variant="default"
+              size="sm"
+              disabled
+              className="rounded-full"
+            >
               Following
-            </button>
+            </Button>
           )}
         </div>
       ))}

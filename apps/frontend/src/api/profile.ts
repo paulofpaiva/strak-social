@@ -28,7 +28,7 @@ export const getProfileApi = async (): Promise<ApiResponse> => {
   }
 }
 
-export const updateProfileApi = async (data: { name?: string; bio?: string; birthDate?: string; username?: string }): Promise<ApiResponse> => {
+export const updateProfileApi = async (data: { name?: string; bio?: string | null; birthDate?: string; username?: string; location?: string | null; website?: string | null }): Promise<ApiResponse> => {
   try {
     const response = await api.put<ApiResponse>('/auth/profile', data)
     return response.data

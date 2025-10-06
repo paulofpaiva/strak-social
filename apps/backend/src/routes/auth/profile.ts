@@ -33,29 +33,16 @@ router.get('/', authenticateToken, asyncHandler(async (req: Request, res: Respon
 // PUT profile
 router.put('/', authenticateToken, asyncHandler(async (req: Request, res: Response) => {
   const validatedData = updateProfileSchema.parse(req.body)
-  const { name, bio, birthDate, username } = validatedData
-  
-  if (!name && !bio && !birthDate && !username) {
-    throw new AppError('At least one field (name, bio, birthDate, or username) must be provided', 400)
-  }
+  const { bio, location, website } = validatedData
 
-  if (username) {
-    const existingUser = await db
-      .select({ id: users.id })
-      .from(users)
-      .where(and(eq(users.username, username), ne(users.id, req.user!.id)))
-      .limit(1)
-
-    if (existingUser.length > 0) {
-      throw new AppError('Username is already taken', 400)
-    }
+  if (bio === undefined && location === undefined && website === undefined) {
+    throw new AppError('At least one field (bio, location or website) must be provided', 400)
   }
 
   const updateData: any = {}
-  if (name !== undefined) updateData.name = name
   if (bio !== undefined) updateData.bio = bio
-  if (birthDate !== undefined) updateData.birthDate = new Date(birthDate)
-  if (username !== undefined) updateData.username = username
+  if (location !== undefined) updateData.location = location
+  if (website !== undefined) updateData.website = website
   updateData.updatedAt = new Date()
 
   const updatedUser = await db
@@ -70,6 +57,8 @@ router.put('/', authenticateToken, asyncHandler(async (req: Request, res: Respon
       avatar: users.avatar,
       cover: users.cover,
       bio: users.bio,
+      location: users.location,
+      website: users.website,
       birthDate: users.birthDate,
       createdAt: users.createdAt,
       updatedAt: users.updatedAt,

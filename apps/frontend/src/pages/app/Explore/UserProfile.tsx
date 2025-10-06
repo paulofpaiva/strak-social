@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { getUserByUsernameApi } from '@/api/users'
 import { formatDate } from '@/utils/date'
 import { Avatar } from '@/components/ui/avatar'
@@ -9,12 +9,14 @@ import {
   Calendar, 
   ArrowLeft,
   Users,
-  UserPlus
+  UserPlus,
+  MapPin,
+  Link as LinkIcon
 } from 'lucide-react'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { UserProfileSkeleton } from './components/UserProfileSkeleton'
-import { useAuth } from '@/hooks'
+import { useAuth, useSearchNavigation } from '@/hooks'
 import { toggleFollowApi } from '@/api/follow'
 import { useQueryClient } from '@tanstack/react-query'
 import { useToastContext } from '@/contexts/ToastContext'
@@ -22,13 +24,16 @@ import { useState, useEffect } from 'react'
 
 export function UserProfile() {
   const { username } = useParams<{ username: string }>()
-  const navigate = useNavigate()
   const { user: currentUser } = useAuth()
   const queryClient = useQueryClient()
   const { error: showError, success: showSuccess } = useToastContext()
   const [isFollowing, setIsFollowing] = useState(false)
   const [isFollowLoading, setIsFollowLoading] = useState(false)
-  const [imageLoading, setImageLoading] = useState(true)
+  const [imageLoading, setImageLoading] = useState(false)
+  const { getReturnUrl } = useSearchNavigation({
+    basePath: '/explore',
+    defaultReturnPath: '/explore'
+  })
 
   const { data: user, isLoading, error, refetch } = useQuery({
     queryKey: ['user-profile', username],
@@ -96,7 +101,7 @@ export function UserProfile() {
 
   return (
     <div className="container mx-auto">
-      <Breadcrumb to="/explore" label={`${user.username}`} />
+      <Breadcrumb to={getReturnUrl()} label={`${user.username}`} />
       
       <div className="relative mt-8">
         <div className="h-64 w-full bg-gray-800 rounded-lg overflow-hidden relative">
@@ -117,7 +122,6 @@ export function UserProfile() {
             </>
           ) : (
             <div className="w-full h-full bg-gradient-to-r from-gray-700 to-gray-600 flex items-center justify-center">
-              <span className="text-gray-500 text-sm">No cover image</span>
             </div>
           )}
         </div>
@@ -137,25 +141,50 @@ export function UserProfile() {
           <div className="space-y-1">
             <div className="flex items-center space-x-2">
               <h1 className="text-xl font-bold text-foreground">{user.name}</h1>
-              <Badge variant="outline" className="text-xs">
-                {user.username}
-              </Badge>
             </div>
             <p className="text-muted-foreground">@{user.username}</p>
             {user.bio && (
-              <p className="text-foreground text-sm mt-2">{user.bio}</p>
+              <p className="text-foreground text-sm pt-4">{user.bio}</p>
+            )}
+            {(user.location || user.website || user.createdAt) && (
+              <div className="flex flex-wrap items-center gap-4 gap-y-2 pt-4 text-sm">
+                {user.location && (
+                  <div className="text-muted-foreground flex items-center gap-1 w-full sm:w-auto">
+                    <MapPin className="h-4 w-4" />
+                    <span>{user.location}</span>
+                  </div>
+                )}
+                {user.website && (
+                  <div className="flex items-center gap-1 w-full sm:w-auto">
+                    <LinkIcon className="h-4 w-4 text-muted-foreground" />
+                    <a
+                      href={user.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:underline break-all"
+                    >
+                      {user.website}
+                    </a>
+                  </div>
+                )}
+                {user.createdAt && (
+                  <div className="text-muted-foreground flex items-center gap-1 w-full sm:w-auto">
+                    <Calendar className="h-4 w-4" />
+                    <span>Joined {formatDate(user.createdAt)}</span>
+                  </div>
+                )}
+              </div>
             )}
           </div>
           
           {!isOwnProfile && (
-            <Button 
-              variant={isFollowing ? "outline" : "default"} 
+            <Button
+              variant={isFollowing ? "secondary" : "default"}
               size="sm"
               onClick={handleToggleFollow}
               disabled={isFollowLoading}
-              className="flex items-center gap-2"
+              className="rounded-full"
             >
-              <UserPlus className="h-4 w-4" />
               {isFollowing ? "Following" : "Follow"}
             </Button>
           )}
@@ -170,12 +199,7 @@ export function UserProfile() {
             <span className="text-muted-foreground">following</span>
           </div>
         </div>
-        <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-4">
-          <div className="flex items-center space-x-1">
-            <Calendar className="h-4 w-4" />
-            <span>Joined {formatDate(user.createdAt)}</span>
-          </div>
-        </div>
+        
       </div>
     </div>
   )

@@ -1,6 +1,6 @@
 export function ProfileSkeleton() {
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="container mx-auto">
       <div className="relative">
         <div className="h-64 w-full bg-muted"></div>
         

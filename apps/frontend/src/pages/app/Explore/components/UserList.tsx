@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 import { toggleFollowApi } from '@/api/follow'
 import { useToastContext } from '@/contexts/ToastContext'
+import { useSearchNavigation } from '@/hooks'
 
 interface UserListProps {
   users: Array<{ 
@@ -16,13 +17,17 @@ interface UserListProps {
     isFollowing?: boolean
   }>
   className?: string
+  onFollowToggled?: (userId: string, isFollowing: boolean) => void
 }
 
-export function UserList({ users, className }: UserListProps) {
+export function UserList({ users, className, onFollowToggled }: UserListProps) {
   const [loadingUsers, setLoadingUsers] = useState<Set<string>>(new Set())
   const queryClient = useQueryClient()
   const { error: showError } = useToastContext()
-  const navigate = useNavigate()
+  const { navigateToUserProfile } = useSearchNavigation({
+    basePath: '/explore',
+    defaultReturnPath: '/explore'
+  })
 
   if (!users || users.length === 0) {
     return (
@@ -32,7 +37,7 @@ export function UserList({ users, className }: UserListProps) {
     )
   }
 
-  const handleToggleFollow = async (userId: string) => {
+  const handleToggleFollow = async (userId: string, currentIsFollowing: boolean) => {
     setLoadingUsers(prev => new Set(prev).add(userId))
     
     try {
@@ -44,6 +49,8 @@ export function UserList({ users, className }: UserListProps) {
         queryClient.invalidateQueries({ queryKey: ['following'] }),
         queryClient.invalidateQueries({ queryKey: ['followers'] })
       ])
+
+      onFollowToggled?.(userId, !currentIsFollowing)
     } catch (error) {
       console.error('Failed to toggle follow:', error)
       showError(error instanceof Error ? error.message : 'Failed to update follow status. Please try again.')
@@ -57,7 +64,7 @@ export function UserList({ users, className }: UserListProps) {
   }
 
   const handleUserClick = (username: string) => {
-    navigate(`/${username}`)
+    navigateToUserProfile(username)
   }
 
   return (
@@ -84,22 +91,18 @@ export function UserList({ users, className }: UserListProps) {
               <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{u.bio}</p>
             )}
           </div>
-          <button
+          <Button
+            variant={u.isFollowing ? "secondary" : "default"}
+            size="sm"
             onClick={(e) => {
-              e.stopPropagation()
-              handleToggleFollow(u.id)
+              e.preventDefault()
+              handleToggleFollow(u.id, !!u.isFollowing)
             }}
             disabled={loadingUsers.has(u.id)}
-            className={cn(
-              "px-4 h-8 rounded-full text-xs font-medium transition-colors cursor-pointer",
-              "disabled:opacity-50 disabled:cursor-not-allowed",
-              u.isFollowing
-                ? "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                : "bg-primary text-primary-foreground hover:bg-primary/90"
-            )}
+            className="rounded-full"
           >
             {u.isFollowing ? "Following" : "Follow"}
-          </button>
+          </Button>
         </div>
       ))}
     </div>

@@ -8,13 +8,18 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { 
   Calendar, 
-  Camera
+  Camera,
+  MapPin,
+  Link as LinkIcon
 } from 'lucide-react'
 import { ProfileSkeleton } from './components/ProfileSkeleton'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
+import { EditProfile } from '@/pages/app/Profile/components/EditProfile'
+import { useState } from 'react'
 
 export function Profile() {
+  const [editOpen, setEditOpen] = useState(false)
   const navigate = useNavigate()
   const { data: profileData, isLoading, error, refetch } = useQuery({
     queryKey: ['profile'],
@@ -70,53 +75,80 @@ export function Profile() {
             </div>
             <p className="text-muted-foreground">@{user.username}</p>
             {user.bio && (
-              <p className="text-foreground text-sm">{user.bio}</p>
+              <p className="text-foreground text-sm pt-4">{user.bio}</p>
+            )}
+            {(user.location || user.website || user.createdAt) && (
+              <div className="flex flex-wrap items-center gap-4 gap-y-2 pt-4 text-sm">
+                {user.location && (
+                  <div className="text-muted-foreground flex items-center gap-1">
+                    <MapPin className="h-4 w-4" />
+                    <span>{user.location}</span>
+                  </div>
+                )}
+                {user.website && (
+                  <div className="flex items-center gap-1">
+                    <LinkIcon className="h-4 w-4 text-muted-foreground" />
+                    <a
+                      href={user.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:underline break-all"
+                    >
+                      {user.website}
+                    </a>
+                  </div>
+                )}
+                {user.createdAt && (
+                  <div className="text-muted-foreground flex items-center gap-1">
+                    <Calendar className="h-4 w-4" />
+                    <span>Joined {formatDate(user.createdAt)}</span>
+                  </div>
+                )}
+              </div>
             )}
           </div>
           
-          <Button variant="outline" size="sm">
+          <Button variant="outline" className='rounded-full' size="sm" onClick={() => setEditOpen(true)}>
             Edit profile
           </Button>
         </div>
         <div className="flex items-center space-x-4 text-sm mb-6">
           <div className="flex items-center space-x-1">
             <span className="font-semibold text-foreground">{user.followersCount || 0}</span>
-            <button
-              className="text-muted-foreground hover:underline cursor-pointer"
+            <Button
+              variant="link"
+              className="text-muted-foreground h-auto p-0 font-normal"
               onClick={() => navigate('/profile/followers')}
             >
               Followers
-            </button>
+            </Button>
           </div>
           <div className="flex items-center space-x-1">
             <span className="font-semibold text-foreground">{user.followingCount || 0}</span>
-            <button
-              className="text-muted-foreground hover:underline cursor-pointer"
+            <Button
+              variant="link"
+              className="text-muted-foreground h-auto p-0 font-normal"
               onClick={() => navigate('/profile/following')}
             >
               Following
-            </button>
+            </Button>
           </div>
         </div>
-        <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-4">
-          <div className="flex items-center space-x-1">
-            <Calendar className="h-4 w-4" />
-            <span>Joined {formatDate(user.createdAt)}</span>
-          </div>
-        </div>
+        
         <div className="border-b border-border">
           <nav className="flex space-x-8">
             {['Posts', 'Replies', 'Highlights', 'Articles', 'Media', 'Likes'].map((tab) => (
-              <button
+              <Button
                 key={tab}
-                className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+                variant="ghost"
+                className={`py-4 text-sm font-medium border-b-2 transition-colors rounded-none h-auto ${
                   tab === 'Posts' 
                     ? 'border-primary text-foreground' 
                     : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {tab}
-              </button>
+              </Button>
             ))}
           </nav>
         </div>
@@ -125,6 +157,16 @@ export function Profile() {
           <p className="text-muted-foreground">No posts yet</p>
         </div>
       </div>
+
+      <EditProfile 
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        defaultValues={{
+          bio: user.bio ?? '',
+          location: user.location ?? '',
+          website: user.website ?? '',
+        }}
+      />
     </div>
   )
 }
