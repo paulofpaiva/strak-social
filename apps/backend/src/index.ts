@@ -20,12 +20,24 @@ dotenv.config()
 
 const app = express()
 
-const corsOptions = {
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://monofrontend-production.up.railway.app',
+]
+
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true)
+    } else {
+      console.warn(`Origin not allowed by CORS: ${origin}`)
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['set-cookie']
+  exposedHeaders: ['set-cookie'],
 }
 
 app.use(cors(corsOptions))
