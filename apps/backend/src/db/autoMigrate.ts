@@ -22,6 +22,8 @@ export const runAutoMigrations = async () => {
   const db = drizzle(pool)
 
   try {
+    console.log('Current working dir:', process.cwd());
+
     // Resolve migrations folder robustly across different CWDs/containers
     const candidates = [
       path.resolve(__dirname, '../../drizzle'), // apps/backend/dist -> ../../drizzle
@@ -31,6 +33,7 @@ export const runAutoMigrations = async () => {
       path.resolve(process.cwd(), 'apps/backend/drizzle'),
       process.env.MIGRATIONS_DIR || ''
     ].filter(Boolean)
+    console.log('Looking for migrations in:', candidates);
 
     const migrationsFolder = candidates.find((p) => {
       try {
