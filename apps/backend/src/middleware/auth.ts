@@ -67,12 +67,12 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
     }
 
     if (userResult[0].avatar && !userResult[0].avatar.startsWith('http')) {
-      const baseUrl = process.env.API_BASE_URL || 'http://localhost:3001';
+      const baseUrl = process.env.VITE_AVATAR_URL || 'http://localhost:3001';
       userResult[0].avatar = `${baseUrl}${userResult[0].avatar}`;
     }
 
     if (userResult[0].cover && !userResult[0].cover.startsWith('http')) {
-      const baseUrl = process.env.API_BASE_URL || 'http://localhost:3001';
+      const baseUrl = process.env.VITE_AVATAR_URL || 'http://localhost:3001';
       userResult[0].cover = `${baseUrl}${userResult[0].cover}`;
     }
 
@@ -122,12 +122,12 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
 
       if (userResult.length > 0) {
         if (userResult[0].avatar && !userResult[0].avatar.startsWith('http')) {
-          const baseUrl = process.env.API_BASE_URL || 'http://localhost:3001';
+          const baseUrl = process.env.VITE_AVATAR_URL || 'http://localhost:3001';
           userResult[0].avatar = `${baseUrl}${userResult[0].avatar}`;
         }
 
         if (userResult[0].cover && !userResult[0].cover.startsWith('http')) {
-          const baseUrl = process.env.API_BASE_URL || 'http://localhost:3001';
+          const baseUrl = process.env.VITE_AVATAR_URL || 'http://localhost:3001';
           userResult[0].cover = `${baseUrl}${userResult[0].cover}`;
         }
         req.user = userResult[0]

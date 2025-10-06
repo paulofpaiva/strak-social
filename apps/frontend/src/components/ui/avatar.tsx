@@ -1,18 +1,18 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const AVATAR_BASE_URL = import.meta.env.VITE_AVATAR_URL || import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
 const getAvatarUrl = (src?: string): string | undefined => {
   if (!src) return undefined
   
   if (src.startsWith('http') || src.startsWith('blob:')) return src
   
-  if (src.startsWith('/uploads/')) {
-    return `${API_BASE_URL}${src}`
+  if (src.startsWith('/')) {
+    return `${AVATAR_BASE_URL}${src}`
   }
   
-  return `${API_BASE_URL}/uploads/avatars/${src}`
+  return `${AVATAR_BASE_URL}/uploads/avatars/${src}`
 }
 
 interface AvatarProps {

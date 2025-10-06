@@ -62,10 +62,10 @@ router.get('/username/:username', authenticateToken, asyncHandler(async (req: Re
     if (src.startsWith('http') || src.startsWith('blob:')) return src
     
     if (src.startsWith('/uploads/')) {
-      return `${process.env.API_BASE_URL || 'http://localhost:3001'}${src}`
+      return `${process.env.VITE_AVATAR_URL || 'http://localhost:3001'}${src}`
     }
     
-    return `${process.env.API_BASE_URL || 'http://localhost:3001'}/uploads/${src.includes('avatar') ? 'avatars' : 'covers'}/${src}`
+    return `${process.env.VITE_AVATAR_URL || 'http://localhost:3001'}/uploads/${src.includes('avatar') ? 'avatars' : 'covers'}/${src}`
   }
 
   return ApiResponse.success(res, {

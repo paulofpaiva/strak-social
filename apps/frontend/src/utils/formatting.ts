@@ -9,12 +9,15 @@ export const formatDateForInput = (dateString: string | undefined): string => {
 }
 
 export const getFullCoverUrl = (coverPath: string): string => {
-  if (coverPath.startsWith('http')) {
+  if (!coverPath) return ''
+  if (coverPath.startsWith('http') || coverPath.startsWith('blob:')) {
     return coverPath
   }
-  const filename = coverPath.replace('/uploads/covers/', '')
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
-  return `${API_BASE_URL}/uploads/covers/${filename}`
+  const BASE_URL = import.meta.env.VITE_AVATAR_URL || import.meta.env.VITE_API_URL || 'http://localhost:3001'
+  if (coverPath.startsWith('/')) {
+    return `${BASE_URL}${coverPath}`
+  }
+  return `${BASE_URL}/uploads/covers/${coverPath}`
 }
 
 export const formatTimeAgo = (dateString: string): string => {
