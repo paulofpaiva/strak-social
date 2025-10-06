@@ -11,6 +11,9 @@ interface ResponsiveModalProps {
   children: React.ReactNode
   className?: string
   actionButton?: React.ReactNode
+  onCancel?: () => void
+  cancelText?: string
+  actionText?: string
 }
 
 export function ResponsiveModal({
@@ -20,7 +23,10 @@ export function ResponsiveModal({
   description,
   children,
   className = "",
-  actionButton
+  actionButton,
+  onCancel,
+  cancelText = "Cancel",
+  actionText = "Save"
 }: ResponsiveModalProps) {
   const isMobile = useIsMobile()
 
@@ -80,7 +86,26 @@ export function ResponsiveModal({
             )}
           </div>
 
-          {children}
+          <div className="mb-6">
+            {children}
+          </div>
+
+          {(actionButton || onCancel) && (
+            <div className="flex gap-3 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={onCancel || onClose}
+                className="flex-1"
+              >
+                {cancelText}
+              </Button>
+              {actionButton || (
+                <Button onClick={onClose} className="flex-1">
+                  {actionText}
+                </Button>
+              )}
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

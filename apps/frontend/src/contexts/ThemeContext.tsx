@@ -1,6 +1,28 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
+import { Sun, Moon, Monitor } from 'lucide-react'
 
 type Theme = 'light' | 'dark' | 'system'
+
+export const themeOptions = [
+  {
+    id: 'light' as const,
+    label: 'Light',
+    description: 'Light theme for bright environments',
+    icon: Sun
+  },
+  {
+    id: 'dark' as const,
+    label: 'Dark',
+    description: 'Dark theme for comfortable viewing',
+    icon: Moon
+  },
+  {
+    id: 'system' as const,
+    label: 'System',
+    description: 'Automatically match your system theme',
+    icon: Monitor
+  }
+]
 
 interface ThemeContextType {
   theme: Theme

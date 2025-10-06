@@ -1,52 +1,70 @@
-import axios from 'axios'
-
-const isDev = import.meta.env.DEV
-const API_BASE_URL = isDev 
-  ? 'http://localhost:3001/api' : 'http://localhost:8001/api'
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true,
-})
+import { api } from './auth'
 
 export interface User {
   id: string
   name: string
   username: string
-  email: string
-  avatar?: string
-  cover?: string
-  bio?: string
+  email?: string
+  avatar: string | null
+  cover: string | null
+  bio: string | null
   createdAt: string
   followersCount: number
   followingCount: number
+  isFollowing?: boolean
 }
 
-export interface GetUserResponse {
+export interface UserResponse {
   success: boolean
   message: string
   data: User
 }
 
-export const getUserByUsernameApi = async (username: string): Promise<GetUserResponse> => {
+export interface UserError {
+  success: false
+  message: string
+  details?: any
+}
+
+export const getUserByIdApi = async (userId: string): Promise<User> => {
   try {
-    const response = await api.get<GetUserResponse>(`/users/username/${encodeURIComponent(username)}`)
-    return response.data
+    const response = await api.get<UserResponse>(`/users/${userId}`)
+    return response.data.data
   } catch (error: any) {
-    if (error.response?.data?.message) {
-      throw new Error(error.response.data.message)
-    }
-    if (error.response?.status === 404) {
-      throw new Error('User not found')
-    }
-    if (error.request) {
+    if (error.response?.data) {
+      const apiError = error.response.data
+      
+      if (apiError.message) {
+        throw new Error(apiError.message)
+      }
+      
+      throw new Error('Failed to fetch user. Please try again.')
+    } else if (error.request) {
       throw new Error('Connection error. Please check your internet and try again.')
+    } else {
+      throw new Error('An unexpected error occurred')
     }
-    throw new Error('An unexpected error occurred')
   }
 }
 
-export { api }
+export const getUserByUsernameApi = async (username: string): Promise<User> => {
+  try {
+    const response = await api.get<UserResponse>(`/users/username/${username}`)
+    return response.data.data
+  } catch (error: any) {
+    if (error.response?.data) {
+      const apiError = error.response.data
+      
+      if (apiError.message) {
+        throw new Error(apiError.message)
+      }
+      
+      throw new Error('Failed to fetch user. Please try again.')
+    } else if (error.request) {
+      throw new Error('Connection error. Please check your internet and try again.')
+    } else {
+      throw new Error('An unexpected error occurred')
+    }
+  }
+}
+

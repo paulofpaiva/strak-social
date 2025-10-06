@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { FloatingInput } from "@/components/ui/floating-input"
-import { useNavigate, useLocation } from "react-router"
+import { Link, useNavigate, useLocation } from "react-router"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { signInSchema, type SignInFormData } from "@/schemas/auth"
@@ -29,14 +29,13 @@ export function SignIn() {
       const from = location.state?.from?.pathname || "/feed"
       navigate(from, { replace: true })
     } catch (error: any) {
-      console.error('Login error:', error)
-      setError(error?.message || "Login error")
+      setError(error.message || "Login error")
     }
   }
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-1">
           <FloatingInput
             id="emailOrUsername"
@@ -73,6 +72,15 @@ export function SignIn() {
           <p className="text-destructive text-sm text-center">{error}</p>
         )}
       </form>
+      
+      <div className="mt-6 text-center">
+        <p className="text-sm text-muted-foreground">
+          Don't have an account?{" "}
+          <Link to={"/auth/sign-up"} className="font-medium text-primary hover:text-primary/80">
+            Create account
+          </Link>
+        </p>
+      </div>
     </>
   )
 }

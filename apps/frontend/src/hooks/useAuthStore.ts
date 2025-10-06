@@ -1,15 +1,16 @@
 import { useAuthStore } from '@/stores/authStore'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { signUpApi, signInApi, signOutApi, getSessionApi, updateProfileApi, updateAvatarApi, updateCoverApi, changePasswordApi, checkUsernameApi } from '@/api/auth'
-import { getUserByUsernameApi } from '@/api/users'
-import { useEffect, useRef } from 'react'
+import { signUpApi, signInApi, signOutApi, getSessionApi, checkUsernameApi } from '@/api/auth'
+import { updateProfileApi, updateAvatarApi, updateCoverApi, changePasswordApi } from '@/api/profile'
+import { getUserByUsernameApi } from '../api/users'
+import { useEffect, useState } from 'react'
 
 export const useAuth = () => {
   const { user, isAuthenticated, setUser, logout: logoutStore } = useAuthStore()
   const queryClient = useQueryClient()
-  const hasCheckedSession = useRef(false)
+  const [hasCheckedSession, setHasCheckedSession] = useState(false)
 
-  const shouldCheckSession = !hasCheckedSession.current
+  const shouldCheckSession = !hasCheckedSession
 
   const { data: sessionData, isLoading: isLoadingSession, error } = useQuery({
     queryKey: ['session'],
@@ -19,6 +20,7 @@ export const useAuth = () => {
     staleTime: Infinity,
     gcTime: Infinity,
     enabled: shouldCheckSession,
+    throwOnError: false, 
   })
 
   const loginMutation = useMutation({
@@ -26,8 +28,13 @@ export const useAuth = () => {
       signInApi({ emailOrUsername, password }),
     onSuccess: async (data) => {
       setUser(data.user)
-      hasCheckedSession.current = true
-      queryClient.invalidateQueries({ queryKey: ['session'] })
+      try {
+        const refreshed = await queryClient.fetchQuery({ queryKey: ['session'], queryFn: getSessionApi })
+        if (refreshed?.user) setUser(refreshed.user)
+      } catch {}
+    },
+    onError: (error: any) => {
+      throw new Error(error.message || 'Login failed')
     },
   })
 
@@ -36,8 +43,9 @@ export const useAuth = () => {
       signUpApi(data),
     onSuccess: (data) => {
       setUser(data.user)
-      hasCheckedSession.current = true
-      queryClient.invalidateQueries({ queryKey: ['session'] })
+    },
+    onError: (error: any) => {
+      throw new Error(error.message || 'Sign up failed')
     },
   })
 
@@ -46,12 +54,11 @@ export const useAuth = () => {
     onSuccess: () => {
       logoutStore()
       queryClient.clear()
-      hasCheckedSession.current = false
     },
-    onError: () => {
+    onError: (error: any) => {
       logoutStore()
       queryClient.clear()
-      hasCheckedSession.current = false
+      throw new Error(error.message || 'Logout failed')
     },
   })
 
@@ -64,6 +71,9 @@ export const useAuth = () => {
       queryClient.invalidateQueries({ queryKey: ['user-posts'] })
       queryClient.invalidateQueries({ queryKey: ['comments'] })
     },
+    onError: (error: any) => {
+      throw new Error(error.message || 'Profile update failed')
+    },
   })
 
   const updateAvatarMutation = useMutation({
@@ -71,6 +81,13 @@ export const useAuth = () => {
     onSuccess: (data) => {
       setUser(data.user)
       queryClient.invalidateQueries({ queryKey: ['session'] })
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
+      queryClient.invalidateQueries({ queryKey: ['user-posts'] })
+      queryClient.invalidateQueries({ queryKey: ['comments'] })
+    },
+    onError: (error: any) => {
+      throw new Error(error.message || 'Avatar update failed')
     },
   })
 
@@ -79,23 +96,37 @@ export const useAuth = () => {
     onSuccess: (data) => {
       setUser(data.user)
       queryClient.invalidateQueries({ queryKey: ['session'] })
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
+      queryClient.invalidateQueries({ queryKey: ['user-posts'] })
+      queryClient.invalidateQueries({ queryKey: ['comments'] })
+    },
+    onError: (error: any) => {
+      throw new Error(error.message || 'Cover update failed')
     },
   })
 
   const changePasswordMutation = useMutation({
     mutationFn: (data: { currentPassword: string; newPassword: string; confirmPassword: string }) => changePasswordApi(data),
+    onError: (error: any) => {
+      throw new Error(error.message || 'Password change failed')
+    },
   })
 
   useEffect(() => {
-    if (!isLoadingSession && !hasCheckedSession.current) {
-      if (sessionData?.user) {
-        setUser(sessionData.user)
-      } else if (sessionData === null) {
-        logoutStore()
+    if (sessionData?.user) {
+      setUser(sessionData.user)
+      setHasCheckedSession(true)
+      setConnectionError(null)
+    } else if (error || !isLoadingSession) {
+      setHasCheckedSession(true)
+      if (error) {
+        setConnectionError(error.message || 'Connection failed')
       }
-      hasCheckedSession.current = true
     }
-  }, [sessionData, isLoadingSession, setUser, logoutStore])
+  }, [sessionData, error, isLoadingSession, setUser])
+
+  const [connectionError, setConnectionError] = useState<string | null>(null)
 
   const login = async (emailOrUsername: string, password: string) => {
     await loginMutation.mutateAsync({ emailOrUsername, password })
@@ -129,6 +160,7 @@ export const useAuth = () => {
     user,
     isAuthenticated,
     isLoading: isLoadingSession || loginMutation.isPending || signUpMutation.isPending || logoutMutation.isPending || updateProfileMutation.isPending || updateAvatarMutation.isPending || updateCoverMutation.isPending || changePasswordMutation.isPending,
+    connectionError,
     login,
     signUp,
     logout,
@@ -184,6 +216,9 @@ export const useChangePassword = () => {
 export const useCheckUsername = () => {
   const checkUsernameMutation = useMutation({
     mutationFn: checkUsernameApi,
+    onError: (error: any) => {
+      throw new Error(error.message || 'Username check failed')
+    },
   })
 
   const checkUsername = async (username: string) => {
@@ -196,10 +231,7 @@ export const useCheckUsername = () => {
 export const useUser = (username: string) => {
   return useQuery({
     queryKey: ['user', username],
-    queryFn: async () => {
-      const response = await getUserByUsernameApi(username)
-      return response.data
-    },
+    queryFn: () => getUserByUsernameApi(username),
     enabled: !!username,
     retry: false,
   })

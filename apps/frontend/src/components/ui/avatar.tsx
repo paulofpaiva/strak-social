@@ -6,14 +6,13 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 const getAvatarUrl = (src?: string): string | undefined => {
   if (!src) return undefined
   
-  // Se é uma blob URL ou URL completa, retorna como está
   if (src.startsWith('http') || src.startsWith('blob:')) return src
   
   if (src.startsWith('/uploads/')) {
-    return `${API_BASE_URL}/api${src}`
+    return `${API_BASE_URL}${src}`
   }
   
-  return `${API_BASE_URL}/api/uploads/avatars/${src}`
+  return `${API_BASE_URL}/uploads/avatars/${src}`
 }
 
 interface AvatarProps {
@@ -58,6 +57,7 @@ export const Avatar: React.FC<AvatarProps> = ({
     )}>
       {avatarUrl ? (
         <img
+          key={src}
           src={avatarUrl}
           alt={name}
           className="w-full h-full object-cover"

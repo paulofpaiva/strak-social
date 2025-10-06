@@ -1,69 +1,105 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+import { api } from './auth'
 
 export interface UploadResponse {
+  success: boolean
   message: string
-  url: string
-  filename: string
+  data: {
+    url: string
+    filename: string
+    type?: 'video' | 'image'
+  }
 }
 
-export const uploadAvatar = async (file: File): Promise<UploadResponse> => {
+export interface UploadError {
+  success: false
+  message: string
+  details?: any
+}
+
+export const uploadAvatar = async (file: File): Promise<UploadResponse['data']> => {
   try {
     const formData = new FormData()
     formData.append('avatar', file)
 
-    const response = await fetch(`${API_BASE_URL}/api/avatar`, {
-      method: 'POST',
-      body: formData,
-      credentials: 'include'
+    const response = await api.post<UploadResponse>('/upload/avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     })
-
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || 'Upload failed')
+    
+    return response.data.data
+  } catch (error: any) {
+    if (error.response?.data) {
+      const apiError = error.response.data
+      
+      if (apiError.message) {
+        throw new Error(apiError.message)
+      }
+      
+      throw new Error('Avatar upload failed. Please try again.')
+    } else if (error.request) {
+      throw new Error('Connection error. Please check your internet and try again.')
+    } else {
+      throw new Error('An unexpected error occurred')
     }
-
-    const data = await response.json()
-    return data
-  } catch (error) {
-    if (error instanceof Error) {
-      throw error
-    }
-    throw new Error('An unexpected error occurred during upload')
   }
 }
 
-export const uploadCover = async (file: File): Promise<UploadResponse> => {
+export const uploadCover = async (file: File): Promise<UploadResponse['data']> => {
   try {
     const formData = new FormData()
     formData.append('cover', file)
 
-    const response = await fetch(`${API_BASE_URL}/api/cover`, {
-      method: 'POST',
-      body: formData,
-      credentials: 'include'
+    const response = await api.post<UploadResponse>('/upload/cover', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     })
-
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || 'Cover upload failed')
+    
+    return response.data.data
+  } catch (error: any) {
+    if (error.response?.data) {
+      const apiError = error.response.data
+      
+      if (apiError.message) {
+        throw new Error(apiError.message)
+      }
+      
+      throw new Error('Cover upload failed. Please try again.')
+    } else if (error.request) {
+      throw new Error('Connection error. Please check your internet and try again.')
+    } else {
+      throw new Error('An unexpected error occurred')
     }
-
-    const data = await response.json()
-    return data
-  } catch (error) {
-    if (error instanceof Error) {
-      throw error
-    }
-    throw new Error('An unexpected error occurred during cover upload')
   }
 }
 
-export const getAvatarUrl = (filename: string): string => {
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
-  return `${API_BASE_URL}/uploads/avatars/${filename}`
+export const uploadMedia = async (file: File): Promise<UploadResponse['data']> => {
+  try {
+    const formData = new FormData()
+    formData.append('media', file)
+
+    const response = await api.post<UploadResponse>('/upload/media', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    
+    return response.data.data
+  } catch (error: any) {
+    if (error.response?.data) {
+      const apiError = error.response.data
+      
+      if (apiError.message) {
+        throw new Error(apiError.message)
+      }
+      
+      throw new Error('Media upload failed. Please try again.')
+    } else if (error.request) {
+      throw new Error('Connection error. Please check your internet and try again.')
+    } else {
+      throw new Error('An unexpected error occurred')
+    }
+  }
 }
 
-export const getCoverUrl = (filename: string): string => {
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
-  return `${API_BASE_URL}/uploads/covers/${filename}`
-}

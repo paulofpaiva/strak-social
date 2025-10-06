@@ -43,7 +43,16 @@ router.post('/toggle', authenticateToken, asyncHandler(async (req: Request, res:
       .delete(followers)
       .where(and(eq(followers.followerId, followerId), eq(followers.followingId, userId)))
 
-    return ApiResponse.success(res, { isFollowing: false }, 'Successfully unfollowed user')
+    const [followerCount, followingCount] = await Promise.all([
+      db.select({ count: followers.id }).from(followers).where(eq(followers.followingId, followerId)),
+      db.select({ count: followers.id }).from(followers).where(eq(followers.followerId, followerId))
+    ])
+
+    return ApiResponse.success(res, { 
+      isFollowing: false,
+      followersCount: followerCount.length,
+      followingCount: followingCount.length
+    }, 'Successfully unfollowed user')
   } else {
     await db
       .insert(followers)
@@ -52,7 +61,17 @@ router.post('/toggle', authenticateToken, asyncHandler(async (req: Request, res:
         followingId: userId
       })
 
-    return ApiResponse.success(res, { isFollowing: true }, 'Successfully followed user')
+    // Get updated follower counts
+    const [followerCount, followingCount] = await Promise.all([
+      db.select({ count: followers.id }).from(followers).where(eq(followers.followingId, followerId)),
+      db.select({ count: followers.id }).from(followers).where(eq(followers.followerId, followerId))
+    ])
+
+    return ApiResponse.success(res, { 
+      isFollowing: true,
+      followersCount: followerCount.length,
+      followingCount: followingCount.length
+    }, 'Successfully followed user')
   }
 }))
 

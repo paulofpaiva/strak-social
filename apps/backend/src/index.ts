@@ -10,6 +10,7 @@ import followRoutes from './routes/follow/index'
 import usersRoutes from './routes/users/index'
 import searchRoutes from './routes/search/index'
 import uploadRoutes from './routes/upload/index'
+import serveRouter from './routes/upload/serve'
 import { maskConnectionString } from './utils/database'
 import { getApiVersion } from './utils/version'
 import { errorHandler, notFound } from './middleware/errorHandler'
@@ -32,6 +33,8 @@ app.use(cookieParser())
 app.use(express.json())
 
 const PORT = Number(process.env.PORT) || 3000
+
+app.use('/', serveRouter)
 
 app.use('/api/health', healthRouter)
 app.use('/api/auth', authRoutes)

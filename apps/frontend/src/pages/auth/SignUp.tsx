@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { FloatingInput } from "@/components/ui/floating-input"
 import { AvatarInput } from "@/components/ui/avatar-input"
 import { Spinner } from "@/components/ui/spinner"
-import { useNavigate } from "react-router"
+import { Link, useNavigate } from "react-router"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { signUpSchema, type SignUpFormData } from "@/schemas/auth"
@@ -37,7 +37,6 @@ export function SignUp() {
   const { showPassword, togglePassword } = useTogglePassword()
   const watchedUsername = watch("username")
 
-  // Check username availability when username changes
   useEffect(() => {
     const checkUsernameAvailability = async () => {
       if (watchedUsername && watchedUsername.length >= 3) {
@@ -199,6 +198,15 @@ export function SignUp() {
           </div>
         )}
       </form>
+      
+      <div className="mt-6 text-center">
+        <p className="text-sm text-muted-foreground">
+          Already have an account?{" "}
+          <Link to={"/auth/sign-in"} className="font-medium text-primary hover:text-primary/80">
+            Sign In
+          </Link>
+        </p>
+      </div>
     </>
   )
 }

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
-import { FeedSidebar } from '../components/navigation/FeedSidebar'
-import { BottomNavigation } from '../components/navigation/BottomNavigation'
+import { FeedSidebar } from '../components/FeedSidebar'
+import { BottomNavigation } from '../components/BottomNavigation'
 import { useIsMobile, useIsCompact } from '../hooks/useIsMobile'
 
 interface AppLayoutProps {

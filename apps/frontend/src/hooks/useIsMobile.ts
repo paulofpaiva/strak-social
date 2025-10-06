@@ -2,7 +2,6 @@ import { useEffect, useState } from "react"
 
 export function useIsMobile() {
   const [isMobile, setIsMobile] = useState<boolean>(() => {
-    // Initialize with current window width if available
     if (typeof window !== 'undefined') {
       return window.innerWidth < 768
     }
@@ -15,13 +14,10 @@ export function useIsMobile() {
       setIsMobile(mobile)
     }
 
-    // Check on mount
     checkIsMobile()
 
-    // Add event listener
     window.addEventListener("resize", checkIsMobile)
 
-    // Cleanup
     return () => window.removeEventListener("resize", checkIsMobile)
   }, [])
 
@@ -30,7 +26,6 @@ export function useIsMobile() {
 
 export function useIsCompact() {
   const [isCompact, setIsCompact] = useState<boolean>(() => {
-    // Initialize with current window width if available
     if (typeof window !== 'undefined') {
       return window.innerWidth >= 768 && window.innerWidth < 1024
     }
@@ -43,13 +38,10 @@ export function useIsCompact() {
       setIsCompact(compact)
     }
 
-    // Check on mount
     checkIsCompact()
 
-    // Add event listener
     window.addEventListener("resize", checkIsCompact)
 
-    // Cleanup
     return () => window.removeEventListener("resize", checkIsCompact)
   }, [])
 
