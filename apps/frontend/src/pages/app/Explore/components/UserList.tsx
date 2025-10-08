@@ -67,7 +67,7 @@ export function UserList({ users, className, onFollowToggled }: UserListProps) {
   }
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn('space-y-4 pt-5', className)}>
       {users.map((u) => (
         <div key={u.id} className="flex items-start gap-4">
           <div 

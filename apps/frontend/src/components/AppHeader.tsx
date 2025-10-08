@@ -13,8 +13,8 @@ export function AppHeader() {
 
   return (
     <>
-      <header className="border-b bg-background sticky top-0 z-30">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+      <header className="bg-background sticky top-0 z-30">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <button 
             onClick={() => setSidebarOpen(true)}
             className="cursor-pointer hover:opacity-80 transition-opacity"

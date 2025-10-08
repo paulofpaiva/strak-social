@@ -8,7 +8,7 @@ interface UsersSkeletonProps {
 
 export function UserListSkeleton({ count = 6, className }: UsersSkeletonProps) {
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn('space-y-4 pt-5', className)}>
       {Array.from({ length: count }).map((_, idx) => (
         <div key={idx} className="flex items-center gap-4">
           <Skeleton className="w-10 h-10 rounded-full" />

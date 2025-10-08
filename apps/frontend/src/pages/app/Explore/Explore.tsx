@@ -80,7 +80,7 @@ export function Explore() {
     <div className="container mx-auto">
       <Breadcrumb to="/feed" label={`Explore`} />
 
-      <div className="mb-4 mt-16 w-full md:w-96">
+      <div className="pt-5 w-full md:w-96">
         <FloatingInput
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
