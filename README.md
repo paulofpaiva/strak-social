@@ -4,6 +4,10 @@
 
 A modern social media platform where users can connect, share posts, interact with content, and build their online community.
 
+# Demo
+
+https://monofrontend-production.up.railway.app/
+
 ## About
 
 Strak Social is a feature-rich social networking application with posts, comments, likes, follow system, user profiles, and media sharing capabilities.
