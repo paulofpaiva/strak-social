@@ -2,8 +2,8 @@ import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getUserPostsApi } from '@/api/posts'
 import type { Post } from '@/api/posts'
-import { PostCard } from './PostCard'
-import { PostCardSkeleton } from './PostCardSkeleton'
+import { PostCard } from '../../../../components/post/PostCard'
+import { PostCardSkeleton } from '../../../../components/post/PostCardSkeleton'
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
 import { Spinner } from '@/components/ui/spinner'
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from '@/components/ui/empty'
@@ -87,7 +87,7 @@ export function PostsList({ userId, className }: PostsListProps) {
 
   return (
     <div className={className}>
-      <div className="space-y-4">
+      <div>
         {allPosts.map(post => (
           <PostCard key={post.id} post={post} />
         ))}

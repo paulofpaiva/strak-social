@@ -7,16 +7,15 @@ interface PostCardSkeletonProps {
 
 export function PostCardSkeleton({ className, count = 3 }: PostCardSkeletonProps) {
   return (
-    <>
+    <div>
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
           className={cn(
-            'bg-card border border-border rounded-lg p-4 animate-pulse',
+            'bg-card p-4 animate-pulse border-b border-border last:border-b-0',
             className
           )}
         >
-          {/* Header */}
           <div className="flex items-start gap-3 mb-3">
             <div className="w-10 h-10 rounded-full bg-muted flex-shrink-0" />
             
@@ -26,18 +25,15 @@ export function PostCardSkeleton({ className, count = 3 }: PostCardSkeletonProps
             </div>
           </div>
 
-          {/* Content */}
           <div className="space-y-2 mb-3">
             <div className="w-full h-4 rounded bg-muted" />
             <div className="w-3/4 h-4 rounded bg-muted" />
           </div>
 
-          {/* Media placeholder (opcional, alguns posts podem ter) */}
           {i % 2 === 0 && (
             <div className="mb-3 w-full h-64 rounded-lg bg-muted" />
           )}
 
-          {/* Footer */}
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-1.5">
               <div className="w-5 h-5 rounded bg-muted" />
@@ -51,6 +47,6 @@ export function PostCardSkeleton({ className, count = 3 }: PostCardSkeletonProps
           </div>
         </div>
       ))}
-    </>
+    </div>
   )
 }

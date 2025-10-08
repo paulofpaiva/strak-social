@@ -23,7 +23,7 @@ import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { EditProfile } from '@/pages/app/Profile/components/EditProfile'
 import { ResponsiveTabs } from '@/components/ui/responsive-tabs-sidebar'
-import { PostsList } from '@/components/post/PostsList'
+import { PostsList } from '@/pages/app/Profile/components/PostsList'
 import { useState } from 'react'
 
 export function Profile() {
@@ -152,7 +152,6 @@ export function Profile() {
           </div>
         </div>
         
-        {/* Tabs */}
         <div className="mt-6">
           <ResponsiveTabs
             activeTab={activeTab}
@@ -163,36 +162,6 @@ export function Profile() {
                 label: 'Posts',
                 icon: FileText,
                 content: <PostsList userId={user.id} />
-              },
-              {
-                id: 'replies',
-                label: 'Replies',
-                icon: MessageSquare,
-                content: (
-                  <div className="py-12 text-center">
-                    <p className="text-muted-foreground">Soon</p>
-                  </div>
-                )
-              },
-              {
-                id: 'media',
-                label: 'Media',
-                icon: ImageIcon,
-                content: (
-                  <div className="py-12 text-center">
-                    <p className="text-muted-foreground">Soon</p>
-                  </div>
-                )
-              },
-              {
-                id: 'likes',
-                label: 'Likes',
-                icon: Heart,
-                content: (
-                  <div className="py-12 text-center">
-                    <p className="text-muted-foreground">Soon</p>
-                  </div>
-                )
               }
             ]}
           />

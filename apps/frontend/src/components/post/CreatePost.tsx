@@ -85,6 +85,7 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
     onSuccess: () => {
       toast.success('Post created successfully!')
       queryClient.invalidateQueries({ queryKey: ['posts'] })
+      queryClient.invalidateQueries({ queryKey: ['user-posts'] })
       handleClose()
     },
     onError: (error: any) => {

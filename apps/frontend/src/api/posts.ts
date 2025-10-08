@@ -60,3 +60,8 @@ export const getUserPostsApi = async (userId: string, page: number = 1, limit: n
   return response.data.data
 }
 
+export const deletePostApi = async (postId: string) => {
+  const response = await api.delete(`/posts/${postId}`)
+  return response.data
+}
+
