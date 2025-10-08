@@ -4,7 +4,7 @@
 
 A modern social media platform where users can connect, share posts, interact with content, and build their online community.
 
-#Demo
+# Demo
 
 https://monofrontend-production.up.railway.app/
 
