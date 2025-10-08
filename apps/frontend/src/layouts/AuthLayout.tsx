@@ -2,6 +2,9 @@ import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
+import StrakLogoBlack from '/Strak_Logo_Black.png'
+import StrakLogoWhite from '/Strak_Logo_White.png'
+import { useTheme } from '@/contexts/ThemeContext'
 
 interface AuthLayoutProps {
   children: ReactNode
@@ -11,6 +14,7 @@ interface AuthLayoutProps {
 
 export function AuthLayout({ children, title, description }: AuthLayoutProps) {
   const navigate = useNavigate()
+  const { resolvedTheme } = useTheme()
 
   const handleBackToLanding = () => {
     navigate("/")
@@ -31,11 +35,12 @@ export function AuthLayout({ children, title, description }: AuthLayoutProps) {
       </div>
       <div className="hidden lg:flex lg:flex-col lg:justify-center lg:px-8 xl:px-12 bg-muted/50">
         <div className="max-w-md mx-auto">
-          <div className="flex items-center space-x-2 mb-8">
-            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">S</span>
-            </div>
-            <h1 className="text-2xl font-bold">Strak Social</h1>
+          <div className="flex items-center mb-8">
+            <img 
+              src={resolvedTheme === 'dark' ? StrakLogoWhite : StrakLogoBlack} 
+              alt="Strak Social" 
+              className="h-10 w-auto object-contain"
+            />
           </div>
           
           <div className="space-y-6">
@@ -85,11 +90,12 @@ export function AuthLayout({ children, title, description }: AuthLayoutProps) {
       <div className="flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-sm">
           <div className="text-center mb-8">
-            <div className="flex items-center justify-center space-x-2 mb-4 lg:hidden">
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">S</span>
-              </div>
-              <h1 className="text-2xl font-bold">Strak Social</h1>
+            <div className="flex items-center justify-center mb-4 lg:hidden">
+              <img 
+                src={resolvedTheme === 'dark' ? StrakLogoWhite : StrakLogoBlack} 
+                alt="Strak Social" 
+                className="h-10 w-auto object-contain"
+              />
             </div>
             <h2 className="text-2xl font-bold">{title}</h2>
             {description && (

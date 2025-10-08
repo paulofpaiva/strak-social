@@ -16,12 +16,16 @@ import {
 import { Avatar } from "@/components/ui/avatar"
 import { Menu, User, Settings, LogOut } from "lucide-react"
 import { useIsMobile, useAuth } from "@/hooks"
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router"
+import StrakLogoBlack from '/Strak_Logo_Black.png'
+import StrakLogoWhite from '/Strak_Logo_White.png'
+import { useTheme } from '@/contexts/ThemeContext'
 
 export function Header() {
   const isMobile = useIsMobile()
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const { resolvedTheme } = useTheme()
 
   const handleLogout = async () => {
     try {
@@ -39,11 +43,12 @@ export function Header() {
   return (
     <header className="border-b">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">S</span>
-          </div>
-          <h1 className="text-2xl font-bold">Strak Social</h1>
+        <div className="flex items-center">
+          <img 
+            src={resolvedTheme === 'dark' ? StrakLogoWhite : StrakLogoBlack} 
+            alt="Strak Social" 
+            className="h-10 w-auto object-contain"
+          />
         </div>
         
         {user ? (
@@ -111,11 +116,12 @@ export function Header() {
                 </DialogTrigger>
                 <DialogContent className="max-w-[400px] w-[90vw]">
                   <DialogHeader>
-                    <div className="flex items-center space-x-3 mb-2">
-                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                        <span className="text-primary-foreground font-bold text-sm">S</span>
-                      </div>
-                      <DialogTitle className="text-xl font-bold">Strak Social</DialogTitle>
+                    <div className="flex items-center mb-2">
+                      <img 
+                        src={resolvedTheme === 'dark' ? StrakLogoWhite : StrakLogoBlack} 
+                        alt="Strak Social" 
+                        className="h-10 w-auto object-contain"
+                      />
                     </div>
                   </DialogHeader>
                   
