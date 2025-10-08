@@ -23,7 +23,6 @@ export const signUpSchema = z.object({
     .max(100, 'Password must be at most 100 characters')
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain at least one lowercase letter, one uppercase letter, and one number'),
   
-  avatar: z.string().optional(),
   birthDate: z.string().min(1, 'Birth date is required')
 })
 

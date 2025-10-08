@@ -25,9 +25,6 @@ export const signUpSchema = z.object({
     .regex(/^[a-zA-Z0-9_.]+$/, 'Username can only contain letters, numbers, underscores, and dots'),
   password: z.string().min(6, 'Password must have at least 6 characters'),
   name: z.string().min(2, 'Name must have at least 2 characters'),
-  avatar: z.string().optional(),
-  cover: z.string().optional(),
-  bio: z.string().max(160, 'Bio must have at most 160 characters').optional(),
   birthDate: z.string().min(1, 'Birth date is required'),
 });
 

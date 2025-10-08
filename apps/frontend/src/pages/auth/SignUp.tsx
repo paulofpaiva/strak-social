@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button"
 import { FloatingInput } from "@/components/ui/floating-input"
-import { AvatarInput } from "@/components/ui/avatar-input"
 import { Spinner } from "@/components/ui/spinner"
 import { Link, useNavigate } from "react-router"
 import { useForm } from "react-hook-form"
@@ -8,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { signUpSchema, type SignUpFormData } from "@/schemas/auth"
 import { useSignUp } from "@/hooks"
 import { useTogglePassword } from "@/hooks"
-import { uploadAvatar } from "@/api/upload"
 import { checkUsernameApi } from "@/api/auth"
 import { Eye, EyeOff, Check, X } from "lucide-react"
 import { useState, useEffect } from "react"
@@ -17,8 +15,6 @@ export function SignUp() {
   const navigate = useNavigate()
   const { signUp, isLoading } = useSignUp()
   const [error, setError] = useState<string>("")
-  const [avatarFile, setAvatarFile] = useState<File | null>(null)
-  const [avatarPreview, setAvatarPreview] = useState<string | undefined>(undefined)
   const [usernameStatus, setUsernameStatus] = useState<{
     available: boolean | null
     message: string
@@ -70,14 +66,8 @@ export function SignUp() {
         setError("Username is not available. Please choose another one.")
         return
       }
-      
-      let avatarUrl: string | undefined = undefined
-      if (avatarFile) {
-        const uploadResult = await uploadAvatar(avatarFile)
-        avatarUrl = uploadResult.url
-      }
 
-      await signUp({ ...data, avatar: avatarUrl })
+      await signUp(data)
       navigate("/feed", { replace: true })
     } catch (error: any) {
       setError(error.message || "Error creating account")
@@ -87,17 +77,6 @@ export function SignUp() {
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="flex justify-center">
-          <AvatarInput
-            value={avatarPreview}
-            onChange={(file, previewUrl) => {
-              setAvatarFile(file)
-              setAvatarPreview(previewUrl || undefined)
-            }}
-            size="xl"
-          />
-        </div>
-
         <div className="space-y-1">
           <FloatingInput
             id="name"

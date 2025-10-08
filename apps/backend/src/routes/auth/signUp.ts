@@ -44,9 +44,6 @@ router.post('/', asyncHandler(async (req: Request, res: Response) => {
       username: validatedData.username,
       name: validatedData.name,
       password: hashedPassword,
-      avatar: validatedData.avatar,
-      cover: validatedData.cover,
-      bio: validatedData.bio,
       birthDate: validatedData.birthDate ? new Date(validatedData.birthDate) : undefined,
     })
     .returning({
