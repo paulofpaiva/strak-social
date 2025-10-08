@@ -1,51 +1,18 @@
 import { useNavigate, useLocation } from "react-router"
-import { Home, Search, User, Settings, Plus } from "lucide-react"
 import { useIsMobile } from "@/hooks/useIsMobile"
 import { cn } from "@/lib/utils"
-
-interface NavItem {
-  id: string
-  label: string
-  icon: any
-  href: string
-  matchPattern?: 'exact' | 'startsWith'
-}
-
-const navItems: NavItem[] = [
-  {
-    id: 'home',
-    label: 'Home',
-    icon: Home,
-    href: '/feed',
-    matchPattern: 'exact'
-  },
-  {
-    id: 'explore',
-    label: 'Explore',
-    icon: Search,
-    href: '/explore',
-    matchPattern: 'exact'
-  },
-  {
-    id: 'profile',
-    label: 'Profile',
-    icon: User,
-    href: '/profile',
-    matchPattern: 'startsWith'
-  },
-  {
-    id: 'settings',
-    label: 'Settings',
-    icon: Settings,
-    href: '/settings',
-    matchPattern: 'startsWith'
-  }
-]
+import { 
+  getBottomNavItems, 
+  getBottomActionItems 
+} from "@/config/navigation"
 
 export function BottomNavigation() {
   const isMobile = useIsMobile()
   const navigate = useNavigate()
   const location = useLocation()
+
+  const navItems = getBottomNavItems()
+  const actionItems = getBottomActionItems()
 
   if (!isMobile) {
     return null
@@ -61,7 +28,7 @@ export function BottomNavigation() {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-[100] shadow-lg">
+      <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-40 shadow-lg">
         <div className="flex items-center justify-around px-2 py-2">
           {navItems.map((item) => {
             const Icon = item.icon
@@ -89,13 +56,19 @@ export function BottomNavigation() {
             )
           })}
           
-          <button
-            onClick={handleCreatePost}
-            className="flex items-center justify-center p-3 rounded-lg transition-colors min-w-0 flex-1 text-primary hover:text-primary/80"
-            title="Create Post"
-          >
-            <Plus className="h-6 w-6 stroke-[2.5px]" />
-          </button>
+          {actionItems.map((action) => {
+            const Icon = action.icon
+            return (
+              <button
+                key={action.id}
+                onClick={handleCreatePost}
+                className="flex items-center justify-center p-3 rounded-lg transition-colors min-w-0 flex-1 text-primary hover:text-primary/80"
+                title={action.label}
+              >
+                <Icon className="h-6 w-6 stroke-[2.5px]" />
+              </button>
+            )
+          })}
         </div>
       </nav>
     </>

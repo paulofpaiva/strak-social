@@ -1,13 +1,5 @@
 import { cn } from '@/lib/utils'
-import { 
-  Home,
-  Search, 
-  Settings, 
-  User,
-  MoreHorizontal,
-  Plus,
-  LogOut
-} from 'lucide-react'
+import { MoreHorizontal } from 'lucide-react'
 import StrakLogoBlack from '/Strak_Logo_Black.png'
 import StrakLogoWhite from '/Strak_Logo_White.png'
 import { useAuth } from '@/hooks'
@@ -17,49 +9,15 @@ import { Button } from '@/components/ui/button'
 import { ResponsiveDropdown } from '@/components/ui/responsive-dropdown'
 import { useNavigate, useLocation } from 'react-router'
 import { useEffect, useState } from 'react'
-
-interface FeedItem {
-  id: string
-  label: string
-  icon: React.ComponentType<{ className?: string }>
-  href?: string
-  matchPattern?: 'exact' | 'startsWith'
-}
+import { 
+  getDesktopSidebarItems, 
+  getDesktopActionItems, 
+  getUserMenuItemsForDesktop
+} from '@/config/navigation'
 
 interface FeedSidebarProps {
   isCompact?: boolean
 }
-
-const feedItems: FeedItem[] = [
-  {
-    id: 'home',
-    label: 'Home',
-    icon: Home,
-    href: '/feed',
-    matchPattern: 'exact'
-  },
-  {
-    id: 'explore',
-    label: 'Explore',
-    icon: Search,
-    href: '/explore',
-    matchPattern: 'exact'
-  },
-  {
-    id: 'profile',
-    label: 'Profile',
-    icon: User,
-    href: '/profile',
-    matchPattern: 'startsWith'
-  },
-  {
-    id: 'settings',
-    label: 'Settings',
-    icon: Settings,
-    href: '/settings',
-    matchPattern: 'startsWith'
-  }
-]
 
 export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
   const { user, logout } = useAuth()
@@ -67,6 +25,10 @@ export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const [avatarKey, setAvatarKey] = useState(0)
+
+  const menuItems = getDesktopSidebarItems()
+  const actionItems = getDesktopActionItems()
+  const userMenuActions = getUserMenuItemsForDesktop()
 
   useEffect(() => {
     if (user?.avatar) {
@@ -83,16 +45,20 @@ export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
     }
   }
 
-  const handleProfileClick = () => {
-    navigate('/profile')
-  }
-
   const handleItemClick = (href: string) => {
     navigate(href)
   }
 
   const handleCreatePost = () => {
     console.log('Create Post Modal opened')
+  }
+
+  const handleUserAction = async (action?: string, href?: string) => {
+    if (action === 'logout') {
+      await handleLogout()
+    } else if (href) {
+      navigate(href)
+    }
   }
 
   return (
@@ -108,16 +74,16 @@ export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
       </div>
 
       <nav className={cn("flex-1 space-y-1", isCompact ? "px-2" : "px-4")}>
-        {feedItems.map((item) => {
+        {menuItems.map((item) => {
           const Icon = item.icon
           const isActive = item.matchPattern === 'startsWith'
-            ? location.pathname.startsWith(item.href!)
+            ? location.pathname.startsWith(item.href)
             : location.pathname === item.href
           
           return (
             <button
               key={item.id}
-              onClick={() => item.href && handleItemClick(item.href)}
+              onClick={() => handleItemClick(item.href)}
               className={cn(
                 "flex items-center w-full text-left rounded-full transition-colors cursor-pointer",
                 isCompact ? "justify-center px-2 py-3" : "px-4 py-3",
@@ -128,25 +94,34 @@ export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
               title={isCompact ? item.label : undefined}
             >
               <Icon className={cn("h-6 w-6", !isCompact && "mr-4")} />
-              {!isCompact && <span className="text-lg">{item.label}</span>}
+              {!isCompact && item.showLabel && <span className="text-lg">{item.label}</span>}
             </button>
           )
         })}
       </nav>
 
-      <div className={cn("", isCompact ? "p-2" : "p-4")}>
-        <Button 
-          onClick={handleCreatePost}
-          className={cn(
-            "w-full h-12 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold",
-            isCompact && "justify-center"
-          )}
-          title={isCompact ? "Post" : undefined}
-        >
-          <Plus className={cn("h-5 w-5", !isCompact && "mr-2")} />
-          {!isCompact && "Post"}
-        </Button>
-      </div>
+      {actionItems.length > 0 && (
+        <div className={cn("", isCompact ? "p-2" : "p-4")}>
+          {actionItems.map((action) => {
+            const Icon = action.icon
+            return (
+              <Button 
+                key={action.id}
+                onClick={handleCreatePost}
+                className={cn(
+                  "w-full h-12 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold",
+                  isCompact && "justify-center"
+                )}
+                title={isCompact ? action.label : undefined}
+              >
+                <Icon className={cn("h-5 w-5", !isCompact && "mr-2")} />
+                {!isCompact && action.showLabel && action.label}
+              </Button>
+            )
+          })}
+        </div>
+      )}
+
 
       {user && (
         <div className={cn("border-t border-border", isCompact ? "p-2" : "p-4")}>
@@ -180,19 +155,15 @@ export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
                 )}
               </button>
             }
-            items={[
-              {
-                label: 'Settings',
-                icon: <Settings className="h-4 w-4" />,
-                onClick: () => navigate('/settings')
-              },
-              {
-                label: 'Log out',
-                icon: <LogOut className="h-4 w-4" />,
-                onClick: handleLogout,
-                variant: 'destructive'
+            items={userMenuActions.map(action => {
+              const Icon = action.icon
+              return {
+                label: action.label,
+                icon: <Icon className="h-4 w-4" />,
+                onClick: () => handleUserAction(action.action, action.href),
+                variant: action.variant
               }
-            ]}
+            })}
           />
         </div>
       )}

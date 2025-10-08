@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { FeedSidebar } from '../components/FeedSidebar'
 import { BottomNavigation } from '../components/BottomNavigation'
+import { AppHeader } from '../components/AppHeader'
 import { useIsMobile, useIsCompact } from '../hooks/useIsMobile'
 
 interface AppLayoutProps {
@@ -13,6 +14,8 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      {isMobile && <AppHeader />}
+      
       <div className="flex">
         {!isMobile && (
           <div className={`fixed left-0 top-0 h-full bg-background border-r border-border z-10 ${isCompact ? 'w-16' : 'w-64'}`}>
@@ -27,7 +30,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         </div>
       </div>
       
-      <BottomNavigation />
+      {isMobile && <BottomNavigation />}
     </div>
   )
 }
