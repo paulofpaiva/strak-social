@@ -32,8 +32,10 @@ export function MobileSidebar({ open, onOpenChange }: MobileSidebarProps) {
   const userMenuActions = getUserMenuItemsForDesktop()
   
 
-  const handleItemClick = (href: string) => {
-    navigate(href)
+  const handleItemClick = (href?: string) => {
+    if (href) {
+      navigate(href)
+    }
     onOpenChange(false)
   }
 
@@ -75,7 +77,7 @@ export function MobileSidebar({ open, onOpenChange }: MobileSidebarProps) {
             {menuItems.map((item) => {
               const Icon = item.icon
               const isActive = item.matchPattern === 'startsWith'
-                ? location.pathname.startsWith(item.href)
+                ? location.pathname.startsWith(item.href!)
                 : location.pathname === item.href
 
               return (

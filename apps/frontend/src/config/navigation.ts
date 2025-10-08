@@ -1,17 +1,18 @@
-import { LucideIcon, Home, Search, User, Settings, Plus, LogOut } from "lucide-react"
+import { LucideIcon, Home, Search, User, Settings, LogOut, PenSquare } from "lucide-react"
 
 export interface NavigationItem {
   id: string
   label: string
   icon: LucideIcon
-  href: string
+  href?: string
   matchPattern?: 'exact' | 'startsWith'
   showBottom?: boolean
   showDesktopSidebar?: boolean
   showMobileSidebar?: boolean
   showLabel?: boolean
-  action?: () => void
+  action?: 'create-post' | 'custom'
   variant?: 'default' | 'destructive'
+  onAction?: () => void
 }
 
 export const navigationItems: NavigationItem[] = [
@@ -65,11 +66,11 @@ export const actionItems: NavigationItem[] = [
   {
     id: 'create-post',
     label: 'Post',
-    icon: Plus,
-    href: '#',
+    icon: PenSquare,
+    action: 'create-post',
     showBottom: true,
     showDesktopSidebar: true,
-    showMobileSidebar: false,
+    showMobileSidebar: true,
     showLabel: true
   }
 ]
@@ -91,7 +92,7 @@ export const userMenuItems: UserMenuItem[] = [
     label: 'Profile',
     icon: User,
     href: '/profile',
-    showInDesktopSidebar: false,
+    showInDesktopSidebar: true,
     showInMobileSidebar: true
   },
   {

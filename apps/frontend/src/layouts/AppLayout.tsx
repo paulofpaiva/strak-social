@@ -31,6 +31,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       </div>
       
       {isMobile && <BottomNavigation />}
+      
     </div>
   )
 }

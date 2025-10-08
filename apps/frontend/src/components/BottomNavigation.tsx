@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from "react-router"
 import { useIsMobile } from "@/hooks/useIsMobile"
+import { useCreatePost } from "@/contexts/CreatePostContext"
 import { cn } from "@/lib/utils"
 import { 
   getBottomNavItems, 
@@ -10,21 +11,21 @@ export function BottomNavigation() {
   const isMobile = useIsMobile()
   const navigate = useNavigate()
   const location = useLocation()
+  const { openCreatePost } = useCreatePost()
 
   const navItems = getBottomNavItems()
   const actionItems = getBottomActionItems()
 
+  const handleItemClick = (href?: string) => {
+    if (href) {
+      navigate(href)
+    }
+  }
+
   if (!isMobile) {
     return null
   }
-
-  const handleItemClick = (href: string) => {
-    navigate(href)
-  }
-
-  const handleCreatePost = () => {
-    console.log('Create Post Modal opened')
-  }
+  
 
   return (
     <>
@@ -33,7 +34,7 @@ export function BottomNavigation() {
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive = item.matchPattern === 'startsWith'
-              ? location.pathname.startsWith(item.href)
+              ? location.pathname.startsWith(item.href!)
               : location.pathname === item.href
             
             return (
@@ -58,10 +59,12 @@ export function BottomNavigation() {
           
           {actionItems.map((action) => {
             const Icon = action.icon
+            const handleClick = action.action === 'create-post' ? openCreatePost : undefined
+            
             return (
               <button
                 key={action.id}
-                onClick={handleCreatePost}
+                onClick={handleClick}
                 className="flex items-center justify-center p-3 rounded-lg transition-colors min-w-0 flex-1 text-primary hover:text-primary/80"
                 title={action.label}
               >

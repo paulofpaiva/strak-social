@@ -4,6 +4,7 @@ import StrakLogoBlack from '/Strak_Logo_Black.png'
 import StrakLogoWhite from '/Strak_Logo_White.png'
 import { useAuth } from '@/hooks'
 import { useTheme } from '@/contexts/ThemeContext'
+import { useCreatePost } from '@/contexts/CreatePostContext'
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { ResponsiveDropdown } from '@/components/ui/responsive-dropdown'
@@ -22,6 +23,7 @@ interface FeedSidebarProps {
 export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
   const { user, logout } = useAuth()
   const { resolvedTheme } = useTheme()
+  const { openCreatePost } = useCreatePost()
   const navigate = useNavigate()
   const location = useLocation()
   const [avatarKey, setAvatarKey] = useState(0)
@@ -45,12 +47,10 @@ export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
     }
   }
 
-  const handleItemClick = (href: string) => {
-    navigate(href)
-  }
-
-  const handleCreatePost = () => {
-    console.log('Create Post Modal opened')
+  const handleItemClick = (href?: string) => {
+    if (href) {
+      navigate(href)
+    }
   }
 
   const handleUserAction = async (action?: string, href?: string) => {
@@ -77,7 +77,7 @@ export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
         {menuItems.map((item) => {
           const Icon = item.icon
           const isActive = item.matchPattern === 'startsWith'
-            ? location.pathname.startsWith(item.href)
+            ? location.pathname.startsWith(item.href!)
             : location.pathname === item.href
           
           return (
@@ -104,10 +104,12 @@ export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
         <div className={cn("", isCompact ? "p-2" : "p-4")}>
           {actionItems.map((action) => {
             const Icon = action.icon
+            const handleClick = action.action === 'create-post' ? openCreatePost : undefined
+            
             return (
               <Button 
                 key={action.id}
-                onClick={handleCreatePost}
+                onClick={handleClick}
                 className={cn(
                   "w-full h-12 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold",
                   isCompact && "justify-center"

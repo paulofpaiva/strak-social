@@ -1,11 +1,13 @@
 import { Router, Request, Response } from 'express'
 import { db } from '../../db/index'
 import { posts } from '../../schemas/posts'
+import { postMedia } from '../../schemas/postMedia'
 import { authenticateToken } from '../../middleware/auth'
 import { eq } from 'drizzle-orm'
 import { asyncHandler } from '../../middleware/asyncHandler'
 import { ApiResponse } from '../../utils/response'
 import { AppError } from '../../middleware/errorHandler'
+import { deletePostMediaFiles } from '../../services/postMedia'
 
 const router = Router()
 
@@ -27,9 +29,19 @@ router.delete('/:id', authenticateToken, asyncHandler(async (req: Request, res: 
     throw new AppError('You can only delete your own posts', 403)
   }
 
+  const media = await db
+    .select({ mediaUrl: postMedia.mediaUrl })
+    .from(postMedia)
+    .where(eq(postMedia.postId, postId))
+
   await db
     .delete(posts)
     .where(eq(posts.id, postId))
+
+  if (media.length > 0) {
+    const mediaUrls = media.map(m => m.mediaUrl)
+    await deletePostMediaFiles(mediaUrls)
+  }
 
   return ApiResponse.success(res, null, 'Post deleted successfully')
 }))

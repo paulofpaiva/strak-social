@@ -15,7 +15,7 @@ export function FloatingInput({ className, label, hintRight, id, ...props }: Flo
         id={inputId}
         placeholder=" "
         className={cn(
-          "peer h-10 w-full rounded-sm border border-input bg-transparent px-4 pt-10 pb-8 text-base md:text-base",
+          "peer h-10 w-full rounded-sm border border-input bg-transparent px-4 pt-8 pb-8 text-base md:text-base",
           "text-foreground placeholder:text-transparent focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-[color,box-shadow] outline-none",
           "disabled:cursor-not-allowed disabled:opacity-50",
           "dark:bg-input/30",

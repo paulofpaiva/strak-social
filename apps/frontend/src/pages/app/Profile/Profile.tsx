@@ -12,16 +12,23 @@ import {
   MapPin,
   Link as LinkIcon,
   Edit,
-  CheckCircle
+  CheckCircle,
+  FileText,
+  MessageSquare,
+  Image as ImageIcon,
+  Heart
 } from 'lucide-react'
 import { ProfileSkeleton } from './components/ProfileSkeleton'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { EditProfile } from '@/pages/app/Profile/components/EditProfile'
+import { ResponsiveTabs } from '@/components/ui/responsive-tabs-sidebar'
+import { PostsList } from '@/components/post/PostsList'
 import { useState } from 'react'
 
 export function Profile() {
   const [editOpen, setEditOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState('posts')
   const navigate = useNavigate()
   const { data: profileData, isLoading, error, refetch } = useQuery({
     queryKey: ['profile'],
@@ -145,9 +152,50 @@ export function Profile() {
           </div>
         </div>
         
-       
-        <div className="py-8 text-center">
-          <p className="text-muted-foreground">No posts yet</p>
+        {/* Tabs */}
+        <div className="mt-6">
+          <ResponsiveTabs
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            tabs={[
+              {
+                id: 'posts',
+                label: 'Posts',
+                icon: FileText,
+                content: <PostsList userId={user.id} />
+              },
+              {
+                id: 'replies',
+                label: 'Replies',
+                icon: MessageSquare,
+                content: (
+                  <div className="py-12 text-center">
+                    <p className="text-muted-foreground">Soon</p>
+                  </div>
+                )
+              },
+              {
+                id: 'media',
+                label: 'Media',
+                icon: ImageIcon,
+                content: (
+                  <div className="py-12 text-center">
+                    <p className="text-muted-foreground">Soon</p>
+                  </div>
+                )
+              },
+              {
+                id: 'likes',
+                label: 'Likes',
+                icon: Heart,
+                content: (
+                  <div className="py-12 text-center">
+                    <p className="text-muted-foreground">Soon</p>
+                  </div>
+                )
+              }
+            ]}
+          />
         </div>
       </div>
 

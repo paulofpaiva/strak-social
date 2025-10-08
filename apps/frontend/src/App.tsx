@@ -2,9 +2,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-
 import { QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { ColorProvider } from '@/contexts/ColorContext'
+import { CreatePostProvider } from '@/contexts/CreatePostContext'
 import { Toaster } from '@/components/ui/sonner'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { useNProgress } from '@/hooks/useNProgress'
+import { AppLayout } from '@/layouts/AppLayout'
 import { AuthLayout } from '@/layouts/AuthLayout'
 import Landing from "@/pages/landing/Landing"
 import { Auth } from "@/pages/auth/Auth"
@@ -16,7 +18,6 @@ import { Followers } from "@/pages/app/Profile/Followers"
 import { Explore } from "@/pages/app/Explore/Explore"
 import { UserProfile } from "@/pages/app/Explore/UserProfile"
 import { queryClient } from '@/utils/query-client'
-import { AppLayout } from '@/layouts/AppLayout'
 
 function App() {
   return (
@@ -24,8 +25,10 @@ function App() {
       <ThemeProvider>
         <ColorProvider>
           <Router>
-            <AppRoutes />
-            <Toaster />
+            <CreatePostProvider>
+              <AppRoutes />
+              <Toaster />
+            </CreatePostProvider>
           </Router>
         </ColorProvider>
       </ThemeProvider>
