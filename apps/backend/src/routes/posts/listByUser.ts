@@ -30,6 +30,7 @@ router.get('/user/:userId', authenticateToken, asyncHandler(async (req: Request,
         name: users.name,
         username: users.username,
         avatar: users.avatar,
+        isVerified: users.isVerified,
       }
     })
     .from(posts)

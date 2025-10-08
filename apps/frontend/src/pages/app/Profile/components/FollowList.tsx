@@ -2,6 +2,7 @@ import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { useSearchNavigation } from '@/hooks'
+import { BadgeCheck } from 'lucide-react'
 
 interface FollowersListProps {
   users: Array<{ 
@@ -9,6 +10,7 @@ interface FollowersListProps {
     name: string
     username: string
     avatar?: string | null
+    isVerified?: boolean
     isFollowing?: boolean
   }>
   variant?: 'followers' | 'following'
@@ -67,7 +69,12 @@ export function FollowList({
             className="flex-1 min-w-0 cursor-pointer"
             onClick={() => handleUserClick(u.username)}
           >
-            <p className="text-sm font-medium truncate">{u.name}</p>
+            <div className="flex items-center gap-1">
+              <p className="text-sm font-medium truncate">{u.name}</p>
+              {u.isVerified && (
+                <BadgeCheck className="h-4 w-4 text-blue-500 flex-shrink-0" />
+              )}
+            </div>
             <p className="text-xs text-muted-foreground truncate">@{u.username}</p>
           </div>
           {variant === 'followers' && onRemoveFollower ? (

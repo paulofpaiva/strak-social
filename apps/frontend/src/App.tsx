@@ -16,7 +16,6 @@ import { Profile } from "@/pages/app/Profile/Profile"
 import { Following } from "@/pages/app/Profile/Following"
 import { Followers } from "@/pages/app/Profile/Followers"
 import { Explore } from "@/pages/app/Explore/Explore"
-import { UserProfile } from "@/pages/app/Explore/UserProfile"
 import { queryClient } from '@/utils/query-client'
 
 function App() {
@@ -130,7 +129,7 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <AppLayout>
-              <UserProfile />
+              <Profile />
             </AppLayout>
           </ProtectedRoute>
         }

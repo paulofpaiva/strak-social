@@ -13,6 +13,7 @@ export interface PostUser {
   name: string
   username: string
   avatar?: string | null
+  isVerified?: boolean
 }
 
 export interface Post {
@@ -83,6 +84,11 @@ export const updatePostApi = async (
     headers: { 'Content-Type': 'multipart/form-data' }
   })
   
+  return response.data
+}
+
+export const toggleLikePostApi = async (postId: string) => {
+  const response = await api.post(`/posts/${postId}/like`)
   return response.data
 }
 

@@ -23,6 +23,7 @@ declare global {
         location: string | null
         website: string | null
         birthDate: Date | null
+        isVerified: boolean
         createdAt: Date
         updatedAt: Date
       }
@@ -55,6 +56,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
         location: users.location,
         website: users.website,
         birthDate: users.birthDate,
+        isVerified: users.isVerified,
         createdAt: users.createdAt,
         updatedAt: users.updatedAt,
       })
@@ -103,6 +105,7 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
           location: users.location,
           website: users.website,
           birthDate: users.birthDate,
+          isVerified: users.isVerified,
           createdAt: users.createdAt,
           updatedAt: users.updatedAt,
         })

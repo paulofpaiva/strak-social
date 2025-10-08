@@ -15,6 +15,13 @@
       "when": 1759769526585,
       "tag": "0001_mature_thunderball",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1759966281927,
+      "tag": "0002_ambiguous_cyclops",
+      "breakpoints": true
     }
   ]
 }

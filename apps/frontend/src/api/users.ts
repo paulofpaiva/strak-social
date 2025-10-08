@@ -10,6 +10,7 @@ export interface User {
   bio: string | null
   location?: string | null
   website?: string | null
+  isVerified?: boolean
   createdAt: string
   followersCount: number
   followingCount: number
@@ -74,7 +75,7 @@ export interface SearchUsersResponse {
   success: boolean
   message: string
   data: { 
-    users: Array<Pick<User, 'id' | 'name' | 'username' | 'avatar' | 'bio' | 'createdAt' | 'isFollowing'>>
+    users: Array<Pick<User, 'id' | 'name' | 'username' | 'avatar' | 'bio' | 'isVerified' | 'createdAt' | 'isFollowing'>>
     pagination: {
       page: number
       limit: number
@@ -87,7 +88,7 @@ export const searchUsersApi = async (
   query: string,
   page: number = 1,
   limit: number = 20
-): Promise<{ items: Array<Pick<User, 'id' | 'name' | 'username' | 'avatar' | 'bio' | 'createdAt' | 'isFollowing'>>; page: number; limit: number; hasMore?: boolean }> => {
+): Promise<{ items: Array<Pick<User, 'id' | 'name' | 'username' | 'avatar' | 'bio' | 'isVerified' | 'createdAt' | 'isFollowing'>>; page: number; limit: number; hasMore?: boolean }> => {
   try {
     const response = await api.get<SearchUsersResponse>(`/search/users`, {
       params: { q: query, page, limit }

@@ -5,47 +5,44 @@ import { formatPostDate } from '@/utils/date'
 import type { Post } from '@/api/posts'
 import { Heart, MessageCircle, MoreVertical, Trash2, Edit } from 'lucide-react'
 import { ResponsiveDropdown } from '@/components/ui/responsive-dropdown'
-import { ResponsiveModal } from '@/components/ui/responsive-modal'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/stores/authStore'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { deletePostApi } from '@/api/posts'
 import { useState } from 'react'
-import { toast } from 'sonner'
 import { EditPost } from './EditPost'
+import { DeletePost } from './DeletePost'
+import { useLikePostMutation } from '@/hooks/post'
 
 interface PostCardProps {
   post: Post
   className?: string
+  readOnly?: boolean
 }
 
-export function PostCard({ post, className }: PostCardProps) {
+export function PostCard({ post, className, readOnly = false }: PostCardProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isLiked, setIsLiked] = useState(post.userLiked)
+  const [likesCount, setLikesCount] = useState(post.likesCount)
   const { user } = useAuthStore()
-  const queryClient = useQueryClient()
   const isOwner = user?.id === post.userId
+  const likeMutation = useLikePostMutation()
 
-  const deletePostMutation = useMutation({
-    mutationFn: deletePostApi,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user-posts'] })
-      setIsDeleteModalOpen(false)
-      toast.success('Post deleted successfully')
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to delete post')
-    }
-  })
-
-  const handleDeletePost = () => {
-    deletePostMutation.mutate(post.id)
+  const handleLike = () => {
+    setIsLiked(!isLiked)
+    setLikesCount(prev => isLiked ? prev - 1 : prev + 1)
+    
+    likeMutation.mutate(post.id, {
+      onError: () => {
+        setIsLiked(isLiked)
+        setLikesCount(likesCount)
+      }
+    })
   }
 
   return (
     <article
       className={cn(
-        'bg-card p-4 hover:bg-accent/50 transition-colors border-b border-border last:border-b-0',
+        'p-4 transition-colors border-b border-border last:border-b-0',
         className
       )}
     >
@@ -74,7 +71,7 @@ export function PostCard({ post, className }: PostCardProps) {
               </span>
             </div>
             
-            {isOwner && (
+            {isOwner && !readOnly && (
               <ResponsiveDropdown
                 trigger={
                   <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -117,15 +114,19 @@ export function PostCard({ post, className }: PostCardProps) {
       )}
 
       <div className="flex items-center gap-6 text-muted-foreground text-sm">
-        <div className="flex items-center gap-1.5">
+        <button 
+          onClick={handleLike}
+          disabled={likeMutation.isPending}
+          className="flex items-center gap-1.5 hover:text-red-500 transition-colors disabled:opacity-50 cursor-pointer"
+        >
           <Heart 
             className={cn(
-              'h-5 w-5',
-              post.userLiked && 'fill-red-500 text-red-500'
+              'h-5 w-5 transition-all',
+              isLiked && 'fill-red-500 text-red-500'
             )} 
           />
-          <span>{post.likesCount}</span>
-        </div>
+          <span>{likesCount}</span>
+        </button>
         
         <div className="flex items-center gap-1.5">
           <MessageCircle className="h-5 w-5" />
@@ -133,34 +134,21 @@ export function PostCard({ post, className }: PostCardProps) {
         </div>
       </div>
 
-      <EditPost
-        open={isEditModalOpen}
-        onOpenChange={setIsEditModalOpen}
-        post={post}
-      />
+      {isOwner && !readOnly && (
+        <>
+          <EditPost
+            open={isEditModalOpen}
+            onOpenChange={setIsEditModalOpen}
+            post={post}
+          />
 
-      <ResponsiveModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        title="Delete post?"
-        description="This action cannot be undone."
-        onCancel={() => setIsDeleteModalOpen(false)}
-        cancelText="Cancel"
-        actionButton={
-          <Button
-            variant="destructive"
-            onClick={handleDeletePost}
-            disabled={deletePostMutation.isPending}
-            className="flex-1"
-          >
-            Delete
-          </Button>
-        }
-      >
-        <p className="text-sm text-muted-foreground">
-          Are you sure you want to delete this post? This action is permanent and cannot be undone.
-        </p>
-      </ResponsiveModal>
+          <DeletePost
+            open={isDeleteModalOpen}
+            onOpenChange={setIsDeleteModalOpen}
+            post={post}
+          />
+        </>
+      )}
     </article>
   )
 }

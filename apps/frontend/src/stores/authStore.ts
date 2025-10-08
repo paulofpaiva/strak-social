@@ -10,6 +10,7 @@ interface User {
   cover?: string
   bio?: string
   birthDate?: string
+  isVerified?: boolean
   followersCount?: number
   followingCount?: number
   createdAt: string

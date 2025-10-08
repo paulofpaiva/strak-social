@@ -28,6 +28,7 @@ router.get('/', authenticateToken, asyncHandler(async (req: Request, res: Respon
         name: users.name,
         username: users.username,
         avatar: users.avatar,
+        isVerified: users.isVerified,
       }
     })
     .from(posts)

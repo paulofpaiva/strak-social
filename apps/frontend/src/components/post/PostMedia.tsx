@@ -10,15 +10,16 @@ export function PostMedia({ media, className }: PostMediaProps) {
   if (!media || media.length === 0) return null
 
   const sortedMedia = [...media].sort((a, b) => a.order - b.order)
+  const isSingle = sortedMedia.length === 1
 
   return (
     <div className={cn('w-full', className)}>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+      <div className={cn('grid gap-2', isSingle ? 'grid-cols-1' : 'grid-cols-2 sm:grid-cols-3')}>
         {sortedMedia.slice(0, 6).map((item, index) => (
           <div
             key={item.id}
             className="relative overflow-hidden rounded-lg bg-muted border-2 border-border"
-            style={{ height: '120px' }}
+            style={{ height: isSingle ? '280px' : '120px' }}
           >
             {item.mediaType === 'video' ? (
               <video

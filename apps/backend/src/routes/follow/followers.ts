@@ -23,6 +23,7 @@ router.get('/:userId/followers', authenticateToken, asyncHandler(async (req: Req
       username: users.username,
       avatar: users.avatar,
       bio: users.bio,
+      isVerified: users.isVerified,
       followerId: followers.id,
       followedAt: followers.createdAt,
     })

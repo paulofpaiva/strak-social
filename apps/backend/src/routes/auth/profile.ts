@@ -60,6 +60,7 @@ router.put('/', authenticateToken, asyncHandler(async (req: Request, res: Respon
       location: users.location,
       website: users.website,
       birthDate: users.birthDate,
+      isVerified: users.isVerified,
       createdAt: users.createdAt,
       updatedAt: users.updatedAt,
     })

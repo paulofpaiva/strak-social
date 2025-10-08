@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { toggleFollowApi } from '@/api/follow'
 import { toast } from 'sonner'
 import { useSearchNavigation } from '@/hooks'
+import { BadgeCheck } from 'lucide-react'
 
 interface UserListProps {
   users: Array<{ 
@@ -14,6 +15,7 @@ interface UserListProps {
     username: string
     avatar?: string | null
     bio?: string | null
+    isVerified?: boolean
     isFollowing?: boolean
   }>
   className?: string
@@ -84,7 +86,12 @@ export function UserList({ users, className, onFollowToggled }: UserListProps) {
             className="flex-1 min-w-0 cursor-pointer"
             onClick={() => handleUserClick(u.username)}
           >
-            <p className="text-sm font-medium truncate">{u.name}</p>
+            <div className="flex items-center gap-1">
+              <p className="text-sm font-medium truncate">{u.name}</p>
+              {u.isVerified && (
+                <BadgeCheck className="h-4 w-4 text-blue-500 flex-shrink-0" />
+              )}
+            </div>
             <p className="text-xs text-muted-foreground truncate">@{u.username}</p>
             {u.bio && (
               <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{u.bio}</p>

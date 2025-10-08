@@ -13,9 +13,10 @@ import { FileText } from 'lucide-react'
 interface PostsListProps {
   userId: string
   className?: string
+  readOnly?: boolean
 }
 
-export function PostsList({ userId, className }: PostsListProps) {
+export function PostsList({ userId, className, readOnly = false }: PostsListProps) {
   const [page, setPage] = useState(1)
   const [limit] = useState(10)
   const [allPosts, setAllPosts] = useState<Post[]>([])
@@ -89,7 +90,7 @@ export function PostsList({ userId, className }: PostsListProps) {
     <div className={className}>
       <div>
         {allPosts.map(post => (
-          <PostCard key={post.id} post={post} />
+          <PostCard key={post.id} post={post} readOnly={readOnly} />
         ))}
       </div>
 

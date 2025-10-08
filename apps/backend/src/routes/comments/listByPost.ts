@@ -42,6 +42,7 @@ router.get('/post/:postId', authenticateToken, asyncHandler(async (req: Request,
         name: users.name,
         username: users.username,
         avatar: users.avatar,
+        isVerified: users.isVerified,
       }
     })
     .from(comments)

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, boolean } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -13,6 +13,7 @@ export const users = pgTable('users', {
   location: text('location'),
   website: text('website'),
   birthDate: timestamp('birth_date'),
+  isVerified: boolean('is_verified').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -61,9 +62,6 @@ export const updateProfileSchema = z.object({
     .refine((val) => {
       if (!val || val === '') return true
       
-      // URL pattern that requires at least domain.tld format
-      // Accepts: example.com, www.example.com, https://example.com, http://subdomain.example.com/path
-      // Rejects: www, example, http://, just-text
       const urlPattern = /^(?:https?:\/\/)?(?:[\w-]+\.)+[a-z]{2,}(?:\/[^\s]*)?$/i
       
       return urlPattern.test(val)

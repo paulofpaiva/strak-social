@@ -21,6 +21,7 @@ router.get('/:userId', authenticateToken, asyncHandler(async (req: Request, res:
       avatar: users.avatar,
       cover: users.cover,
       bio: users.bio,
+      isVerified: users.isVerified,
       createdAt: users.createdAt,
     })
     .from(users)

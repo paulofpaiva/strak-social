@@ -5,7 +5,7 @@ import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { FloatingInput } from '@/components/ui/floating-input'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { UserListSkeleton } from '../../../components/skeleton/UserListSkeleton'
-import { UserList } from './components/UserList'
+import { UserList } from './UserList'
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from '@/components/ui/empty'
 import { Search as SearchIcon } from 'lucide-react'
 import { useInfiniteScroll, useSearchNavigation } from '@/hooks'
@@ -19,6 +19,7 @@ export function Explore() {
     username: string
     avatar?: string | null
     bio?: string | null
+    isVerified?: boolean
     isFollowing?: boolean
   }>>([])
   const [page, setPage] = useState(1)
