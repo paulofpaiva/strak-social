@@ -7,7 +7,7 @@ import { FloatingInput } from '@/components/ui/floating-input'
 import { useTogglePassword } from '@/hooks/useTogglePassword'
 import { changePasswordSchema, ChangePasswordFormData } from '@/schemas/auth'
 import { changePasswordApi } from '@/api/profile'
-import { useToastContext } from '@/contexts/ToastContext'
+import { toast } from 'sonner'
 import { Eye, EyeOff } from 'lucide-react'
 
 interface ChangePasswordProps {
@@ -17,7 +17,6 @@ interface ChangePasswordProps {
 
 export function ChangePassword({ isOpen, onClose }: ChangePasswordProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const { success, error } = useToastContext()
   
   const {
     showPassword: showCurrentPassword,
@@ -57,11 +56,11 @@ export function ChangePassword({ isOpen, onClose }: ChangePasswordProps) {
       setIsLoading(true)
       await changePasswordApi(data)
       
-      success("Password changed successfully!")
+      toast.success("Password changed successfully!")
       reset()
       onClose()
     } catch (err: any) {
-      error(err.message || "Failed to change password. Please try again.")
+      toast.error(err.message || "Failed to change password. Please try again.")
     } finally {
       setIsLoading(false)
     }

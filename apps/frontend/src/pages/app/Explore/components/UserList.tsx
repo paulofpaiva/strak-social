@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { toggleFollowApi } from '@/api/follow'
-import { useToastContext } from '@/contexts/ToastContext'
+import { toast } from 'sonner'
 import { useSearchNavigation } from '@/hooks'
 
 interface UserListProps {
@@ -23,7 +23,6 @@ interface UserListProps {
 export function UserList({ users, className, onFollowToggled }: UserListProps) {
   const [loadingUsers, setLoadingUsers] = useState<Set<string>>(new Set())
   const queryClient = useQueryClient()
-  const { error: showError } = useToastContext()
   const { navigateToUserProfile } = useSearchNavigation({
     basePath: '/explore',
     defaultReturnPath: '/explore'
@@ -53,7 +52,7 @@ export function UserList({ users, className, onFollowToggled }: UserListProps) {
       onFollowToggled?.(userId, !currentIsFollowing)
     } catch (error) {
       console.error('Failed to toggle follow:', error)
-      showError(error instanceof Error ? error.message : 'Failed to update follow status. Please try again.')
+      toast.error(error instanceof Error ? error.message : 'Failed to update follow status. Please try again.')
     } finally {
       setLoadingUsers(prev => {
         const newSet = new Set(prev)

@@ -8,18 +8,6 @@ export const formatDateForInput = (dateString: string | undefined): string => {
   }
 }
 
-export const getFullCoverUrl = (coverPath: string): string => {
-  if (!coverPath) return ''
-  if (coverPath.startsWith('http') || coverPath.startsWith('blob:')) {
-    return coverPath
-  }
-  const BASE_URL = import.meta.env.VITE_AVATAR_URL || import.meta.env.VITE_API_URL || 'http://localhost:3001'
-  if (coverPath.startsWith('/')) {
-    return `${BASE_URL}${coverPath}`
-  }
-  return `${BASE_URL}/uploads/covers/${coverPath}`
-}
-
 export const formatTimeAgo = (dateString: string): string => {
   const now = new Date()
   const postDate = new Date(dateString)

@@ -80,11 +80,20 @@ export const useAuth = () => {
     mutationFn: (avatar: string) => updateAvatarApi(avatar),
     onSuccess: (data) => {
       setUser(data.user)
-      queryClient.invalidateQueries({ queryKey: ['session'] })
-      queryClient.invalidateQueries({ queryKey: ['profile'] })
-      queryClient.invalidateQueries({ queryKey: ['posts'] })
-      queryClient.invalidateQueries({ queryKey: ['user-posts'] })
-      queryClient.invalidateQueries({ queryKey: ['comments'] })
+      
+      queryClient.setQueryData(['profile'], (oldData: any) => {
+        if (oldData?.user) {
+          return { ...oldData, user: { ...oldData.user, avatar: data.user.avatar } }
+        }
+        return oldData
+      })
+      
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['session'] })
+        queryClient.invalidateQueries({ queryKey: ['posts'] })
+        queryClient.invalidateQueries({ queryKey: ['user-posts'] })
+        queryClient.invalidateQueries({ queryKey: ['comments'] })
+      }, 0)
     },
     onError: (error: any) => {
       throw new Error(error.message || 'Avatar update failed')
@@ -95,11 +104,20 @@ export const useAuth = () => {
     mutationFn: (cover: string) => updateCoverApi(cover),
     onSuccess: (data) => {
       setUser(data.user)
-      queryClient.invalidateQueries({ queryKey: ['session'] })
-      queryClient.invalidateQueries({ queryKey: ['profile'] })
-      queryClient.invalidateQueries({ queryKey: ['posts'] })
-      queryClient.invalidateQueries({ queryKey: ['user-posts'] })
-      queryClient.invalidateQueries({ queryKey: ['comments'] })
+      
+      queryClient.setQueryData(['profile'], (oldData: any) => {
+        if (oldData?.user) {
+          return { ...oldData, user: { ...oldData.user, cover: data.user.cover } }
+        }
+        return oldData
+      })
+      
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['session'] })
+        queryClient.invalidateQueries({ queryKey: ['posts'] })
+        queryClient.invalidateQueries({ queryKey: ['user-posts'] })
+        queryClient.invalidateQueries({ queryKey: ['comments'] })
+      }, 0)
     },
     onError: (error: any) => {
       throw new Error(error.message || 'Cover update failed')

@@ -2,8 +2,9 @@ import { useState, useRef } from 'react'
 import { Avatar } from '@/components/ui/avatar'
 import { Camera, Loader2 } from 'lucide-react'
 import { uploadAvatar } from '@/api/upload'
-import { useToastContext } from '@/contexts/ToastContext'
-import { useUpdateAvatar } from '@/hooks/useAuthStore'
+import { toast } from 'sonner'
+import { useAuthStore } from '@/stores/authStore'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface AvatarEditorProps {
   src?: string
@@ -15,11 +16,11 @@ interface AvatarEditorProps {
 export function AvatarEditor({ src, name, size = 'xl', className }: AvatarEditorProps) {
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const { success, error } = useToastContext()
-  const { updateAvatar, isLoading: isUpdatingAvatar } = useUpdateAvatar()
+  const { setUser } = useAuthStore()
+  const queryClient = useQueryClient()
 
   const handleAvatarClick = () => {
-    if (!isUploading && !isUpdatingAvatar) {
+    if (!isUploading) {
       fileInputRef.current?.click()
     }
   }
@@ -29,25 +30,31 @@ export function AvatarEditor({ src, name, size = 'xl', className }: AvatarEditor
     if (!file) return
 
     if (!file.type.startsWith('image/')) {
-      error("Please select only image files.")
+      toast.error("Please select only image files.")
       return
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      error("The file must be at most 5MB.")
+      toast.error("The file must be at most 5MB.")
       return
     }
 
     setIsUploading(true)
 
     try {
-      const uploadResult = await uploadAvatar(file)
+      const result = await uploadAvatar(file)
       
-      await updateAvatar(uploadResult.url)
-      success("Avatar updated successfully!")
-    } catch (error: any) {
-      console.error('Error uploading avatar:', error)
-      error(error.message || "An error occurred while uploading the avatar.")
+      if (result.user) {
+        setUser(result.user)
+      }
+      
+      await queryClient.invalidateQueries({ queryKey: ['profile'] })
+      await queryClient.invalidateQueries({ queryKey: ['session'] })
+      
+      toast.success("Avatar updated successfully!")
+    } catch (err: any) {
+      console.error('Error uploading avatar:', err)
+      toast.error(err.message || "An error occurred while uploading the avatar.")
     } finally {
       setIsUploading(false)
       if (fileInputRef.current) {
@@ -69,13 +76,13 @@ export function AvatarEditor({ src, name, size = 'xl', className }: AvatarEditor
           className={className}
         />
         
-        {(isUploading || isUpdatingAvatar) && (
+        {isUploading && (
           <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-white" />
           </div>
         )}
 
-        {!isUploading && !isUpdatingAvatar && (
+        {!isUploading && (
           <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
             <Camera className="h-6 w-6 text-white" />
           </div>

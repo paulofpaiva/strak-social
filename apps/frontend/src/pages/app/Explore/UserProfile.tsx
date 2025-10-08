@@ -19,14 +19,13 @@ import { UserProfileSkeleton } from './components/UserProfileSkeleton'
 import { useAuth, useSearchNavigation } from '@/hooks'
 import { toggleFollowApi } from '@/api/follow'
 import { useQueryClient } from '@tanstack/react-query'
-import { useToastContext } from '@/contexts/ToastContext'
+import { toast } from 'sonner'
 import { useState, useEffect } from 'react'
 
 export function UserProfile() {
   const { username } = useParams<{ username: string }>()
   const { user: currentUser } = useAuth()
   const queryClient = useQueryClient()
-  const { error: showError, success: showSuccess } = useToastContext()
   const [isFollowing, setIsFollowing] = useState(false)
   const [isFollowLoading, setIsFollowLoading] = useState(false)
   const [imageLoading, setImageLoading] = useState(false)
@@ -71,10 +70,10 @@ export function UserProfile() {
         queryClient.invalidateQueries({ queryKey: ['user-profile', username] })
       ])
       
-      showSuccess(isFollowing ? 'Unfollowed successfully' : 'Following successfully')
+      toast.success(isFollowing ? 'Unfollowed successfully' : 'Following successfully')
     } catch (error) {
       console.error('Failed to toggle follow:', error)
-      showError(error instanceof Error ? error.message : 'Failed to update follow status. Please try again.')
+      toast.error(error instanceof Error ? error.message : 'Failed to update follow status. Please try again.')
     } finally {
       setIsFollowLoading(false)
     }
@@ -100,11 +99,11 @@ export function UserProfile() {
   const isOwnProfile = currentUser?.id === user.id
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto overflow-x-hidden">
       <Breadcrumb to={getReturnUrl()} label={`${user.username}`} />
       
-      <div className="relative mt-8">
-        <div className="h-64 w-full bg-gray-800 rounded-lg overflow-hidden relative">
+      <div className="relative mt-8 -mx-4 sm:mx-0">
+        <div className="h-32 sm:h-48 md:h-64 w-full bg-gray-800 rounded-lg overflow-hidden relative">
           {user.cover ? (
             <>
               {imageLoading && (
@@ -126,17 +125,17 @@ export function UserProfile() {
           )}
         </div>
         
-        <div className="absolute -bottom-16 left-6">
+        <div className="absolute -bottom-12 sm:-bottom-16 left-4 sm:left-6">
           <Avatar 
             src={user.avatar ?? undefined} 
             name={user.name} 
             size="2xl"
-            className="w-40 h-40 border-4 border-background"
+            className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 border-4 border-background"
           />
         </div>
       </div>
 
-      <div className="mt-20 px-4">
+      <div className="mt-14 sm:mt-20 px-4">
         <div className="flex items-start justify-between mb-4">
           <div className="space-y-1">
             <div className="flex items-center space-x-2">
@@ -144,10 +143,10 @@ export function UserProfile() {
             </div>
             <p className="text-muted-foreground">@{user.username}</p>
             {user.bio && (
-              <p className="text-foreground text-sm pt-4">{user.bio}</p>
+              <p className="text-foreground text-sm pt-2">{user.bio}</p>
             )}
             {(user.location || user.website || user.createdAt) && (
-              <div className="flex flex-wrap items-center gap-4 gap-y-2 pt-4 text-sm">
+              <div className="flex flex-wrap items-center gap-4 gap-y-2 pt-2 text-sm">
                 {user.location && (
                   <div className="text-muted-foreground flex items-center gap-1 w-full sm:w-auto">
                     <MapPin className="h-4 w-4" />

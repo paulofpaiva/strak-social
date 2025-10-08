@@ -10,11 +10,11 @@ import followRoutes from './routes/follow/index'
 import usersRoutes from './routes/users/index'
 import searchRoutes from './routes/search/index'
 import uploadRoutes from './routes/upload/index'
-import serveRouter from './routes/upload/serve'
 import { maskConnectionString } from './utils/database'
 import { getApiVersion } from './utils/version'
 import { errorHandler, notFound } from './middleware/errorHandler'
 import { runAutoMigrations } from './db/autoMigrate'
+import { initializeFirebase } from './services/firebase'
 
 dotenv.config()
 
@@ -46,8 +46,6 @@ app.use(express.json())
 
 const PORT = Number(process.env.PORT) || 3000
 
-app.use('/', serveRouter)
-
 app.use('/api/health', healthRouter)
 app.use('/api/auth', authRoutes)
 app.use('/api/posts', postsRoutes)
@@ -63,9 +61,11 @@ app.use(errorHandler)
 const startServer = async () => {
   try {
     await runAutoMigrations()
+    
+    initializeFirebase()
 
     app.listen(PORT, () => {
-      console.log('\nStrak Social API')
+      console.log('Strak Social API')
       console.log(`URL:         http://localhost:${PORT}`)
       console.log(`Version:     ${getApiVersion()}`)
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`)

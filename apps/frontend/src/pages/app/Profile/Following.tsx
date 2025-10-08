@@ -9,7 +9,7 @@ import { FloatingInput } from '@/components/ui/floating-input'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
 import { Spinner } from '@/components/ui/spinner'
-import { useToastContext } from '@/contexts/ToastContext'
+import { toast } from 'sonner'
 
 export function Following() {
   const { user } = useAuth()
@@ -21,7 +21,6 @@ export function Following() {
 
   const userId = user?.id || ''
   const queryClient = useQueryClient()
-  const { error: showError } = useToastContext()
 
   const { data, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ['following', userId, page, limit, search],
@@ -73,7 +72,7 @@ export function Following() {
       ])
     } catch (error) {
       console.error('Failed to toggle follow:', error)
-      showError(error instanceof Error ? error.message : 'Failed to update follow status. Please try again.')
+      toast.error(error instanceof Error ? error.message : 'Failed to update follow status. Please try again.')
     } finally {
       setLoadingUsers(prev => {
         const newSet = new Set(prev)

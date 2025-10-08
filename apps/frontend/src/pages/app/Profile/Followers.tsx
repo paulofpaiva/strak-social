@@ -9,7 +9,7 @@ import { FloatingInput } from '@/components/ui/floating-input'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
 import { Spinner } from '@/components/ui/spinner'
-import { useToastContext } from '@/contexts/ToastContext'
+import { toast } from 'sonner'
 
 export function Followers() {
   const { user } = useAuth()
@@ -21,7 +21,6 @@ export function Followers() {
 
   const userId = user?.id || ''
   const queryClient = useQueryClient()
-  const { error: showError } = useToastContext()
 
   const { data, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ['followers', userId, page, limit, search],
@@ -73,7 +72,7 @@ export function Followers() {
       ])
     } catch (error) {
       console.error('Failed to remove follower:', error)
-      showError(error instanceof Error ? error.message : 'Failed to remove follower. Please try again.')
+      toast.error(error instanceof Error ? error.message : 'Failed to remove follower. Please try again.')
     } finally {
       setLoadingUsers(prev => {
         const newSet = new Set(prev)

@@ -1,6 +1,18 @@
 import { api } from './auth'
 
-export interface UploadResponse {
+export interface UploadAvatarResponse {
+  success: boolean
+  message: string
+  user: any
+}
+
+export interface UploadCoverResponse {
+  success: boolean
+  message: string
+  user: any
+}
+
+export interface UploadMediaResponse {
   success: boolean
   message: string
   data: {
@@ -16,18 +28,18 @@ export interface UploadError {
   details?: any
 }
 
-export const uploadAvatar = async (file: File): Promise<UploadResponse['data']> => {
+export const uploadAvatar = async (file: File): Promise<UploadAvatarResponse> => {
   try {
     const formData = new FormData()
     formData.append('avatar', file)
 
-    const response = await api.post<UploadResponse>('/upload/avatar', formData, {
+    const response = await api.post<UploadAvatarResponse>('/upload/avatar', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     })
     
-    return response.data.data
+    return response.data
   } catch (error: any) {
     if (error.response?.data) {
       const apiError = error.response.data
@@ -45,18 +57,18 @@ export const uploadAvatar = async (file: File): Promise<UploadResponse['data']> 
   }
 }
 
-export const uploadCover = async (file: File): Promise<UploadResponse['data']> => {
+export const uploadCover = async (file: File): Promise<UploadCoverResponse> => {
   try {
     const formData = new FormData()
     formData.append('cover', file)
 
-    const response = await api.post<UploadResponse>('/upload/cover', formData, {
+    const response = await api.post<UploadCoverResponse>('/upload/cover', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     })
     
-    return response.data.data
+    return response.data
   } catch (error: any) {
     if (error.response?.data) {
       const apiError = error.response.data
@@ -74,12 +86,12 @@ export const uploadCover = async (file: File): Promise<UploadResponse['data']> =
   }
 }
 
-export const uploadMedia = async (file: File): Promise<UploadResponse['data']> => {
+export const uploadMedia = async (file: File): Promise<UploadMediaResponse['data']> => {
   try {
     const formData = new FormData()
     formData.append('media', file)
 
-    const response = await api.post<UploadResponse>('/upload/media', formData, {
+    const response = await api.post<UploadMediaResponse>('/upload/media', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

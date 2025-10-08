@@ -6,7 +6,7 @@ import { ResponsiveModal } from '@/components/ui/responsive-modal'
 import { Button } from '@/components/ui/button'
 import { FloatingInput } from '@/components/ui/floating-input'
 import { FloatingTextarea } from '@/components/ui/floating-textarea'
-import { useToastContext } from '@/contexts/ToastContext'
+import { toast } from 'sonner'
 import { updateProfileApi } from '@/api/profile'
 import { editProfileSchema, type EditProfileFormData, editProfileFieldMax } from '@/schemas/profile'
 
@@ -17,7 +17,6 @@ interface EditProfileProps {
 }
 
 export function EditProfile({ open, onOpenChange, defaultValues }: EditProfileProps) {
-  const { success, error } = useToastContext()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const queryClient = useQueryClient()
 
@@ -68,11 +67,11 @@ export function EditProfile({ open, onOpenChange, defaultValues }: EditProfilePr
         location: data.location === '' ? null : data.location ?? null,
         website: data.website === '' ? null : data.website ?? null,
       })
-      success('Profile updated successfully!')
+      toast.success('Profile updated successfully!')
       await queryClient.invalidateQueries({ queryKey: ['profile'] })
       onClose()
     } catch (e: any) {
-      error(e?.message || 'Failed to update profile.')
+      toast.error(e?.message || 'Failed to update profile.')
     } finally {
       setIsSubmitting(false)
     }

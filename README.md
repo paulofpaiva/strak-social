@@ -35,7 +35,20 @@ This will start the frontend, backend, and PostgreSQL database.
 docker-compose exec backend pnpm db:migrate
 ```
 
-4. **Access the application**
+4. **Configure Firebase Storage** (required for uploads)
+
+Configure Firebase Storage credentials using environment variables:
+
+- Copy the example environment file:
+```bash
+cp apps/backend/.env.example apps/backend/.env
+```
+
+- Get your Firebase service account key from Firebase Console
+- Extract the values from your Firebase service account JSON file
+- Update `apps/backend/.env` with your Firebase credentials (see `apps/backend/.env.example` for all required variables)
+
+5. **Access the application**
 
 Open your browser and go to: **http://localhost:5173**
 

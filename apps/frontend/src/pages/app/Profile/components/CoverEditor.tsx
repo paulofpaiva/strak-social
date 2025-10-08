@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef } from 'react'
 import { Camera, Loader2 } from 'lucide-react'
 import { uploadCover } from '@/api/upload'
-import { useToastContext } from '@/contexts/ToastContext'
-import { useUpdateCover } from '@/hooks/useAuthStore'
+import { toast } from 'sonner'
+import { useAuthStore } from '@/stores/authStore'
 import { Button } from '@/components/ui/button'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface CoverEditorProps {
   src?: string
@@ -14,8 +15,8 @@ export function CoverEditor({ src, className }: CoverEditorProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [isFakeLoading, setIsFakeLoading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const { success, error } = useToastContext()
-  const { updateCover, isLoading: isUpdatingCover } = useUpdateCover()
+  const { setUser } = useAuthStore()
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     if (!src) {
@@ -28,7 +29,7 @@ export function CoverEditor({ src, className }: CoverEditorProps) {
   }, [src])
 
   const handleCoverClick = () => {
-    if (!isUploading && !isUpdatingCover) {
+    if (!isUploading) {
       fileInputRef.current?.click()
     }
   }
@@ -38,25 +39,31 @@ export function CoverEditor({ src, className }: CoverEditorProps) {
     if (!file) return
 
     if (!file.type.startsWith('image/')) {
-      error("Please select only image files.")
+      toast.error("Please select only image files.")
       return
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      error("The file must be at most 5MB.")
+      toast.error("The file must be at most 5MB.")
       return
     }
 
     setIsUploading(true)
 
     try {
-      const uploadResult = await uploadCover(file)
+      const result = await uploadCover(file)
       
-      await updateCover(uploadResult.url)
-      success("Cover updated successfully!")
-    } catch (error: any) {
-      console.error('Error uploading cover:', error)
-      error(error.message || "An error occurred while uploading the cover.")
+      if (result.user) {
+        setUser(result.user)
+      }
+      
+      await queryClient.invalidateQueries({ queryKey: ['profile'] })
+      await queryClient.invalidateQueries({ queryKey: ['session'] })
+      
+      toast.success("Cover updated successfully!")
+    } catch (err: any) {
+      console.error('Error uploading cover:', err)
+      toast.error(err.message || "An error occurred while uploading the cover.")
     } finally {
       setIsUploading(false)
       if (fileInputRef.current) {
@@ -88,13 +95,13 @@ export function CoverEditor({ src, className }: CoverEditorProps) {
           </div>
         )}
         
-        {(isUploading || isUpdatingCover) && (
+        {isUploading && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-white" />
           </div>
         )}
 
-        {!isUploading && !isUpdatingCover && (
+        {!isUploading && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
             <Camera className="h-6 w-6 text-white" />
           </div>

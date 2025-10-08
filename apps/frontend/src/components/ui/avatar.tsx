@@ -1,19 +1,5 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { cn } from '@/lib/utils'
-
-const AVATAR_BASE_URL = import.meta.env.VITE_AVATAR_URL || import.meta.env.VITE_API_URL || 'http://localhost:3001'
-
-const getAvatarUrl = (src?: string): string | undefined => {
-  if (!src) return undefined
-  
-  if (src.startsWith('http') || src.startsWith('blob:')) return src
-  
-  if (src.startsWith('/')) {
-    return `${AVATAR_BASE_URL}${src}`
-  }
-  
-  return `${AVATAR_BASE_URL}/uploads/avatars/${src}`
-}
 
 interface AvatarProps {
   src?: string
@@ -36,6 +22,8 @@ export const Avatar: React.FC<AvatarProps> = ({
   size = 'md', 
   className 
 }) => {
+  const [imageError, setImageError] = useState(false)
+  
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -47,28 +35,19 @@ export const Avatar: React.FC<AvatarProps> = ({
 
   const sizeClass = sizeClasses[size]
 
-  const avatarUrl = getAvatarUrl(src)
-
   return (
     <div className={cn(
       'rounded-full bg-gray-600 flex items-center justify-center text-white font-medium overflow-hidden',
       sizeClass,
       className
     )}>
-      {avatarUrl ? (
+      {src && !imageError ? (
         <img
           key={src}
-          src={avatarUrl}
+          src={src}
           alt={name}
           className="w-full h-full object-cover"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement
-            target.style.display = 'none'
-            const parent = target.parentElement
-            if (parent) {
-              parent.innerHTML = `<span class="text-white font-medium">${getInitials(name)}</span>`
-            }
-          }}
+          onError={() => setImageError(true)}
         />
       ) : (
         <span className="text-white font-medium">

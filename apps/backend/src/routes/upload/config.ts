@@ -1,58 +1,10 @@
 import multer from 'multer'
-import path from 'path'
-import fs from 'fs'
-import { randomUUID } from 'crypto'
 
-export const avatarStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = path.join(process.cwd(), 'uploads', 'avatars')
-    
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true })
-    }
-    
-    cb(null, uploadDir)
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = `${randomUUID()}${path.extname(file.originalname)}`
-    cb(null, uniqueName)
-  }
-})
-
-export const coverStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = path.join(process.cwd(), 'uploads', 'covers')
-    
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true })
-    }
-    
-    cb(null, uploadDir)
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = `${randomUUID()}${path.extname(file.originalname)}`
-    cb(null, uniqueName)
-  }
-})
-
-export const mediaStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = path.join(process.cwd(), 'uploads', 'media')
-    
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true })
-    }
-    
-    cb(null, uploadDir)
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = `${randomUUID()}${path.extname(file.originalname)}`
-    cb(null, uniqueName)
-  }
-})
+// Use memory storage to process files in memory before sending to Firebase
+const storage = multer.memoryStorage()
 
 export const avatarUpload = multer({
-  storage: avatarStorage,
+  storage,
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB limit
   },
@@ -66,7 +18,7 @@ export const avatarUpload = multer({
 })
 
 export const coverUpload = multer({
-  storage: coverStorage,
+  storage,
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB limit
   },
@@ -80,7 +32,7 @@ export const coverUpload = multer({
 })
 
 export const mediaUpload = multer({
-  storage: mediaStorage,
+  storage,
   limits: {
     fileSize: 20 * 1024 * 1024, // 20MB limit
   },

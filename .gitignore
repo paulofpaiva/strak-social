@@ -11,9 +11,7 @@ node_modules/
 
 # Env files
 .env
-.env.*
 apps/*/.env
-apps/*/.env.*
 
 # Builds
 apps/**/dist

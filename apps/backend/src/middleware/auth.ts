@@ -66,16 +66,6 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
       return res.status(401).json({ error: 'User not found' })
     }
 
-    if (userResult[0].avatar && !userResult[0].avatar.startsWith('http')) {
-      const baseUrl = process.env.VITE_AVATAR_URL || 'http://localhost:3001';
-      userResult[0].avatar = `${baseUrl}${userResult[0].avatar}`;
-    }
-
-    if (userResult[0].cover && !userResult[0].cover.startsWith('http')) {
-      const baseUrl = process.env.VITE_AVATAR_URL || 'http://localhost:3001';
-      userResult[0].cover = `${baseUrl}${userResult[0].cover}`;
-    }
-
     req.user = userResult[0]
     next()
   } catch (error) {
@@ -121,15 +111,6 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
         .limit(1)
 
       if (userResult.length > 0) {
-        if (userResult[0].avatar && !userResult[0].avatar.startsWith('http')) {
-          const baseUrl = process.env.VITE_AVATAR_URL || 'http://localhost:3001';
-          userResult[0].avatar = `${baseUrl}${userResult[0].avatar}`;
-        }
-
-        if (userResult[0].cover && !userResult[0].cover.startsWith('http')) {
-          const baseUrl = process.env.VITE_AVATAR_URL || 'http://localhost:3001';
-          userResult[0].cover = `${baseUrl}${userResult[0].cover}`;
-        }
         req.user = userResult[0]
       }
     }

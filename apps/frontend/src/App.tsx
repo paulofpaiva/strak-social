@@ -2,8 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-
 import { QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { ColorProvider } from '@/contexts/ColorContext'
-import { ToastProvider } from '@/contexts/ToastContext'
-import { ToastContainer } from '@/components/ToastContainer'
+import { Toaster } from '@/components/ui/sonner'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { useNProgress } from '@/hooks/useNProgress'
 import { AuthLayout } from '@/layouts/AuthLayout'
@@ -24,12 +23,10 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <ColorProvider>
-          <ToastProvider>
-              <Router>
-                <AppRoutes />
-                <ToastContainer />
-              </Router>
-          </ToastProvider>
+          <Router>
+            <AppRoutes />
+            <Toaster />
+          </Router>
         </ColorProvider>
       </ThemeProvider>
     </QueryClientProvider>
