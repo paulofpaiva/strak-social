@@ -8,17 +8,14 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { 
   Calendar, 
-  Camera,
   MapPin,
   Link as LinkIcon,
   Edit,
   CheckCircle,
   FileText,
-  MessageSquare,
-  Image as ImageIcon,
-  Heart
+  Image as ImageIcon
 } from 'lucide-react'
-import { ProfileSkeleton } from './components/ProfileSkeleton'
+import { ProfileSkeleton } from '../../../components/skeleton/ProfileSkeleton'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { EditProfile } from '@/pages/app/Profile/components/EditProfile'
@@ -63,7 +60,7 @@ export function Profile() {
           className="h-32 sm:h-48 md:h-64 w-full"
         />
         
-        <div className="absolute -bottom-12 sm:-bottom-16 left-4 sm:left-6">
+        <div className="absolute -bottom-12 sm:-bottom-16 left-4">
           <AvatarEditor 
             src={user.avatar} 
             name={user.name} 

@@ -6,12 +6,13 @@ import { Button } from '@/components/ui/button'
 
 interface SortableMediaItemProps {
   id: string
-  file: File
+  file: File | null
   preview: string
   onRemove: () => void
+  mediaType?: 'image' | 'video'
 }
 
-export function SortableMediaItem({ id, file, preview, onRemove }: SortableMediaItemProps) {
+export function SortableMediaItem({ id, file, preview, onRemove, mediaType }: SortableMediaItemProps) {
   const {
     attributes,
     listeners,
@@ -26,7 +27,7 @@ export function SortableMediaItem({ id, file, preview, onRemove }: SortableMedia
     transition,
   }
 
-  const isVideo = file.type.startsWith('video/')
+  const isVideo = file?.type.startsWith('video/') || mediaType === 'video'
 
   return (
     <div

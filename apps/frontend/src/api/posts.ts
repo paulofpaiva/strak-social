@@ -65,3 +65,24 @@ export const deletePostApi = async (postId: string) => {
   return response.data
 }
 
+export const updatePostApi = async (
+  postId: string, 
+  content: string, 
+  files: File[], 
+  mediaOrder: Array<{ id: string; isExisting: boolean }>
+) => {
+  const formData = new FormData()
+  formData.append('content', content)
+  formData.append('mediaOrder', JSON.stringify(mediaOrder))
+  
+  files.forEach(file => {
+    formData.append('media', file)
+  })
+  
+  const response = await api.put(`/posts/${postId}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })
+  
+  return response.data
+}
+

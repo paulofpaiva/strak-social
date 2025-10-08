@@ -3,7 +3,7 @@ import { Avatar } from '@/components/ui/avatar'
 import { PostMedia } from './PostMedia'
 import { formatPostDate } from '@/utils/date'
 import type { Post } from '@/api/posts'
-import { Heart, MessageCircle, MoreVertical, Trash2 } from 'lucide-react'
+import { Heart, MessageCircle, MoreVertical, Trash2, Edit } from 'lucide-react'
 import { ResponsiveDropdown } from '@/components/ui/responsive-dropdown'
 import { ResponsiveModal } from '@/components/ui/responsive-modal'
 import { Button } from '@/components/ui/button'
@@ -12,6 +12,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { deletePostApi } from '@/api/posts'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { EditPost } from './EditPost'
 
 interface PostCardProps {
   post: Post
@@ -20,6 +21,7 @@ interface PostCardProps {
 
 export function PostCard({ post, className }: PostCardProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const { user } = useAuthStore()
   const queryClient = useQueryClient()
   const isOwner = user?.id === post.userId
@@ -81,6 +83,12 @@ export function PostCard({ post, className }: PostCardProps) {
                 }
                 items={[
                   {
+                    label: 'Edit',
+                    icon: <Edit className="h-4 w-4" />,
+                    onClick: () => setIsEditModalOpen(true),
+                    variant: 'default'
+                  },
+                  {
                     label: 'Delete',
                     icon: <Trash2 className="h-4 w-4" />,
                     onClick: () => setIsDeleteModalOpen(true),
@@ -124,6 +132,12 @@ export function PostCard({ post, className }: PostCardProps) {
           <span>{post.commentsCount}</span>
         </div>
       </div>
+
+      <EditPost
+        open={isEditModalOpen}
+        onOpenChange={setIsEditModalOpen}
+        post={post}
+      />
 
       <ResponsiveModal
         isOpen={isDeleteModalOpen}

@@ -4,18 +4,14 @@ import { getUserByUsernameApi } from '@/api/users'
 import { formatDate } from '@/utils/date'
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { 
   Calendar, 
-  ArrowLeft,
-  Users,
-  UserPlus,
   MapPin,
   Link as LinkIcon
 } from 'lucide-react'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
-import { UserProfileSkeleton } from './components/UserProfileSkeleton'
+import { UserProfileSkeleton } from '../../../components/skeleton/UserProfileSkeleton'
 import { useAuth, useSearchNavigation } from '@/hooks'
 import { toggleFollowApi } from '@/api/follow'
 import { useQueryClient } from '@tanstack/react-query'

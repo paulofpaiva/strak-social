@@ -5,7 +5,7 @@ import { postMedia } from '../../schemas/postMedia'
 import { users } from '../../schemas/auth'
 import { likes } from '../../schemas/likes'
 import { authenticateToken } from '../../middleware/auth'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, inArray, asc } from 'drizzle-orm'
 import { asyncHandler } from '../../middleware/asyncHandler'
 import { ApiResponse } from '../../utils/response'
 import { AppError } from '../../middleware/errorHandler'
@@ -20,7 +20,7 @@ router.put('/:id',
   asyncHandler(async (req: Request, res: Response) => {
     const postId = req.params.id
     const userId = req.user!.id
-    const { content } = req.body
+    const { content, mediaOrder } = req.body
     
     if (!content || content.length < 1 || content.length > 280) {
       throw new AppError('Content must be between 1 and 280 characters', 400)
@@ -40,10 +40,42 @@ router.put('/:id',
       throw new AppError('You can only edit your own posts', 403)
     }
 
-    const oldMedia = await db
-      .select({ mediaUrl: postMedia.mediaUrl })
+    const parsedMediaOrder: Array<{ id: string; isExisting: boolean }> = mediaOrder ? JSON.parse(mediaOrder) : []
+    
+    const existingMediaInOrder = parsedMediaOrder.filter(m => m.isExisting)
+    const mediaIdsToKeep = existingMediaInOrder.map(m => m.id)
+
+    const currentMedia = await db
+      .select()
       .from(postMedia)
       .where(eq(postMedia.postId, postId))
+
+    const mediaToDelete = currentMedia.filter(m => !mediaIdsToKeep.includes(m.id))
+
+    if (mediaToDelete.length > 0) {
+      await db
+        .delete(postMedia)
+        .where(inArray(postMedia.id, mediaToDelete.map(m => m.id)))
+      
+      const urlsToDelete = mediaToDelete.map(m => m.mediaUrl)
+      await deletePostMediaFiles(urlsToDelete)
+    }
+
+    const existingMediaOrderMap = new Map<string, number>()
+    parsedMediaOrder.forEach((m, index) => {
+      if (m.isExisting) {
+        existingMediaOrderMap.set(m.id, index)
+      }
+    })
+
+    if (existingMediaOrderMap.size > 0) {
+      for (const [mediaId, order] of existingMediaOrderMap.entries()) {
+        await db
+          .update(postMedia)
+          .set({ order })
+          .where(eq(postMedia.id, mediaId))
+      }
+    }
 
     const updatedPost = await db
       .update(posts)
@@ -60,10 +92,6 @@ router.put('/:id',
         updatedAt: posts.updatedAt,
       })
 
-    await db
-      .delete(postMedia)
-      .where(eq(postMedia.postId, postId))
-
     let uploadedMedia: any[] = []
     if (req.files && Array.isArray(req.files) && req.files.length > 0) {
       try {
@@ -73,16 +101,24 @@ router.put('/:id',
       }
     }
 
-    let mediaData: any[] = []
+    let newMediaData: any[] = []
     if (uploadedMedia.length > 0) {
-      const mediaToInsert = uploadedMedia.map(media => ({
+      // Map new media to their positions in mediaOrder
+      const newMediaPositions: number[] = []
+      parsedMediaOrder.forEach((m, index) => {
+        if (!m.isExisting) {
+          newMediaPositions.push(index)
+        }
+      })
+
+      const mediaToInsert = uploadedMedia.map((media, index) => ({
         postId: postId,
         mediaUrl: media.url,
         mediaType: media.type,
-        order: media.order,
+        order: newMediaPositions[index] || 0,
       }))
 
-      mediaData = await db
+      newMediaData = await db
         .insert(postMedia)
         .values(mediaToInsert)
         .returning({
@@ -94,10 +130,17 @@ router.put('/:id',
         })
     }
 
-    if (oldMedia.length > 0) {
-      const oldMediaUrls = oldMedia.map(m => m.mediaUrl)
-      await deletePostMediaFiles(oldMediaUrls)
-    }
+    const allMedia = await db
+      .select({
+        id: postMedia.id,
+        postId: postMedia.postId,
+        mediaUrl: postMedia.mediaUrl,
+        mediaType: postMedia.mediaType,
+        order: postMedia.order,
+      })
+      .from(postMedia)
+      .where(eq(postMedia.postId, postId))
+      .orderBy(asc(postMedia.order))
 
     const userData = await db
       .select({
@@ -124,7 +167,7 @@ router.put('/:id',
     const postWithUser = {
       ...updatedPost[0],
       user: userData[0],
-      media: mediaData,
+      media: allMedia,
       likesCount: likesCount.length,
       userLiked: userLiked.length > 0,
     }

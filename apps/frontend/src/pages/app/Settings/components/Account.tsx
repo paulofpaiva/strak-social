@@ -12,7 +12,7 @@ import {
   ItemActions
 } from '@/components/ui/item'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
-import { SkeletonItemGroup } from '@/components/SkeletonItemGroup'
+import { SkeletonItemGroup } from '@/components/skeleton/SkeletonItemGroup'
 import { Button } from '@/components/ui/button'
 import { ChevronRight, Lock } from 'lucide-react'
 import { ChangePassword } from './ChangePassword'

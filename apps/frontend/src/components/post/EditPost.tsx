@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useEffect, useCallback } from 'react'
 import {
   DndContext,
   closestCenter,
@@ -16,17 +16,19 @@ import { ResponsiveModal } from '@/components/ui/responsive-modal'
 import { FloatingTextarea } from '@/components/ui/floating-textarea'
 import { Button } from '@/components/ui/button'
 import { createPostFieldMax, type CreatePostFormData } from '@/schemas/post'
+import type { Post } from '@/api/posts'
 import { cn } from '@/lib/utils'
-import { useMediaManager, usePostForm, usePostMutation } from '@/hooks/post'
+import { useMediaManager, usePostForm, usePostMutation, type MediaFile } from '@/hooks/post'
 import { SortableMediaItem } from './SortableMediaItem'
 
-interface CreatePostProps {
+interface EditPostProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  post: Post
 }
 
-export function CreatePost({ open, onOpenChange }: CreatePostProps) {
-  const form = usePostForm()
+export function EditPost({ open, onOpenChange, post }: EditPostProps) {
+  const form = usePostForm({ defaultContent: post.content })
   const media = useMediaManager({ maxFiles: createPostFieldMax.mediaFiles })
   
   const handleClose = useCallback(() => {
@@ -36,7 +38,8 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
   }, [media, form, onOpenChange])
   
   const mutation = usePostMutation({
-    type: 'create',
+    type: 'update',
+    postId: post.id,
     onSuccess: handleClose,
   })
 
@@ -53,6 +56,25 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
       },
     })
   )
+
+  useEffect(() => {
+    if (open) {
+      form.reset({ content: post.content })
+      
+      if (post.media && post.media.length > 0) {
+        const existingMedia: MediaFile[] = post.media.map(m => ({
+          id: m.id,
+          file: null,
+          preview: m.mediaUrl,
+          isExisting: true,
+          mediaType: m.mediaType
+        }))
+        media.reset(existingMedia)
+      } else {
+        media.reset([])
+      }
+    }
+  }, [open, post])
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
@@ -74,7 +96,7 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
       disabled={isSubmitDisabled}
       className="flex-1"
     >
-      Post
+      Update
     </Button>
   )
 
@@ -82,7 +104,7 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
     <ResponsiveModal
       isOpen={open}
       onClose={handleClose}
-      title="Create Post"
+      title="Edit Post"
       actionButton={actionButton}
     >
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -155,6 +177,7 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
                       file={mediaItem.file}
                       preview={mediaItem.preview}
                       onRemove={() => media.removeFile(mediaItem.id)}
+                      mediaType={mediaItem.mediaType}
                     />
                   ))}
                 </div>
