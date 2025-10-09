@@ -22,7 +22,7 @@ export function useAuthMutations() {
   })
 
   const signUpMutation = useMutation({
-    mutationFn: (data: { name: string; email: string; username: string; password: string; birthDate: string; avatar?: string }) =>
+    mutationFn: (data: { name: string; email: string; username: string; password: string; birthDate: string }) =>
       signUpApi(data),
     onSuccess: (data) => {
       setUser(data.user)
@@ -49,7 +49,7 @@ export function useAuthMutations() {
     await loginMutation.mutateAsync({ emailOrUsername, password })
   }
 
-  const signUp = async (data: { name: string; email: string; username: string; password: string; birthDate: string; avatar?: string }) => {
+  const signUp = async (data: { name: string; email: string; username: string; password: string; birthDate: string }) => {
     await signUpMutation.mutateAsync(data)
   }
 

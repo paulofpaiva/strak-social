@@ -30,9 +30,7 @@ export function FeedLayout({ children }: FeedLayoutProps) {
           {!isMobile && !isCompact ? (
             <div className="flex gap-4 max-w-[1400px] mx-auto py-4">
               <aside className="w-[300px] shrink-0">
-                <div className="sticky top-4 h-[calc(100vh-2rem)] overflow-y-auto scrollbar-hide">
-                  <FeedLeftColumn />
-                </div>
+                <FeedLeftColumn />
               </aside>
               
               <main className="flex-1 min-w-0 max-w-[600px]">
@@ -40,9 +38,7 @@ export function FeedLayout({ children }: FeedLayoutProps) {
               </main>
               
               <aside className="w-[350px] shrink-0">
-                <div className="sticky top-4 h-[calc(100vh-2rem)] overflow-y-auto scrollbar-hide">
-                  <FeedRightColumn />
-                </div>
+                <FeedRightColumn />
               </aside>
             </div>
           ) : (

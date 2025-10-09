@@ -85,3 +85,32 @@ export const searchUsersApi = async (
   }
 }
 
+export interface SuggestedUser {
+  id: string
+  name: string
+  username: string
+  avatar: string | null
+  bio: string | null
+  isVerified: boolean
+  isFollowing: boolean
+}
+
+export interface UserSuggestionsResponse {
+  success: boolean
+  message: string
+  data: {
+    users: SuggestedUser[]
+  }
+}
+
+export const getUserSuggestionsApi = async (limit: number = 8): Promise<SuggestedUser[]> => {
+  try {
+    const response = await api.get<UserSuggestionsResponse>(`/users/suggestions`, {
+      params: { limit }
+    })
+    return response.data.data.users
+  } catch (error: any) {
+    handleApiError(error, 'Failed to fetch user suggestions. Please try again.')
+  }
+}
+

@@ -57,22 +57,8 @@ router.get('/username/:username', authenticateToken, asyncHandler(async (req: Re
     .where(and(eq(followers.followerId, currentUserId), eq(followers.followingId, userData.id)))
     .limit(1)
 
-  const getImageUrl = (src?: string | null) => {
-    if (!src) return null
-    
-    if (src.startsWith('http') || src.startsWith('blob:')) return src
-    
-    if (src.startsWith('/uploads/')) {
-      return `${process.env.VITE_AVATAR_URL || 'http://localhost:3001'}${src}`
-    }
-    
-    return `${process.env.VITE_AVATAR_URL || 'http://localhost:3001'}/uploads/${src.includes('avatar') ? 'avatars' : 'covers'}/${src}`
-  }
-
   return ApiResponse.success(res, {
     ...userData,
-    avatar: getImageUrl(userData.avatar),
-    cover: getImageUrl(userData.cover),
     followersCount: followersCount[0]?.count || 0,
     followingCount: followingCount[0]?.count || 0,
     isFollowing: isFollowing.length > 0

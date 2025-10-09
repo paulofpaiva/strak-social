@@ -12,7 +12,8 @@ export function FeedRightColumn() {
     isError,
     fetchNextPage,
     hasNextPage,
-    isFetchingNextPage
+    isFetchingNextPage,
+    refetch
   } = useNewsArticles({
     pageSize: 10,
     country: 'us',
@@ -43,7 +44,9 @@ export function FeedRightColumn() {
       <div className="px-4 pt-4">
         <ErrorEmpty
           title="Failed to load news"
-          description="Unable to fetch latest news. Please try again later."
+          description="Unable to fetch latest news. Please try again."
+          onRetry={() => refetch()}
+          retryText="Try again"
         />
       </div>
     )

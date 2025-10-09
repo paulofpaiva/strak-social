@@ -31,6 +31,7 @@ export function useFollowToggle({ userId, initialIsFollowing = false, username }
         queryClient.invalidateQueries({ queryKey: ['profile'] }),
         queryClient.invalidateQueries({ queryKey: ['following'] }),
         queryClient.invalidateQueries({ queryKey: ['followers'] }),
+        queryClient.invalidateQueries({ queryKey: ['user-suggestions'] }),
         username && queryClient.invalidateQueries({ queryKey: ['user-profile', username] })
       ].filter(Boolean))
       

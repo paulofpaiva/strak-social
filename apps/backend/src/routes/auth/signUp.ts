@@ -60,16 +60,6 @@ router.post('/', signUpLimiter, asyncHandler(async (req: Request, res: Response)
       updatedAt: users.updatedAt,
     })
 
-  if (newUser[0].avatar && !newUser[0].avatar.startsWith('http')) {
-    const baseUrl = process.env.VITE_AVATAR_URL || 'http://localhost:3001'
-    newUser[0].avatar = `${baseUrl}${newUser[0].avatar}`
-  }
-
-  if (newUser[0].cover && !newUser[0].cover.startsWith('http')) {
-    const baseUrl = process.env.VITE_AVATAR_URL || 'http://localhost:3001'
-    newUser[0].cover = `${baseUrl}${newUser[0].cover}`
-  }
-
   const token = jwt.sign(
     { 
       userId: newUser[0].id, 
