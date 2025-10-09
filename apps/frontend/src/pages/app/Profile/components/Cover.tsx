@@ -6,6 +6,8 @@ import { useAuthStore } from '@/stores/authStore'
 import { Button } from '@/components/ui/button'
 import { useQueryClient } from '@tanstack/react-query'
 import { CoverCropModal } from '@/components/image-editor/CoverCropModal'
+import { CoverPreviewModal } from '@/components/image-editor/CoverPreviewModal'
+import { deleteCoverApi } from '@/api/profile'
 
 interface CoverEditorProps {
   src?: string
@@ -16,7 +18,9 @@ export function CoverEditor({ src, className }: CoverEditorProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [isFakeLoading, setIsFakeLoading] = useState(false)
   const [cropModalOpen, setCropModalOpen] = useState(false)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [selectedFile, setSelectedFile] = useState<File | string | null>(null)
+  const [previewModalOpen, setPreviewModalOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { setUser } = useAuthStore()
   const queryClient = useQueryClient()
@@ -32,8 +36,8 @@ export function CoverEditor({ src, className }: CoverEditorProps) {
   }, [src])
 
   const handleCoverClick = () => {
-    if (!isUploading) {
-      fileInputRef.current?.click()
+    if (!isUploading && !isDeleting) {
+      setPreviewModalOpen(true)
     }
   }
 
@@ -51,6 +55,7 @@ export function CoverEditor({ src, className }: CoverEditorProps) {
       return
     }
 
+    setPreviewModalOpen(false)
     setSelectedFile(file)
     setCropModalOpen(true)
     if (fileInputRef.current) {
@@ -64,7 +69,11 @@ export function CoverEditor({ src, className }: CoverEditorProps) {
     setIsUploading(true)
 
     try {
-      const processedFile = new File([blob], selectedFile.name, { 
+      const fileName = typeof selectedFile === 'string' 
+        ? 'cover.jpg' 
+        : selectedFile.name
+      
+      const processedFile = new File([blob], fileName, { 
         type: 'image/jpeg',
         lastModified: Date.now()
       })
@@ -77,6 +86,9 @@ export function CoverEditor({ src, className }: CoverEditorProps) {
       
       await queryClient.invalidateQueries({ queryKey: ['profile'] })
       await queryClient.invalidateQueries({ queryKey: ['session'] })
+      await queryClient.invalidateQueries({ queryKey: ['user-posts'] })
+      await queryClient.invalidateQueries({ queryKey: ['posts'] })
+      await queryClient.invalidateQueries({ queryKey: ['comments'] })
       
       toast.success("Cover updated successfully!")
     } catch (err: any) {
@@ -90,6 +102,45 @@ export function CoverEditor({ src, className }: CoverEditorProps) {
 
   const handleChangePhoto = () => {
     fileInputRef.current?.click()
+  }
+
+  const handleEdit = () => {
+    if (!src) return
+    
+    setSelectedFile(src)
+    setCropModalOpen(true)
+  }
+
+  const handleChangeFromPreview = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleDelete = async () => {
+    if (!src) return
+
+    setIsDeleting(true)
+
+    try {
+      const result = await deleteCoverApi()
+      
+      if (result.user) {
+        setUser(result.user)
+      }
+      
+      await queryClient.invalidateQueries({ queryKey: ['profile'] })
+      await queryClient.invalidateQueries({ queryKey: ['session'] })
+      await queryClient.invalidateQueries({ queryKey: ['user-posts'] })
+      await queryClient.invalidateQueries({ queryKey: ['posts'] })
+      await queryClient.invalidateQueries({ queryKey: ['comments'] })
+      
+      setPreviewModalOpen(false)
+      toast.success('Cover deleted successfully!')
+    } catch (err: any) {
+      console.error('Error deleting cover:', err)
+      toast.error(err.message || 'Failed to delete cover')
+    } finally {
+      setIsDeleting(false)
+    }
   }
 
   return (
@@ -115,13 +166,13 @@ export function CoverEditor({ src, className }: CoverEditorProps) {
           </div>
         )}
         
-        {isUploading && (
+        {(isUploading || isDeleting) && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-white" />
           </div>
         )}
 
-        {!isUploading && (
+        {!isUploading && !isDeleting && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
             <Camera className="h-6 w-6 text-white" />
           </div>
@@ -144,6 +195,17 @@ export function CoverEditor({ src, className }: CoverEditorProps) {
         accept="image/*"
         onChange={handleFileChange}
         className="hidden"
+      />
+
+      <CoverPreviewModal
+        open={previewModalOpen}
+        onOpenChange={setPreviewModalOpen}
+        coverUrl={src}
+        onEdit={handleEdit}
+        onChange={handleChangeFromPreview}
+        onDelete={handleDelete}
+        hasCover={!!src}
+        isDeleting={isDeleting}
       />
 
       <CoverCropModal

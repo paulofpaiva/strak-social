@@ -35,12 +35,30 @@ export const updateAvatarApi = async (avatar: string): Promise<ApiResponse> => {
   }
 }
 
+export const deleteAvatarApi = async (): Promise<ApiResponse> => {
+  try {
+    const response = await api.delete<ApiResponse>('/upload/avatar')
+    return response.data
+  } catch (error: any) {
+    handleApiError(error, 'Avatar deletion failed')
+  }
+}
+
 export const updateCoverApi = async (cover: string): Promise<ApiResponse> => {
   try {
     const response = await api.put<ApiResponse>('/auth/cover', { cover })
     return response.data
   } catch (error: any) {
     handleApiError(error, 'Cover update failed')
+  }
+}
+
+export const deleteCoverApi = async (): Promise<ApiResponse> => {
+  try {
+    const response = await api.delete<ApiResponse>('/upload/cover')
+    return response.data
+  } catch (error: any) {
+    handleApiError(error, 'Cover deletion failed')
   }
 }
 

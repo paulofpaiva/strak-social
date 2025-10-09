@@ -22,7 +22,6 @@ router.post('/cover', authenticateToken, coverUploadLimiter, coverUpload.single(
   const extension = path.extname(req.file.originalname)
   const filename = generateCoverFilename(userId, extension)
 
-  // Fetch current user to get old cover URL
   const currentUser = await db
     .select({ cover: users.cover })
     .from(users)
@@ -34,7 +33,6 @@ router.post('/cover', authenticateToken, coverUploadLimiter, coverUpload.single(
   let newCoverUrl: string | null = null
 
   try {
-    // Upload new cover to Firebase Storage
     newCoverUrl = await uploadFile(
       req.file.buffer,
       'covers',
@@ -42,7 +40,6 @@ router.post('/cover', authenticateToken, coverUploadLimiter, coverUpload.single(
       req.file.mimetype
     )
 
-    // Update database with new cover URL
     const updatedUser = await db
       .update(users)
       .set({ cover: newCoverUrl, updatedAt: new Date() })
@@ -60,19 +57,54 @@ router.post('/cover', authenticateToken, coverUploadLimiter, coverUpload.single(
         updatedAt: users.updatedAt,
       })
 
-    // Delete old cover from Firebase Storage (after successful DB update)
     if (oldCoverUrl) {
       await deleteFile(oldCoverUrl)
     }
 
     return ApiResponse.successUser(res, updatedUser[0], 'Cover uploaded and updated successfully')
   } catch (error) {
-    // Rollback: If DB update failed, delete the newly uploaded file
     if (newCoverUrl) {
       await deleteFile(newCoverUrl)
     }
     throw error
   }
+}))
+
+router.delete('/cover', authenticateToken, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user!.id
+
+  const currentUser = await db
+    .select({ cover: users.cover })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1)
+
+  const coverUrl = currentUser[0]?.cover
+
+  if (!coverUrl) {
+    throw new AppError('No cover to delete', 400)
+  }
+
+  const updatedUser = await db
+    .update(users)
+    .set({ cover: null, updatedAt: new Date() })
+    .where(eq(users.id, userId))
+    .returning({
+      id: users.id,
+      email: users.email,
+      username: users.username,
+      name: users.name,
+      avatar: users.avatar,
+      cover: users.cover,
+      bio: users.bio,
+      birthDate: users.birthDate,
+      createdAt: users.createdAt,
+      updatedAt: users.updatedAt,
+    })
+
+  await deleteFile(coverUrl)
+
+  return ApiResponse.successUser(res, updatedUser[0], 'Cover deleted successfully')
 }))
 
 export default router

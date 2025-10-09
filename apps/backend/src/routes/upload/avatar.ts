@@ -75,5 +75,42 @@ router.post('/avatar', authenticateToken, avatarUploadLimiter, avatarUpload.sing
   }
 }))
 
+router.delete('/avatar', authenticateToken, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user!.id
+
+  const currentUser = await db
+    .select({ avatar: users.avatar })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1)
+
+  const avatarUrl = currentUser[0]?.avatar
+
+  if (!avatarUrl) {
+    throw new AppError('No avatar to delete', 400)
+  }
+
+  const updatedUser = await db
+    .update(users)
+    .set({ avatar: null, updatedAt: new Date() })
+    .where(eq(users.id, userId))
+    .returning({
+      id: users.id,
+      email: users.email,
+      username: users.username,
+      name: users.name,
+      avatar: users.avatar,
+      cover: users.cover,
+      bio: users.bio,
+      birthDate: users.birthDate,
+      createdAt: users.createdAt,
+      updatedAt: users.updatedAt,
+    })
+
+  await deleteFile(avatarUrl)
+
+  return ApiResponse.successUser(res, updatedUser[0], 'Avatar deleted successfully')
+}))
+
 export default router
 

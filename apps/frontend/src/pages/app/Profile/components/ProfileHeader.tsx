@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Avatar } from '@/components/ui/avatar'
-import { AvatarEditor } from './AvatarEditor'
-import { CoverEditor } from './CoverEditor'
+import { AvatarEditor } from './Avatar'
+import { CoverEditor } from './Cover'
 import type { User } from '@/api/users'
 
 interface ProfileHeaderProps {

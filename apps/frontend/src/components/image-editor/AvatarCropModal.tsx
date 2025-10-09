@@ -8,7 +8,7 @@ import { getCroppedImg, optimizeBlobSize, type Area } from '@/utils/image-proces
 import { toast } from 'sonner'
 import { useIsMobile } from '@/hooks/useIsMobile'
 
-interface CoverCropModalProps {
+interface AvatarCropModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   imageFile: File | string | null
@@ -16,15 +16,15 @@ interface CoverCropModalProps {
   onChangePhoto: () => void
 }
 
-const ASPECT_RATIO = 16 / 9
+const ASPECT_RATIO = 1
 
-export function CoverCropModal({
+export function AvatarCropModal({
   open,
   onOpenChange,
   imageFile,
   onApply,
   onChangePhoto,
-}: CoverCropModalProps) {
+}: AvatarCropModalProps) {
   const [crop, setCrop] = useState({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
   const [rotation, setRotation] = useState(0)
@@ -93,13 +93,14 @@ export function CoverCropModal({
 
   const modalContent = (
     <div className="space-y-6">
-      <div className="relative bg-gray-900 flex items-center justify-center h-32 sm:h-48 md:h-64 w-full overflow-hidden rounded-lg">
+      <div className="relative bg-gray-900 flex items-center justify-center h-[400px] w-full max-w-[400px] mx-auto overflow-hidden rounded-lg">
         <Cropper
           image={imageUrl}
           crop={crop}
           zoom={zoom}
           rotation={rotation}
           aspect={ASPECT_RATIO}
+          cropShape="round"
           onCropChange={setCrop}
           onZoomChange={setZoom}
           onRotationChange={setRotation}
@@ -195,8 +196,8 @@ export function CoverCropModal({
     <ResponsiveModal
       isOpen={open}
       onClose={handleCancel}
-      title="Cover image"
-      className="sm:max-w-4xl"
+      title="Avatar image"
+      className="sm:max-w-2xl"
       actionButton={actionButton}
       onCancel={handleCancel}
       cancelText="Cancel"

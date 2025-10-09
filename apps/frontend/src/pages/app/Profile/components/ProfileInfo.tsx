@@ -12,7 +12,7 @@ export function ProfileInfo({ user }: ProfileInfoProps) {
       <div className="flex items-center space-x-2">
         <h1 className="text-xl font-bold text-foreground">{user.name}</h1>
         {user.isVerified && (
-          <BadgeCheck className="h-5 w-5 text-blue-500" />
+          <BadgeCheck className="h-5 w-5 text-primary" />
         )}
       </div>
       <p className="text-muted-foreground">@{user.username}</p>
