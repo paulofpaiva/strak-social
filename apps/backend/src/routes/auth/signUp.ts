@@ -8,10 +8,11 @@ import { eq } from 'drizzle-orm'
 import { asyncHandler } from '../../middleware/asyncHandler'
 import { ApiResponse } from '../../utils/response'
 import { AppError } from '../../middleware/errorHandler'
+import { signUpLimiter } from '../../middleware/rateLimiter'
 
 const router = Router()
 
-router.post('/', asyncHandler(async (req: Request, res: Response) => {
+router.post('/', signUpLimiter, asyncHandler(async (req: Request, res: Response) => {
   const validatedData = signUpSchema.parse(req.body)
   
   const existingEmail = await db

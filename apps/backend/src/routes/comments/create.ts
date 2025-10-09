@@ -9,10 +9,11 @@ import { eq } from 'drizzle-orm'
 import { asyncHandler } from '../../middleware/asyncHandler'
 import { ApiResponse } from '../../utils/response'
 import { AppError } from '../../middleware/errorHandler'
+import { createCommentLimiter } from '../../middleware/rateLimiter'
 
 const router = Router()
 
-router.post('/:postId', authenticateToken, asyncHandler(async (req: Request, res: Response) => {
+router.post('/:postId', authenticateToken, createCommentLimiter, asyncHandler(async (req: Request, res: Response) => {
   const { postId } = req.params
   const validatedData = createCommentSchema.parse(req.body)
 

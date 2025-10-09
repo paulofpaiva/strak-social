@@ -5,10 +5,11 @@ import { checkUsernameSchema } from '../../schemas/auth'
 import { eq } from 'drizzle-orm'
 import { asyncHandler } from '../../middleware/asyncHandler'
 import { ApiResponse } from '../../utils/response'
+import { checkUsernameLimiter } from '../../middleware/rateLimiter'
 
 const router = Router()
 
-router.get('/', asyncHandler(async (req: Request, res: Response) => {
+router.get('/', checkUsernameLimiter, asyncHandler(async (req: Request, res: Response) => {
   const { username } = req.query
   
   if (!username || typeof username !== 'string') {

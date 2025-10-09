@@ -8,10 +8,11 @@ import { eq, or } from 'drizzle-orm'
 import { asyncHandler } from '../../middleware/asyncHandler'
 import { ApiResponse } from '../../utils/response'
 import { AppError } from '../../middleware/errorHandler'
+import { signInLimiter } from '../../middleware/rateLimiter'
 
 const router = Router()
 
-router.post('/', asyncHandler(async (req: Request, res: Response) => {
+router.post('/', signInLimiter, asyncHandler(async (req: Request, res: Response) => {
   const validatedData = signInSchema.parse(req.body)
   
   const userResult = await db

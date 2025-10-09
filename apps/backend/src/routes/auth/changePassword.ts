@@ -8,10 +8,11 @@ import { eq } from 'drizzle-orm'
 import { asyncHandler } from '../../middleware/asyncHandler'
 import { ApiResponse } from '../../utils/response'
 import { AppError } from '../../middleware/errorHandler'
+import { changePasswordLimiter } from '../../middleware/rateLimiter'
 
 const router = Router()
 
-router.put('/', authenticateToken, asyncHandler(async (req: Request, res: Response) => {
+router.put('/', authenticateToken, changePasswordLimiter, asyncHandler(async (req: Request, res: Response) => {
   const validatedData = changePasswordSchema.parse(req.body)
   
   const userResult = await db

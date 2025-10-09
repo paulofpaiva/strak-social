@@ -7,10 +7,11 @@ import { eq, and } from 'drizzle-orm'
 import { asyncHandler } from '../../middleware/asyncHandler'
 import { ApiResponse } from '../../utils/response'
 import { AppError } from '../../middleware/errorHandler'
+import { followLimiter } from '../../middleware/rateLimiter'
 
 const router = Router()
 
-router.post('/toggle', authenticateToken, asyncHandler(async (req: Request, res: Response) => {
+router.post('/toggle', authenticateToken, followLimiter, asyncHandler(async (req: Request, res: Response) => {
   const { userId } = req.body
   const followerId = req.user!.id
 

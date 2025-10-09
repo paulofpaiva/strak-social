@@ -4,11 +4,12 @@ import { ApiResponse } from '../../utils/response'
 import { AppError } from '../../middleware/errorHandler'
 import { asyncHandler } from '../../middleware/asyncHandler'
 import { uploadFile, generateMediaFilename } from '../../services/storage'
+import { mediaUploadLimiter } from '../../middleware/rateLimiter'
 import path from 'path'
 
 const router = Router()
 
-router.post('/media', mediaUpload.single('media'), asyncHandler(async (req: Request, res: Response) => {
+router.post('/media', mediaUploadLimiter, mediaUpload.single('media'), asyncHandler(async (req: Request, res: Response) => {
   if (!req.file) {
     throw new AppError('No file uploaded', 400)
   }

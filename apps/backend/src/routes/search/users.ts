@@ -6,10 +6,11 @@ import { authenticateToken } from '../../middleware/auth'
 import { eq, ilike, or, and, ne } from 'drizzle-orm'
 import { asyncHandler } from '../../middleware/asyncHandler'
 import { ApiResponse } from '../../utils/response'
+import { searchLimiter } from '../../middleware/rateLimiter'
 
 const router = Router()
 
-router.get('/users', authenticateToken, asyncHandler(async (req: Request, res: Response) => {
+router.get('/users', authenticateToken, searchLimiter, asyncHandler(async (req: Request, res: Response) => {
   const { q: query } = req.query
   const page = parseInt(req.query.page as string) || 1
   const limit = parseInt(req.query.limit as string) || 10

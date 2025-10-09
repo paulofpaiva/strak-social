@@ -7,10 +7,11 @@ import { eq, and } from 'drizzle-orm'
 import { asyncHandler } from '../../middleware/asyncHandler'
 import { ApiResponse } from '../../utils/response'
 import { AppError } from '../../middleware/errorHandler'
+import { likeLimiter } from '../../middleware/rateLimiter'
 
 const router = Router()
 
-router.post('/:id/like', authenticateToken, asyncHandler(async (req: Request, res: Response) => {
+router.post('/:id/like', authenticateToken, likeLimiter, asyncHandler(async (req: Request, res: Response) => {
   const postId = req.params.id
   const userId = req.user!.id
 

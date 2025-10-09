@@ -10,11 +10,13 @@ import { ApiResponse } from '../../utils/response'
 import { AppError } from '../../middleware/errorHandler'
 import { mediaUpload } from '../upload/config'
 import { uploadPostMediaFiles } from '../../services/postMedia'
+import { createPostLimiter } from '../../middleware/rateLimiter'
 
 const router = Router()
 
 router.post('/', 
   authenticateToken, 
+  createPostLimiter,
   mediaUpload.array('media', 3),
   asyncHandler(async (req: Request, res: Response) => {
     const { content } = req.body

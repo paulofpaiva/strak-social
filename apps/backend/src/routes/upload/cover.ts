@@ -5,6 +5,7 @@ import { AppError } from '../../middleware/errorHandler'
 import { authenticateToken } from '../../middleware/auth'
 import { asyncHandler } from '../../middleware/asyncHandler'
 import { uploadFile, generateCoverFilename, deleteFile } from '../../services/storage'
+import { coverUploadLimiter } from '../../middleware/rateLimiter'
 import { db } from '../../db/index'
 import { users } from '../../schemas/auth'
 import { eq } from 'drizzle-orm'
@@ -12,7 +13,7 @@ import path from 'path'
 
 const router = Router()
 
-router.post('/cover', authenticateToken, coverUpload.single('cover'), asyncHandler(async (req: Request, res: Response) => {
+router.post('/cover', authenticateToken, coverUploadLimiter, coverUpload.single('cover'), asyncHandler(async (req: Request, res: Response) => {
   if (!req.file) {
     throw new AppError('No file uploaded', 400)
   }
