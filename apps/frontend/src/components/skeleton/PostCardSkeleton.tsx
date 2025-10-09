@@ -12,7 +12,7 @@ export function PostCardSkeleton({ className, count = 3 }: PostCardSkeletonProps
         <div
           key={i}
           className={cn(
-            'bg-card p-4 animate-pulse border-b border-border last:border-b-0',
+            'p-4 animate-pulse border-b border-border last:border-b-0',
             className
           )}
         >

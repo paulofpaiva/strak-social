@@ -59,7 +59,7 @@ export function Comment() {
 
   if (isLoading) {
     return (
-      <div className="max-w-2xl mx-auto">
+      <div className="container mx-auto">
         <CommentCardSkeleton />
         <div className="border-t border-border mt-4" />
       </div>
@@ -68,11 +68,14 @@ export function Comment() {
 
   if (isError || !comment) {
     return (
-      <div className="max-w-2xl mx-auto py-8">
-        <ErrorEmpty
-          title="Comment not found"
-          description="The comment you're looking for doesn't exist or has been deleted."
-        />
+      <div className="container mx-auto">
+        <Breadcrumb to={getReturnUrl()} label="Back" />
+        <div className="py-8">
+          <ErrorEmpty
+            title="Comment not found"
+            description="The comment you're looking for doesn't exist or has been deleted."
+          />
+        </div>
       </div>
     )
   }
@@ -103,7 +106,7 @@ export function Comment() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="container mx-auto">
       <Breadcrumb to={backUrl} label={breadcrumbLabel} />
       
       <div className="border-b border-border">
@@ -132,7 +135,6 @@ export function Comment() {
             <CommentCard
               key={reply.id}
               comment={reply}
-              isReply={true}
               showRepliesButton={false}
             />
           ))}

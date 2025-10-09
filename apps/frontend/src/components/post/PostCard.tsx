@@ -57,7 +57,7 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
       onClick={disableNavigation ? undefined : handleNavigateToPost}
       className={cn(
         'p-4 transition-colors border-b border-border last:border-b-0',
-        !disableNavigation && 'cursor-pointer hover:bg-muted/50',
+        !disableNavigation && 'cursor-pointer',
         className
       )}
     >

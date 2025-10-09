@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export function CommentCardSkeleton() {
   return (
-    <div className="p-4 border-b border-border">
+    <div className="p-4 border-border">
       <div className="flex items-start gap-3">
         <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
         

@@ -92,41 +92,44 @@ export function CommentCard({
         isReply && 'pl-12'
       )}
     >
-      <div className="flex items-start gap-3 mb-2">
+      <div className="flex items-start gap-3 mb-3">
         <Avatar
           src={comment.user.avatar || undefined}
           name={comment.user.name}
-          size="sm"
+          size="md"
           className="flex-shrink-0"
         />
         
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center justify-between">
             <div className="flex-1 flex flex-col">
-              <div className="flex items-center gap-1.5">
-                <span className="font-semibold text-foreground text-sm truncate">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-foreground truncate">
                   {comment.user.name}
                 </span>
                 {comment.user.isVerified && (
                   <BadgeCheck className="h-4 w-4 text-primary flex-shrink-0" />
                 )}
                 {!showFullDate && (
-                  <span className="text-muted-foreground text-xs ml-auto">
-                    {formatPostDate(comment.createdAt)}
-                  </span>
+                  <>
+                    <span className="text-muted-foreground text-sm">·</span>
+                    <span className="text-muted-foreground text-sm">
+                      {formatPostDate(comment.createdAt)}
+                    </span>
+                  </>
                 )}
               </div>
-              <span className="text-muted-foreground text-xs truncate">
+              <span className="text-muted-foreground text-sm truncate">
                 @{comment.user.username}
               </span>
             </div>
             
             {isOwner && (
-              <div onClick={(e) => e.stopPropagation()} className="flex-shrink-0">
+              <div onClick={(e) => e.stopPropagation()}>
                 <ResponsiveDropdown
                   trigger={
-                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                      <MoreVertical className="h-4 w-4" />
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                      <MoreVertical className="h-5 w-5" />
                     </Button>
                   }
                   items={[
@@ -152,28 +155,28 @@ export function CommentCard({
       </div>
 
       {comment.content && (
-        <div className="mb-2 ml-11">
-          <p className="text-foreground text-sm whitespace-pre-wrap break-words">
+        <div className="mb-3">
+          <p className="text-foreground whitespace-pre-wrap break-words">
             {comment.content}
           </p>
         </div>
       )}
 
       {comment.media && comment.media.length > 0 && (
-        <div className="mb-2 ml-11">
+        <div className="mb-3">
           <PostMedia media={comment.media as MediaItem[]} />
         </div>
       )}
 
       {showFullDate && (
-        <div className="mb-2 ml-11">
+        <div className="mb-3">
           <p className="text-sm text-muted-foreground">
             {formatFullPostDate(comment.createdAt)}
           </p>
         </div>
       )}
 
-      <div className="flex items-center gap-4 text-muted-foreground text-sm ml-11">
+      <div className="flex items-center gap-6 text-muted-foreground text-sm">
         <button 
           onClick={(e) => {
             e.stopPropagation()
@@ -184,11 +187,11 @@ export function CommentCard({
         >
           <Heart 
             className={cn(
-              'h-4 w-4 transition-all',
+              'h-5 w-5 transition-all',
               isLiked && 'fill-red-500 text-red-500'
             )} 
           />
-          <span className="text-xs">{likesCount}</span>
+          <span>{likesCount}</span>
         </button>
         
         <button 
@@ -199,8 +202,8 @@ export function CommentCard({
           }}
           className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer"
         >
-          <MessageCircle className="h-4 w-4" />
-          <span className="text-xs">{comment.repliesCount || 0}</span>
+          <MessageCircle className="h-5 w-5" />
+          <span>{comment.repliesCount || 0}</span>
         </button>
       </div>
 

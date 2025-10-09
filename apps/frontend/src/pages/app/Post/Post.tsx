@@ -25,7 +25,7 @@ export function Post() {
 
   if (isLoading) {
     return (
-      <div className="max-w-2xl mx-auto">
+      <div className="container mx-auto">
         <PostCardSkeleton />
         <div className="border-t border-border mt-4" />
       </div>
@@ -34,17 +34,20 @@ export function Post() {
 
   if (isError || !post) {
     return (
-      <div className="max-w-2xl mx-auto py-8">
-        <ErrorEmpty
-          title="Post not found"
-          description="The post you're looking for doesn't exist or has been deleted."
-        />
+      <div className="container mx-auto">
+        <Breadcrumb to={getReturnUrl()} label="Back" />
+        <div className="py-8">
+          <ErrorEmpty
+            title="Post not found"
+            description="The post you're looking for doesn't exist or has been deleted."
+          />
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="container mx-auto">
        <Breadcrumb to={getReturnUrl()} label="Back" />
       <div className="border-b border-border">
         <PostCard post={post} readOnly={false} disableNavigation={true} showFullDate={true} />
