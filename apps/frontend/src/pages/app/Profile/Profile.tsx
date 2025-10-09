@@ -65,7 +65,7 @@ export function Profile() {
 
   if (error || !user) {
     return (
-      <div className="container mx-auto">
+      <>
         <Breadcrumb to={isOwnProfile ? "/feed" : getReturnUrl()} label="Back" />
         <ErrorEmpty
           title={isOwnProfile ? "Failed to load profile" : "User not found"}
@@ -76,12 +76,12 @@ export function Profile() {
           onRetry={() => refetch()}
           retryText="Try again"
         />
-      </div>
+      </>
     )
   }
 
   return (
-    <div className="container mx-auto">
+    <>
       <Breadcrumb to={isOwnProfile ? "/feed" : getReturnUrl()} label={`${user.username}`} />
       
       <ProfileHeader user={user} isOwnProfile={isOwnProfile} />
@@ -144,6 +144,6 @@ export function Profile() {
           }}
         />
       )}
-    </div>
+    </>
   )
 }

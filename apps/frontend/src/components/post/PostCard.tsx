@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/ui/avatar'
 import { PostMedia } from './PostMedia'
+import { MediaViewer } from '@/components/MediaViewer'
 import { formatPostDate, formatFullPostDate } from '@/utils/date'
 import type { Post } from '@/api/posts'
 import { Heart, MessageCircle, MoreVertical, Trash2, Edit, BadgeCheck, Bookmark, Share, Link as LinkIcon } from 'lucide-react'
@@ -27,6 +28,8 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false)
+  const [isMediaViewerOpen, setIsMediaViewerOpen] = useState(false)
+  const [mediaViewerIndex, setMediaViewerIndex] = useState(0)
   const [isLiked, setIsLiked] = useState(post.userLiked)
   const [likesCount, setLikesCount] = useState(post.likesCount)
   const [isBookmarked, setIsBookmarked] = useState(post.userBookmarked)
@@ -69,6 +72,11 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
     } catch (error) {
       toast.error('Failed to copy link')
     }
+  }
+
+  const handleMediaClick = (index: number) => {
+    setMediaViewerIndex(index)
+    setIsMediaViewerOpen(true)
   }
 
   const postUrl = `/post/${post.id}?return=${location.pathname}`
@@ -180,8 +188,15 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
       )}
 
       {post.media && post.media.length > 0 && (
-        <div className="mb-3 relative z-10 pointer-events-none">
-          <PostMedia media={post.media} />
+        <div className={cn(
+          'mb-3 relative z-10',
+          isPostView ? 'pointer-events-auto' : 'pointer-events-none'
+        )}>
+          <PostMedia 
+            media={post.media} 
+            isPostView={isPostView}
+            onMediaClick={isPostView ? handleMediaClick : undefined}
+          />
         </div>
       )}
 
@@ -273,6 +288,15 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
         onOpenChange={setIsCommentModalOpen}
         postId={post.id}
       />
+
+      {post.media && post.media.length > 0 && (
+        <MediaViewer
+          media={post.media}
+          initialIndex={mediaViewerIndex}
+          isOpen={isMediaViewerOpen}
+          onClose={() => setIsMediaViewerOpen(false)}
+        />
+      )}
     </article>
   )
 }

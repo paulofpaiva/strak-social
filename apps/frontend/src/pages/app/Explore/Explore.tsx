@@ -52,7 +52,7 @@ export function Explore() {
   )
 
   return (
-    <div className="container mx-auto">
+    <>
       <Breadcrumb to="/feed" label={`Explore`} />
 
       <div className="pt-5 w-full md:w-96">
@@ -104,7 +104,7 @@ export function Explore() {
           )}
         </>
       )}
-    </div>
+    </>
   )
 }
 

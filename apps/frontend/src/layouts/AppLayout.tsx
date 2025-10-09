@@ -3,6 +3,7 @@ import { FeedSidebar } from '../components/FeedSidebar'
 import { BottomNavigation } from '../components/BottomNavigation'
 import { AppHeader } from '../components/AppHeader'
 import { useIsMobile, useIsCompact } from '../hooks/useIsMobile'
+import { cn } from '@/lib/utils'
 
 interface AppLayoutProps {
   children: ReactNode
@@ -24,7 +25,10 @@ export function AppLayout({ children }: AppLayoutProps) {
         )}
         
         <div className={`flex-1 ${!isMobile ? (isCompact ? 'ml-16' : 'ml-64') : ''}`}>
-          <main className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 ${isMobile ? 'pb-20' : ''}`}>
+          <main className={cn(
+            'mx-auto py-4',
+            isMobile ? 'w-full px-4 pb-20' : 'max-w-4xl'
+          )}>
             {children}
           </main>
         </div>

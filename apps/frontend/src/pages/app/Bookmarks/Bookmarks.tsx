@@ -16,7 +16,7 @@ export function Bookmarks() {
   }
 
   return (
-    <div className="container mx-auto">
+    <>
       <Breadcrumb to="/feed" label="Bookmarks" />
 
       <div className="pt-5 w-full md:w-96">
@@ -28,7 +28,7 @@ export function Bookmarks() {
       </div>
 
       <BookmarksList search={search} />
-    </div>
+    </>
   )
 }
 

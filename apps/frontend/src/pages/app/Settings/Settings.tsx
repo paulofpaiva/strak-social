@@ -28,7 +28,7 @@ export function Settings() {
   ]
 
   return (
-    <div className="container mx-auto">
+    <>
       <Breadcrumb to="/feed" label="Back to Feed" />
       
       <div className="mt-8">
@@ -45,6 +45,6 @@ export function Settings() {
           tabs={tabs}
         />
       </div>
-    </div>
+    </>
   )
 }

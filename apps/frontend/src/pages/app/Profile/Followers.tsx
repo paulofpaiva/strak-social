@@ -83,7 +83,7 @@ export function Followers() {
   }
 
   return (
-    <div className="container mx-auto">
+    <>
       <Breadcrumb to="/profile" label={`Followers`} />
 
       <div className="pt-5 w-full md:w-96">
@@ -126,7 +126,7 @@ export function Followers() {
           )}
         </>
       )}
-    </div>
+    </>
   )
 }
 

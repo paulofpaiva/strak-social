@@ -59,16 +59,16 @@ export function Comment() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto">
+      <>
         <CommentCardSkeleton />
         <div className="border-t border-border mt-4" />
-      </div>
+      </>
     )
   }
 
   if (isError || !comment) {
     return (
-      <div className="container mx-auto">
+      <>
         <Breadcrumb to={getReturnUrl()} label="Back" />
         <div className="py-8">
           <ErrorEmpty
@@ -76,7 +76,7 @@ export function Comment() {
             description="The comment you're looking for doesn't exist or has been deleted."
           />
         </div>
-      </div>
+      </>
     )
   }
 
@@ -106,7 +106,7 @@ export function Comment() {
   }
 
   return (
-    <div className="container mx-auto overflow-x-hidden">
+    <>
       <Breadcrumb to={backUrl} label={breadcrumbLabel} />
       
       <div className="border-b border-border">
@@ -148,6 +148,6 @@ export function Comment() {
           )}
         </div>
       )}
-    </div>
+    </>
   )
 }
