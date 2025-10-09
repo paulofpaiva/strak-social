@@ -10,6 +10,7 @@ import followRoutes from './routes/follow/index'
 import usersRoutes from './routes/users/index'
 import searchRoutes from './routes/search/index'
 import uploadRoutes from './routes/upload/index'
+import newsRoutes from './routes/news/index'
 import { maskConnectionString } from './utils/database'
 import { getApiVersion } from './utils/version'
 import { errorHandler, notFound } from './middleware/errorHandler'
@@ -56,6 +57,7 @@ app.use('/api/follow', followRoutes)
 app.use('/api/users', usersRoutes)
 app.use('/api/search', searchRoutes)
 app.use('/api/upload', uploadRoutes)
+app.use('/api/news', newsRoutes)
 
 app.use(notFound)
 app.use(errorHandler)

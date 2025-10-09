@@ -1,7 +1,4 @@
-import axios from 'axios'
-
-const NEWS_API_KEY = import.meta.env.VITE_NEWSAPI_API_KEY
-const NEWS_API_BASE_URL = 'https://newsapi.org/v2'
+import { api } from './auth'
 
 export interface NewsSource {
   id: string | null
@@ -39,9 +36,8 @@ export async function getTopHeadlines({
   category = 'technology'
 }: GetNewsParams = {}): Promise<NewsResponse> {
   try {
-    const response = await axios.get(`${NEWS_API_BASE_URL}/top-headlines`, {
+    const response = await api.get('/news/top-headlines', {
       params: {
-        apiKey: NEWS_API_KEY,
         country,
         category,
         page,
@@ -49,7 +45,7 @@ export async function getTopHeadlines({
       }
     })
     
-    return response.data
+    return response.data.data
   } catch (error) {
     console.error('Error fetching news:', error)
     throw error
@@ -62,17 +58,15 @@ export async function searchNews({
   pageSize = 10
 }: GetNewsParams & { query: string }): Promise<NewsResponse> {
   try {
-    const response = await axios.get(`${NEWS_API_BASE_URL}/everything`, {
+    const response = await api.get('/news/search', {
       params: {
-        apiKey: NEWS_API_KEY,
         q: query,
         page,
-        pageSize,
-        sortBy: 'publishedAt'
+        pageSize
       }
     })
     
-    return response.data
+    return response.data.data
   } catch (error) {
     console.error('Error searching news:', error)
     throw error
