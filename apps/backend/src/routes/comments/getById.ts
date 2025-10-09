@@ -28,6 +28,7 @@ router.get('/comment/:commentId', authenticateToken, asyncHandler(async (req: Re
         name: users.name,
         username: users.username,
         avatar: users.avatar,
+        isVerified: users.isVerified,
       }
     })
     .from(comments)

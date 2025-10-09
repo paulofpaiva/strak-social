@@ -1,8 +1,14 @@
 import { cn } from '@/lib/utils'
-import type { PostMedia as PostMediaType } from '@/api/posts'
+
+export interface MediaItem {
+  id: string
+  mediaUrl: string
+  mediaType: 'image' | 'video' | 'gif'
+  order: number
+}
 
 interface PostMediaProps {
-  media: PostMediaType[]
+  media: MediaItem[]
   className?: string
 }
 
@@ -33,7 +39,7 @@ export function PostMedia({ media, className }: PostMediaProps) {
             ) : (
               <img
                 src={item.mediaUrl}
-                alt={`Post media ${index + 1}`}
+                alt={`Media ${index + 1}`}
                 className="w-full h-full object-cover"
                 loading="lazy"
               />

@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { getUserPostsApi } from '@/api/posts'
 import { PostCard } from '../../../../components/post/PostCard'
 import { PostCardSkeleton } from '../../../../components/skeleton/PostCardSkeleton'
-import { useInfiniteScroll, useInfinitePagination } from '@/hooks'
-import { Spinner } from '@/components/ui/spinner'
+import { useInfiniteScroll } from '@/hooks'
+import { Loader2 } from 'lucide-react'
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from '@/components/ui/empty'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { FileText } from 'lucide-react'
@@ -15,34 +15,43 @@ interface PostsListProps {
 }
 
 export function PostsList({ userId, className, readOnly = false }: PostsListProps) {
-  const paginatedData = useInfinitePagination({
-    initialPage: 1,
-    limit: 10,
-  })
-
-  const { data, isLoading, error, refetch, isFetching } = useQuery({
-    queryKey: ['user-posts', userId, paginatedData.page, paginatedData.limit],
-    queryFn: () => getUserPostsApi(userId, paginatedData.page, paginatedData.limit),
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch
+  } = useInfiniteQuery({
+    queryKey: ['user-posts', userId],
+    queryFn: ({ pageParam = 1 }) => getUserPostsApi(userId, pageParam, 10),
+    getNextPageParam: (lastPage) => {
+      return lastPage.pagination.hasMore 
+        ? lastPage.pagination.page + 1 
+        : undefined
+    },
+    initialPageParam: 1,
     enabled: !!userId,
     retry: false,
     refetchOnWindowFocus: false,
   })
 
-  const { items, hasMore, loadMore, totalItems } = useInfinitePagination({
-    data: data?.posts,
-    currentPage: data?.pagination.page,
-    hasMore: data?.pagination.hasMore,
-    isFetching,
-    limit: 10,
-  })
-
-  const setSentinelRef = useInfiniteScroll(
-    loadMore,
-    hasMore,
-    isFetching
+  const sentinelRef = useInfiniteScroll(
+    () => fetchNextPage(),
+    hasNextPage || false,
+    isFetchingNextPage
   )
 
-  if (error) {
+  if (isLoading) {
+    return (
+      <div className={className}>
+        <PostCardSkeleton count={3} />
+      </div>
+    )
+  }
+
+  if (isError) {
     return (
       <ErrorEmpty
         title="Failed to load posts"
@@ -53,15 +62,9 @@ export function PostsList({ userId, className, readOnly = false }: PostsListProp
     )
   }
 
-  if (isLoading) {
-    return (
-      <div className={className}>
-        <PostCardSkeleton count={3} />
-      </div>
-    )
-  }
+  const posts = data?.pages.flatMap((page) => page.posts) || []
 
-  if (!items || items.length === 0) {
+  if (posts.length === 0) {
     return (
       <Empty className={className}>
         <EmptyHeader>
@@ -80,19 +83,17 @@ export function PostsList({ userId, className, readOnly = false }: PostsListProp
   return (
     <div className={className}>
       <div>
-        {items.map(post => (
+        {posts.map(post => (
           <PostCard key={post.id} post={post} readOnly={readOnly} />
         ))}
       </div>
 
-      {totalItems > 0 && isFetching && (
-        <div className="flex justify-center py-6">
-          <Spinner size="md" />
+      {hasNextPage && (
+        <div ref={sentinelRef} className="flex justify-center py-4">
+          {isFetchingNextPage && (
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          )}
         </div>
-      )}
-
-      {totalItems > 0 && hasMore && (
-        <div ref={setSentinelRef} className="h-1" />
       )}
     </div>
   )

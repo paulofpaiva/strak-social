@@ -37,30 +37,33 @@ export function EditPost({ open, onOpenChange, post }: EditPostProps) {
       form="edit-post-form"
       disabled={!isValid}
       className="flex-1"
+      onClick={(e) => e.stopPropagation()}
     >
       Update
     </Button>
   )
 
   return (
-    <ResponsiveModal
-      isOpen={open}
-      onClose={handleClose}
-      title="Edit Post"
-      description="Update your post content and media"
-      actionButton={actionButton}
-    >
-      <PostForm
-        mode="update"
-        postId={post.id}
-        initialContent={post.content}
-        initialMedia={initialMedia}
-        onSuccess={handleClose}
-        submitButtonLabel="Update"
-        formId="edit-post-form"
-        key={open ? post.id : 'closed'}
-        onValidationChange={setIsValid}
-      />
-    </ResponsiveModal>
+    <div onClick={(e) => e.stopPropagation()}>
+      <ResponsiveModal
+        isOpen={open}
+        onClose={handleClose}
+        title="Edit Post"
+        description="Update your post content and media"
+        actionButton={actionButton}
+      >
+        <PostForm
+          mode="update"
+          postId={post.id}
+          initialContent={post.content}
+          initialMedia={initialMedia}
+          onSuccess={handleClose}
+          submitButtonLabel="Update"
+          formId="edit-post-form"
+          key={open ? post.id : 'closed'}
+          onValidationChange={setIsValid}
+        />
+      </ResponsiveModal>
+    </div>
   )
 }

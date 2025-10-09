@@ -5,6 +5,7 @@ import { ColorProvider } from '@/contexts/ColorContext'
 import { CreatePostProvider } from '@/contexts/CreatePostContext'
 import { Toaster } from '@/components/ui/sonner'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { ScrollToTop } from '@/components/ScrollToTop'
 import { useNProgress } from '@/hooks/useNProgress'
 import { AppLayout } from '@/layouts/AppLayout'
 import { AuthLayout } from '@/layouts/AuthLayout'
@@ -16,6 +17,8 @@ import { Profile } from "@/pages/app/Profile/Profile"
 import { Following } from "@/pages/app/Profile/Following"
 import { Followers } from "@/pages/app/Profile/Followers"
 import { Explore } from "@/pages/app/Explore/Explore"
+import { Post } from "@/pages/app/Post/Post"
+import { Comment } from "@/pages/app/Comment/Comment"
 import { queryClient } from '@/utils/query-client'
 
 function App() {
@@ -39,7 +42,9 @@ function AppRoutes() {
   useNProgress()
   
   return (
-    <Routes>
+    <>
+      <ScrollToTop />
+      <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/auth" element={<Navigate to="/auth/sign-in" replace />} />
       <Route 
@@ -99,6 +104,28 @@ function AppRoutes() {
       />
 
       <Route 
+        path="/post/:id" 
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <Post />
+            </AppLayout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/comment/:id" 
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <Comment />
+            </AppLayout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
         path="/profile" 
         element={
           <ProtectedRoute>
@@ -138,7 +165,8 @@ function AppRoutes() {
       <Route path="/app/*" element={<Navigate to="/feed" replace />} />
       
       <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+      </Routes>
+    </>
   )
 }
 

@@ -16,7 +16,7 @@ const router = Router()
 router.get('/post/:postId', authenticateToken, asyncHandler(async (req: Request, res: Response) => {
   const { postId } = req.params
   const page = parseInt(req.query.page as string) || 1
-  const limit = parseInt(req.query.limit as string) || 3
+  const limit = parseInt(req.query.limit as string) || 10
   const offset = (page - 1) * limit
 
   const postExists = await db

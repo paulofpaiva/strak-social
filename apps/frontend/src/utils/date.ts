@@ -37,3 +37,21 @@ export const formatPostDate = (dateString: string): string => {
     year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
   })
 }
+
+export const formatFullPostDate = (dateString: string): string => {
+  const date = new Date(dateString)
+  
+  const time = date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  })
+  
+  const dateFormatted = date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  })
+  
+  return `${time} - ${dateFormatted}`
+}

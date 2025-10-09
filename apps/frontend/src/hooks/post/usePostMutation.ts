@@ -44,14 +44,28 @@ export function usePostMutation(options: UsePostMutationOptions) {
         return updatePostApi(postId, content, newFiles, mediaOrder)
       }
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       const message = type === 'create' 
         ? 'Post created successfully!' 
         : 'Post updated successfully!'
       toast.success(message)
       
-      queryClient.invalidateQueries({ queryKey: ['posts'] })
-      queryClient.invalidateQueries({ queryKey: ['user-posts'] })
+      await queryClient.invalidateQueries({ 
+        queryKey: ['user-posts'],
+        refetchType: 'active'
+      })
+      
+      await queryClient.invalidateQueries({ 
+        queryKey: ['posts'],
+        refetchType: 'active'
+      })
+      
+      if (postId) {
+        await queryClient.invalidateQueries({ 
+          queryKey: ['post', postId],
+          refetchType: 'active'
+        })
+      }
       
       onSuccess?.()
     },
@@ -73,9 +87,20 @@ export function useLikePostMutation() {
     mutationFn: async (postId: string) => {
       return toggleLikePostApi(postId)
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['posts'] })
-      queryClient.invalidateQueries({ queryKey: ['user-posts'] })
+    onSuccess: async (_data, postId) => {
+      await queryClient.invalidateQueries({ 
+        queryKey: ['posts'],
+        refetchType: 'all'
+      })
+      await queryClient.invalidateQueries({ 
+        queryKey: ['user-posts'],
+        refetchType: 'all'
+      })
+      
+      await queryClient.invalidateQueries({ 
+        queryKey: ['post', postId],
+        refetchType: 'all'
+      })
     },
     onError: (error: any) => {
       const errorMessage = error.response?.data?.message 
@@ -87,4 +112,3 @@ export function useLikePostMutation() {
 
   return mutation
 }
-

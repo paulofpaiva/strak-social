@@ -1,13 +1,14 @@
 import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/ui/avatar'
 import { PostMedia } from './PostMedia'
-import { formatPostDate } from '@/utils/date'
+import { formatPostDate, formatFullPostDate } from '@/utils/date'
 import type { Post } from '@/api/posts'
-import { Heart, MessageCircle, MoreVertical, Trash2, Edit } from 'lucide-react'
+import { Heart, MessageCircle, MoreVertical, Trash2, Edit, BadgeCheck } from 'lucide-react'
 import { ResponsiveDropdown } from '@/components/ui/responsive-dropdown'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/stores/authStore'
 import { useState } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { EditPost } from './EditPost'
 import { DeletePost } from './DeletePost'
 import { useLikePostMutation } from '@/hooks/post'
@@ -16,14 +17,18 @@ interface PostCardProps {
   post: Post
   className?: string
   readOnly?: boolean
+  disableNavigation?: boolean
+  showFullDate?: boolean
 }
 
-export function PostCard({ post, className, readOnly = false }: PostCardProps) {
+export function PostCard({ post, className, readOnly = false, disableNavigation = false, showFullDate = false }: PostCardProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isLiked, setIsLiked] = useState(post.userLiked)
   const [likesCount, setLikesCount] = useState(post.likesCount)
   const { user } = useAuthStore()
+  const navigate = useNavigate()
+  const location = useLocation()
   const isOwner = user?.id === post.userId
   const likeMutation = useLikePostMutation()
 
@@ -39,10 +44,18 @@ export function PostCard({ post, className, readOnly = false }: PostCardProps) {
     })
   }
 
+  const handleNavigateToPost = () => {
+    if (disableNavigation) return
+    const currentPath = location.pathname
+    navigate(`/post/${post.id}?return=${currentPath}`)
+  }
+
   return (
     <article
+      onClick={disableNavigation ? undefined : handleNavigateToPost}
       className={cn(
         'p-4 transition-colors border-b border-border last:border-b-0',
+        !disableNavigation && 'cursor-pointer hover:bg-muted/50',
         className
       )}
     >
@@ -61,10 +74,17 @@ export function PostCard({ post, className, readOnly = false }: PostCardProps) {
                 <span className="font-semibold text-foreground truncate">
                   {post.user.name}
                 </span>
-                <span className="text-muted-foreground text-sm">·</span>
-                <span className="text-muted-foreground text-sm">
-                  {formatPostDate(post.createdAt)}
-                </span>
+                {post.user.isVerified && (
+                  <BadgeCheck className="h-4 w-4 text-primary flex-shrink-0" />
+                )}
+                {!showFullDate && (
+                  <>
+                    <span className="text-muted-foreground text-sm">·</span>
+                    <span className="text-muted-foreground text-sm">
+                      {formatPostDate(post.createdAt)}
+                    </span>
+                  </>
+                )}
               </div>
               <span className="text-muted-foreground text-sm truncate">
                 @{post.user.username}
@@ -72,28 +92,34 @@ export function PostCard({ post, className, readOnly = false }: PostCardProps) {
             </div>
             
             {isOwner && !readOnly && (
-              <ResponsiveDropdown
-                trigger={
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <MoreVertical className="h-5 w-5" />
-                  </Button>
-                }
-                items={[
-                  {
-                    label: 'Edit',
-                    icon: <Edit className="h-4 w-4" />,
-                    onClick: () => setIsEditModalOpen(true),
-                    variant: 'default'
-                  },
-                  {
-                    label: 'Delete',
-                    icon: <Trash2 className="h-4 w-4" />,
-                    onClick: () => setIsDeleteModalOpen(true),
-                    variant: 'destructive'
+              <div onClick={(e) => e.stopPropagation()}>
+                <ResponsiveDropdown
+                  trigger={
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 w-8 p-0"
+                    >
+                      <MoreVertical className="h-5 w-5" />
+                    </Button>
                   }
-                ]}
-                align="end"
-              />
+                  items={[
+                    {
+                      label: 'Edit',
+                      icon: <Edit className="h-4 w-4" />,
+                      onClick: () => setIsEditModalOpen(true),
+                      variant: 'default'
+                    },
+                    {
+                      label: 'Delete',
+                      icon: <Trash2 className="h-4 w-4" />,
+                      onClick: () => setIsDeleteModalOpen(true),
+                      variant: 'destructive'
+                    }
+                  ]}
+                  align="end"
+                />
+              </div>
             )}
           </div>
         </div>
@@ -113,9 +139,20 @@ export function PostCard({ post, className, readOnly = false }: PostCardProps) {
         </div>
       )}
 
+      {showFullDate && (
+        <div className="mb-3">
+          <p className="text-sm text-muted-foreground">
+            {formatFullPostDate(post.createdAt)}
+          </p>
+        </div>
+      )}
+
       <div className="flex items-center gap-6 text-muted-foreground text-sm">
         <button 
-          onClick={handleLike}
+          onClick={(e) => {
+            e.stopPropagation()
+            handleLike()
+          }}
           disabled={likeMutation.isPending}
           className="flex items-center gap-1.5 hover:text-red-500 transition-colors disabled:opacity-50 cursor-pointer"
         >
@@ -128,10 +165,16 @@ export function PostCard({ post, className, readOnly = false }: PostCardProps) {
           <span>{likesCount}</span>
         </button>
         
-        <div className="flex items-center gap-1.5">
+        <button 
+          onClick={(e) => {
+            e.stopPropagation()
+            handleNavigateToPost()
+          }}
+          className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer"
+        >
           <MessageCircle className="h-5 w-5" />
           <span>{post.commentsCount}</span>
-        </div>
+        </button>
       </div>
 
       {isOwner && !readOnly && (
