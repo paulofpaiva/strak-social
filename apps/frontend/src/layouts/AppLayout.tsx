@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { FeedSidebar } from '../components/FeedSidebar'
+import { FeedSidebar } from '../components/AppSidebar'
 import { BottomNavigation } from '../components/BottomNavigation'
 import { AppHeader } from '../components/AppHeader'
 import { useIsMobile, useIsCompact } from '../hooks/useIsMobile'
