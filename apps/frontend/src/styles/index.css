@@ -131,3 +131,8 @@
     display: none;
   }
 }
+
+/* React Easy Crop customization */
+.reactEasyCrop_Container {
+  background: rgb(17 24 39); /* gray-900 */
+}

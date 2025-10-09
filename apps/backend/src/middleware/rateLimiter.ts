@@ -46,7 +46,7 @@ export const mediaUploadLimiter = rateLimit({
 
 export const avatarUploadLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
-  max: 3,
+  max: 10,
   message: {
     success: false,
     message: 'Too many avatar uploads. Please try again in 1 hour.'
@@ -57,7 +57,7 @@ export const avatarUploadLimiter = rateLimit({
 
 export const coverUploadLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
-  max: 3,
+  max: 10,
   message: {
     success: false,
     message: 'Too many cover uploads. Please try again in 1 hour.'

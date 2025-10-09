@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/authStore'
 import { Button } from '@/components/ui/button'
 import { useQueryClient } from '@tanstack/react-query'
+import { CoverCropModal } from '@/components/image-editor/CoverCropModal'
 
 interface CoverEditorProps {
   src?: string
@@ -14,6 +15,8 @@ interface CoverEditorProps {
 export function CoverEditor({ src, className }: CoverEditorProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [isFakeLoading, setIsFakeLoading] = useState(false)
+  const [cropModalOpen, setCropModalOpen] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { setUser } = useAuthStore()
   const queryClient = useQueryClient()
@@ -48,10 +51,25 @@ export function CoverEditor({ src, className }: CoverEditorProps) {
       return
     }
 
+    setSelectedFile(file)
+    setCropModalOpen(true)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const handleApplyCrop = async (blob: Blob) => {
+    if (!selectedFile) return
+
     setIsUploading(true)
 
     try {
-      const result = await uploadCover(file)
+      const processedFile = new File([blob], selectedFile.name, { 
+        type: 'image/jpeg',
+        lastModified: Date.now()
+      })
+
+      const result = await uploadCover(processedFile)
       
       if (result.user) {
         setUser(result.user)
@@ -66,10 +84,12 @@ export function CoverEditor({ src, className }: CoverEditorProps) {
       toast.error(err.message || "An error occurred while uploading the cover.")
     } finally {
       setIsUploading(false)
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
-      }
+      setSelectedFile(null)
     }
+  }
+
+  const handleChangePhoto = () => {
+    fileInputRef.current?.click()
   }
 
   return (
@@ -124,6 +144,14 @@ export function CoverEditor({ src, className }: CoverEditorProps) {
         accept="image/*"
         onChange={handleFileChange}
         className="hidden"
+      />
+
+      <CoverCropModal
+        open={cropModalOpen}
+        onOpenChange={setCropModalOpen}
+        imageFile={selectedFile}
+        onApply={handleApplyCrop}
+        onChangePhoto={handleChangePhoto}
       />
     </div>
   )
