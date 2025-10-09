@@ -24,7 +24,7 @@ export function CreateComment({ open, onOpenChange, postId, parentCommentId }: C
       disabled={!isValid}
       className="flex-1"
     >
-      {parentCommentId ? 'Reply' : 'Comment'}
+      Reply
     </Button>
   )
 
@@ -41,7 +41,7 @@ export function CreateComment({ open, onOpenChange, postId, parentCommentId }: C
         postId={postId}
         parentCommentId={parentCommentId}
         onSuccess={handleClose}
-        submitButtonLabel={parentCommentId ? 'Reply' : 'Comment'}
+        submitButtonLabel="Reply"
         formId="create-comment-form"
         onValidationChange={setIsValid}
       />

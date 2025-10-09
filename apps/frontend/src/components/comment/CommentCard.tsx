@@ -11,6 +11,7 @@ import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { EditComment } from './EditComment'
 import { DeleteComment } from './DeleteComment'
+import { CreateComment } from './CreateComment'
 import { useLikeCommentMutation } from '@/hooks/comment'
 
 interface CommentCardProps {
@@ -34,6 +35,7 @@ export function CommentCard({
 }: CommentCardProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false)
   const [isLiked, setIsLiked] = useState(comment.userLiked)
   const [likesCount, setLikesCount] = useState(comment.likesCount)
   const { user } = useAuthStore()
@@ -189,10 +191,17 @@ export function CommentCard({
           <span className="text-xs">{likesCount}</span>
         </button>
         
-        <div className="flex items-center gap-1.5 text-muted-foreground">
+        <button 
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            setIsCommentModalOpen(true)
+          }}
+          className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer"
+        >
           <MessageCircle className="h-4 w-4" />
           <span className="text-xs">{comment.repliesCount || 0}</span>
-        </div>
+        </button>
       </div>
 
       {isOwner && (
@@ -210,6 +219,13 @@ export function CommentCard({
           />
         </>
       )}
+
+      <CreateComment
+        open={isCommentModalOpen}
+        onOpenChange={setIsCommentModalOpen}
+        postId={comment.postId}
+        parentCommentId={comment.id}
+      />
     </article>
   )
 }

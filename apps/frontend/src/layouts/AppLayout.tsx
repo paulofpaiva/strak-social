@@ -24,7 +24,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         )}
         
         <div className={`flex-1 ${!isMobile ? (isCompact ? 'ml-16' : 'ml-64') : ''}`}>
-          <main className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 ${isMobile ? 'pb-20' : ''}`}>
+          <main className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 ${isMobile ? 'pb-20' : ''}`}>
             {children}
           </main>
         </div>

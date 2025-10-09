@@ -11,6 +11,7 @@ import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { EditPost } from './EditPost'
 import { DeletePost } from './DeletePost'
+import { CreateComment } from '@/components/comment/CreateComment'
 import { useLikePostMutation } from '@/hooks/post'
 
 interface PostCardProps {
@@ -24,6 +25,7 @@ interface PostCardProps {
 export function PostCard({ post, className, readOnly = false, disableNavigation = false, showFullDate = false }: PostCardProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false)
   const [isLiked, setIsLiked] = useState(post.userLiked)
   const [likesCount, setLikesCount] = useState(post.likesCount)
   const { user } = useAuthStore()
@@ -167,8 +169,9 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
         
         <button 
           onClick={(e) => {
+            e.preventDefault()
             e.stopPropagation()
-            handleNavigateToPost()
+            setIsCommentModalOpen(true)
           }}
           className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer"
         >
@@ -192,6 +195,12 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
           />
         </>
       )}
+
+      <CreateComment
+        open={isCommentModalOpen}
+        onOpenChange={setIsCommentModalOpen}
+        postId={post.id}
+      />
     </article>
   )
 }

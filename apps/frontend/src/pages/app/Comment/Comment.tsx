@@ -1,10 +1,8 @@
-import { useState } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import { MessageSquarePlus, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Loader2 } from 'lucide-react'
 import { CommentCard } from '@/components/comment/CommentCard'
-import { CreateComment } from '@/components/comment/CreateComment'
+import { InlineCommentForm } from '@/components/comment/InlineCommentForm'
 import { CommentCardSkeleton } from '@/components/skeleton/CommentCardSkeleton'
 import { CommentListSkeleton } from '@/components/skeleton/CommentListSkeleton'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
@@ -23,7 +21,6 @@ const getCommentById = async (commentId: string): Promise<CommentType> => {
 export function Comment() {
   const { id } = useParams<{ id: string }>()
   const location = useLocation()
-  const [isReplyModalOpen, setIsReplyModalOpen] = useState(false)
   
   const { getReturnUrl } = useSearchNavigation({
     basePath: '/comment',
@@ -109,7 +106,7 @@ export function Comment() {
     <div className="max-w-2xl mx-auto">
       <Breadcrumb to={backUrl} label={breadcrumbLabel} />
       
-      <div>
+      <div className="border-b border-border">
         <CommentCard 
           comment={comment} 
           isReply={false}
@@ -119,16 +116,11 @@ export function Comment() {
         />
       </div>
 
-      <div className="p-4">
-        <Button
-          onClick={() => setIsReplyModalOpen(true)}
-          variant="outline"
-          className="w-full"
-        >
-          <MessageSquarePlus className="h-4 w-4 mr-2" />
-          Reply to comment
-        </Button>
-      </div>
+      <InlineCommentForm 
+        postId={comment.postId}
+        parentCommentId={comment.id}
+        placeholder="Post your reply"
+      />
 
       {repliesLoading ? (
         <div className="border-t border-border">
@@ -154,13 +146,6 @@ export function Comment() {
           )}
         </div>
       )}
-
-      <CreateComment
-        open={isReplyModalOpen}
-        onOpenChange={setIsReplyModalOpen}
-        postId={comment.postId}
-        parentCommentId={comment.id}
-      />
     </div>
   )
 }

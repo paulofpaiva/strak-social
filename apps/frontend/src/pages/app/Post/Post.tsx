@@ -1,11 +1,8 @@
-import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { MessageSquarePlus } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { PostCard } from '@/components/post/PostCard'
 import { CommentsList } from '@/components/comment/CommentsList'
-import { CreateComment } from '@/components/comment/CreateComment'
+import { InlineCommentForm } from '@/components/comment/InlineCommentForm'
 import { PostCardSkeleton } from '@/components/skeleton/PostCardSkeleton'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { getPostById } from '@/api/comments'
@@ -14,7 +11,6 @@ import { useSearchNavigation } from '@/hooks'
 
 export function Post() {
   const { id } = useParams<{ id: string }>()
-  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false)
   
   const { getReturnUrl } = useSearchNavigation({
     basePath: '/post',
@@ -50,30 +46,18 @@ export function Post() {
   return (
     <div className="max-w-2xl mx-auto">
        <Breadcrumb to={getReturnUrl()} label="Back" />
-      <div>
+      <div className="border-b border-border">
         <PostCard post={post} readOnly={false} disableNavigation={true} showFullDate={true} />
       </div>
 
-      <div className="p-4">
-        <Button
-          onClick={() => setIsCommentModalOpen(true)}
-          variant="outline"
-          className="w-full"
-        >
-          <MessageSquarePlus className="h-4 w-4 mr-2" />
-          Add a comment
-        </Button>
-      </div>
+      <InlineCommentForm 
+        postId={post.id}
+        placeholder="Post your reply"
+      />
 
       <div>
         <CommentsList postId={post.id} />
       </div>
-
-      <CreateComment
-        open={isCommentModalOpen}
-        onOpenChange={setIsCommentModalOpen}
-        postId={post.id}
-      />
     </div>
   )
 }

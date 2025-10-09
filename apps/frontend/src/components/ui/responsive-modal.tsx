@@ -34,7 +34,10 @@ export function ResponsiveModal({
     if (!isOpen) return null
     
     return (
-      <div className="fixed inset-0 z-50 flex flex-col bg-background">
+      <div 
+        className="fixed inset-0 z-50 flex flex-col bg-background"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between border-b bg-background px-4 py-3 flex-shrink-0">
           <div className="flex items-center flex-1">
             <Button
