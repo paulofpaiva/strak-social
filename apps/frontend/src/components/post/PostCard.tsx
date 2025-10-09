@@ -3,12 +3,12 @@ import { Avatar } from '@/components/ui/avatar'
 import { PostMedia } from './PostMedia'
 import { formatPostDate, formatFullPostDate } from '@/utils/date'
 import type { Post } from '@/api/posts'
-import { Heart, MessageCircle, MoreVertical, Trash2, Edit, BadgeCheck, Bookmark, Share, Link } from 'lucide-react'
+import { Heart, MessageCircle, MoreVertical, Trash2, Edit, BadgeCheck, Bookmark, Share, Link as LinkIcon } from 'lucide-react'
 import { ResponsiveDropdown } from '@/components/ui/responsive-dropdown'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/stores/authStore'
 import { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation, Link } from 'react-router-dom'
 import { EditPost } from './EditPost'
 import { DeletePost } from './DeletePost'
 import { CreateComment } from '@/components/comment/CreateComment'
@@ -32,7 +32,6 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
   const [isBookmarked, setIsBookmarked] = useState(post.userBookmarked)
   const [bookmarksCount, setBookmarksCount] = useState(post.bookmarksCount)
   const { user } = useAuthStore()
-  const navigate = useNavigate()
   const location = useLocation()
   const isOwner = user?.id === post.userId
   const likeMutation = useLikePostMutation()
@@ -72,34 +71,44 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
     }
   }
 
-  const handleNavigateToPost = () => {
-    if (disableNavigation) return
-    const currentPath = location.pathname
-    navigate(`/post/${post.id}?return=${currentPath}`)
-  }
+  const postUrl = `/post/${post.id}?return=${location.pathname}`
 
   return (
     <article
-      onClick={disableNavigation ? undefined : handleNavigateToPost}
       className={cn(
-        'p-4 transition-colors border-b border-border last:border-b-0',
-        !disableNavigation && 'cursor-pointer',
+        'relative p-4 transition-colors border-b border-border last:border-b-0',
         className
       )}
     >
-      <div className="flex items-start gap-3 mb-3">
-        <Avatar
-          src={post.user.avatar || undefined}
-          name={post.user.name}
-          size="md"
-          className="flex-shrink-0"
+      {!disableNavigation && (
+        <Link 
+          to={postUrl}
+          className="absolute inset-0 z-0"
+          aria-label={`View post by ${post.user.name}`}
         />
+      )}
+      <div className="flex items-start gap-3 mb-3 relative z-10">
+        <Link 
+          to={`/${post.user.username}`}
+          className="flex-shrink-0"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Avatar
+            src={post.user.avatar || undefined}
+            name={post.user.name}
+            size="md"
+          />
+        </Link>
         
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
-            <div className="flex-1 flex flex-col">
+            <Link 
+              to={`/${post.user.username}`}
+              className="flex-1 flex flex-col min-w-0"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-foreground truncate">
+                <span className="font-semibold text-foreground truncate hover:underline">
                   {post.user.name}
                 </span>
                 {post.user.isVerified && (
@@ -114,13 +123,13 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
                   </>
                 )}
               </div>
-              <span className="text-muted-foreground text-sm truncate">
+              <span className="text-muted-foreground text-sm truncate hover:underline">
                 @{post.user.username}
               </span>
-            </div>
+            </Link>
             
             {!readOnly && (
-              <div onClick={(e) => e.stopPropagation()}>
+              <div onClick={(e) => e.stopPropagation()} className="relative z-10">
                 <ResponsiveDropdown
                   trigger={
                     <Button 
@@ -162,7 +171,7 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
       </div>
 
       {post.content && (
-        <div className="mb-3">
+        <div className="mb-3 relative z-10">
           <p className="text-foreground whitespace-pre-wrap break-words">
             {post.content}
           </p>
@@ -170,20 +179,20 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
       )}
 
       {post.media && post.media.length > 0 && (
-        <div className="mb-3">
+        <div className="mb-3 relative z-10">
           <PostMedia media={post.media} />
         </div>
       )}
 
       {isPostView && (
-        <div className="mb-3">
+        <div className="mb-3 relative z-10">
           <p className="text-sm text-muted-foreground">
             {formatFullPostDate(post.createdAt)}
           </p>
         </div>
       )}
 
-      <div className="flex items-center gap-6 text-muted-foreground text-sm">
+      <div className="flex items-center gap-6 text-muted-foreground text-sm relative z-10">
         <button 
           onClick={(e) => {
             e.stopPropagation()
@@ -224,7 +233,7 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
               items={[
                 {
                   label: 'Copy Link',
-                  icon: <Link className="h-4 w-4" />,
+                  icon: <LinkIcon className="h-4 w-4" />,
                   onClick: handleCopyLink,
                   variant: 'default' as const
                 }

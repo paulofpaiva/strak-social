@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from "react-router"
+import { useLocation, Link } from "react-router"
 import { useIsMobile } from "@/hooks/useIsMobile"
 import { useCreatePost } from "@/contexts/CreatePostContext"
 import { useScrollDirection } from "@/hooks/useScrollDirection"
@@ -10,19 +10,12 @@ import {
 
 export function BottomNavigation() {
   const isMobile = useIsMobile()
-  const navigate = useNavigate()
   const location = useLocation()
   const { openCreatePost } = useCreatePost()
   const scrollDirection = useScrollDirection(10)
 
   const navItems = getBottomNavItems()
   const actionItems = getBottomActionItems()
-
-  const handleItemClick = (href?: string) => {
-    if (href) {
-      navigate(href)
-    }
-  }
 
   if (!isMobile) {
     return null
@@ -45,9 +38,9 @@ export function BottomNavigation() {
               : location.pathname === item.href
             
             return (
-              <button
+              <Link
                 key={item.id}
-                onClick={() => handleItemClick(item.href)}
+                to={item.href!}
                 className={cn(
                   "flex items-center justify-center p-3 rounded-lg transition-all duration-300 min-w-0 flex-1",
                   scrollDirection === 'down' && "opacity-60",
@@ -61,7 +54,7 @@ export function BottomNavigation() {
                   "h-6 w-6",
                   isActive && "stroke-[2.5px]"
                 )} />
-              </button>
+              </Link>
             )
           })}
           

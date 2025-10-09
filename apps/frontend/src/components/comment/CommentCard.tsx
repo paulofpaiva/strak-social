@@ -8,7 +8,7 @@ import { ResponsiveDropdown } from '@/components/ui/responsive-dropdown'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/stores/authStore'
 import { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation, Link } from 'react-router-dom'
 import { EditComment } from './EditComment'
 import { DeleteComment } from './DeleteComment'
 import { CreateComment } from './CreateComment'
@@ -39,7 +39,6 @@ export function CommentCard({
   const [isLiked, setIsLiked] = useState(comment.userLiked)
   const [likesCount, setLikesCount] = useState(comment.likesCount)
   const { user } = useAuthStore()
-  const navigate = useNavigate()
   const location = useLocation()
   const isOwner = user?.id === comment.userId
   const likeMutation = useLikeCommentMutation()
@@ -63,9 +62,7 @@ export function CommentCard({
     )
   }
 
-  const handleNavigateToComment = () => {
-    if (disableNavigation) return
-    
+  const getCommentUrl = () => {
     const searchParams = new URLSearchParams(location.search)
     const currentReturn = searchParams.get('return')
     
@@ -78,33 +75,47 @@ export function CommentCard({
       returnPath = location.pathname
     }
     
-    navigate(`/comment/${comment.id}?return=${returnPath}`)
+    return `/comment/${comment.id}?return=${returnPath}`
   }
 
   const hasReplies = comment.repliesCount && comment.repliesCount > 0
 
   return (
     <article
-      onClick={disableNavigation ? undefined : handleNavigateToComment}
       className={cn(
-        'p-4 transition-colors border-b border-border last:border-b-0',
-        !disableNavigation && 'cursor-pointer',
+        'relative p-4 transition-colors border-b border-border last:border-b-0',
         isReply && 'pl-12'
       )}
     >
-      <div className="flex items-start gap-3 mb-3">
-        <Avatar
-          src={comment.user.avatar || undefined}
-          name={comment.user.name}
-          size="md"
-          className="flex-shrink-0"
+      {!disableNavigation && (
+        <Link 
+          to={getCommentUrl()}
+          className="absolute inset-0 z-0"
+          aria-label={`View comment by ${comment.user.name}`}
         />
+      )}
+      <div className="flex items-start gap-3 mb-3 relative z-10">
+        <Link 
+          to={`/${comment.user.username}`}
+          className="flex-shrink-0"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Avatar
+            src={comment.user.avatar || undefined}
+            name={comment.user.name}
+            size="md"
+          />
+        </Link>
         
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
-            <div className="flex-1 flex flex-col">
+            <Link 
+              to={`/${comment.user.username}`}
+              className="flex-1 flex flex-col min-w-0"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-foreground truncate">
+                <span className="font-semibold text-foreground truncate hover:underline">
                   {comment.user.name}
                 </span>
                 {comment.user.isVerified && (
@@ -119,13 +130,13 @@ export function CommentCard({
                   </>
                 )}
               </div>
-              <span className="text-muted-foreground text-sm truncate">
+              <span className="text-muted-foreground text-sm truncate hover:underline">
                 @{comment.user.username}
               </span>
-            </div>
+            </Link>
             
             {isOwner && (
-              <div onClick={(e) => e.stopPropagation()}>
+              <div onClick={(e) => e.stopPropagation()} className="relative z-10">
                 <ResponsiveDropdown
                   trigger={
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -155,7 +166,7 @@ export function CommentCard({
       </div>
 
       {comment.content && (
-        <div className="mb-3">
+        <div className="mb-3 relative z-10">
           <p className="text-foreground whitespace-pre-wrap break-words">
             {comment.content}
           </p>
@@ -163,20 +174,20 @@ export function CommentCard({
       )}
 
       {comment.media && comment.media.length > 0 && (
-        <div className="mb-3">
+        <div className="mb-3 relative z-10">
           <PostMedia media={comment.media as MediaItem[]} />
         </div>
       )}
 
       {showFullDate && (
-        <div className="mb-3">
+        <div className="mb-3 relative z-10">
           <p className="text-sm text-muted-foreground">
             {formatFullPostDate(comment.createdAt)}
           </p>
         </div>
       )}
 
-      <div className="flex items-center gap-6 text-muted-foreground text-sm">
+      <div className="flex items-center gap-6 text-muted-foreground text-sm relative z-10">
         <button 
           onClick={(e) => {
             e.stopPropagation()

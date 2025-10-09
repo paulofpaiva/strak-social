@@ -7,6 +7,7 @@ import { toggleFollowApi } from '@/api/follow'
 import { toast } from 'sonner'
 import { useSearchNavigation } from '@/hooks'
 import { BadgeCheck } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 interface UserListProps {
   users: Array<{ 
@@ -64,39 +65,35 @@ export function UserList({ users, className, onFollowToggled }: UserListProps) {
     }
   }
 
-  const handleUserClick = (username: string) => {
-    navigateToUserProfile(username)
-  }
-
   return (
     <div className={cn('space-y-4 pt-5', className)}>
       {users.map((u) => (
         <div key={u.id} className="flex items-start gap-4">
-          <div 
-            className="cursor-pointer"
-            onClick={() => handleUserClick(u.username)}
+          <Link 
+            to={`/${u.username}`}
+            className="flex-shrink-0"
           >
             <Avatar 
               src={u.avatar ?? undefined} 
               name={u.name} 
               size="md"
             />
-          </div>
-          <div 
-            className="flex-1 min-w-0 cursor-pointer"
-            onClick={() => handleUserClick(u.username)}
+          </Link>
+          <Link 
+            to={`/${u.username}`}
+            className="flex-1 min-w-0"
           >
             <div className="flex items-center gap-1">
-              <p className="text-sm font-medium truncate">{u.name}</p>
+              <p className="text-sm font-medium truncate hover:underline">{u.name}</p>
               {u.isVerified && (
                 <BadgeCheck className="h-4 w-4 text-blue-500 flex-shrink-0" />
               )}
             </div>
-            <p className="text-xs text-muted-foreground truncate">@{u.username}</p>
+            <p className="text-xs text-muted-foreground truncate hover:underline">@{u.username}</p>
             {u.bio && (
               <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{u.bio}</p>
             )}
-          </div>
+          </Link>
           <Button
             variant={u.isFollowing ? "secondary" : "default"}
             size="sm"

@@ -4,11 +4,13 @@ import { Drawer, DrawerContent, DrawerFooter, DrawerTrigger, DrawerClose, Drawer
 import { VisuallyHidden } from "@/components/ui/visually-hidden"
 import { useIsMobile } from "@/hooks/useIsMobile"
 import { useState, useEffect } from "react"
+import { Link } from "react-router-dom"
 
 interface ResponsiveDropdownItem {
   label: string
   icon?: React.ReactNode
-  onClick: () => void
+  onClick?: () => void
+  href?: string
   variant?: 'default' | 'destructive'
   disabled?: boolean
 }
@@ -27,9 +29,11 @@ export function ResponsiveDropdown({
   const isMobile = useIsMobile()
   const [isOpen, setIsOpen] = useState(false)
 
-  const handleItemClick = (onClick: () => void, e?: React.MouseEvent) => {
+  const handleItemClick = (onClick?: () => void, e?: React.MouseEvent) => {
     e?.stopPropagation()
-    onClick()
+    if (onClick) {
+      onClick()
+    }
     setIsOpen(false)
   }
 
@@ -57,26 +61,52 @@ export function ResponsiveDropdown({
               <DrawerDescription>Select an action from the menu</DrawerDescription>
             </VisuallyHidden>
             <div className="flex-1 p-6 space-y-3 overflow-y-auto">
-              {items.map((item, index) => (
-                <Button
-                  key={index}
-                  variant="ghost"
-                  className={`w-full justify-start h-16 text-lg font-normal px-6 rounded-xl ${
-                    item.variant === 'destructive' 
-                      ? 'text-destructive hover:text-destructive hover:bg-destructive/10' 
-                      : 'text-foreground hover:bg-accent'
-                  }`}
-                  onClick={(e) => handleItemClick(item.onClick, e)}
-                  disabled={item.disabled}
-                >
-                  {item.icon && (
-                    <span className="mr-5 text-xl">
-                      {item.icon}
-                    </span>
-                  )}
-                  {item.label}
-                </Button>
-              ))}
+              {items.map((item, index) => {
+                const content = (
+                  <>
+                    {item.icon && (
+                      <span className="mr-5 text-xl">
+                        {item.icon}
+                      </span>
+                    )}
+                    {item.label}
+                  </>
+                )
+                
+                const className = `w-full justify-start h-16 text-lg font-normal px-6 rounded-xl ${
+                  item.variant === 'destructive' 
+                    ? 'text-destructive hover:text-destructive hover:bg-destructive/10' 
+                    : 'text-foreground hover:bg-accent'
+                }`
+                
+                if (item.href) {
+                  return (
+                    <Button
+                      key={index}
+                      variant="ghost"
+                      className={className}
+                      disabled={item.disabled}
+                      asChild
+                    >
+                      <Link to={item.href} onClick={(e) => handleItemClick(item.onClick, e)}>
+                        {content}
+                      </Link>
+                    </Button>
+                  )
+                }
+                
+                return (
+                  <Button
+                    key={index}
+                    variant="ghost"
+                    className={className}
+                    onClick={(e) => handleItemClick(item.onClick, e)}
+                    disabled={item.disabled}
+                  >
+                    {content}
+                  </Button>
+                )
+              })}
             </div>
             
             <DrawerFooter className="p-6 bg-background">
@@ -102,21 +132,44 @@ export function ResponsiveDropdown({
           {trigger}
         </DropdownMenuTrigger>
       <DropdownMenuContent align={align}>
-        {items.map((item, index) => (
-          <DropdownMenuItem
-            key={index}
-            onClick={(e) => handleItemClick(item.onClick, e)}
-            className={item.variant === 'destructive' ? 'text-destructive focus:text-destructive' : ''}
-            disabled={item.disabled}
-          >
-            {item.icon && (
-              <span className="mr-2">
-                {item.icon}
-              </span>
-            )}
-            {item.label}
-          </DropdownMenuItem>
-        ))}
+        {items.map((item, index) => {
+          const content = (
+            <>
+              {item.icon && (
+                <span className="mr-2">
+                  {item.icon}
+                </span>
+              )}
+              {item.label}
+            </>
+          )
+          
+          if (item.href) {
+            return (
+              <DropdownMenuItem
+                key={index}
+                className={item.variant === 'destructive' ? 'text-destructive focus:text-destructive' : ''}
+                disabled={item.disabled}
+                asChild
+              >
+                <Link to={item.href} onClick={(e) => handleItemClick(item.onClick, e)}>
+                  {content}
+                </Link>
+              </DropdownMenuItem>
+            )
+          }
+          
+          return (
+            <DropdownMenuItem
+              key={index}
+              onClick={(e) => handleItemClick(item.onClick, e)}
+              className={item.variant === 'destructive' ? 'text-destructive focus:text-destructive' : ''}
+              disabled={item.disabled}
+            >
+              {content}
+            </DropdownMenuItem>
+          )
+        })}
       </DropdownMenuContent>
       </DropdownMenu>
     </div>

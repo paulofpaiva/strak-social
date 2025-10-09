@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import { useAuth } from "@/hooks"
 import { useTheme } from "@/contexts/ThemeContext"
 import { Avatar } from "@/components/ui/avatar"
@@ -31,13 +31,6 @@ export function MobileSidebar({ open, onOpenChange }: MobileSidebarProps) {
   const menuItems = getMobileSidebarItems()
   const userMenuActions = getUserMenuItemsForDesktop()
   
-
-  const handleItemClick = (href?: string) => {
-    if (href) {
-      navigate(href)
-    }
-    onOpenChange(false)
-  }
 
   const handleUserAction = async (action?: string, href?: string) => {
     if (action === 'logout') {
@@ -81,9 +74,10 @@ export function MobileSidebar({ open, onOpenChange }: MobileSidebarProps) {
                 : location.pathname === item.href
 
               return (
-                <button
+                <Link
                   key={item.id}
-                  onClick={() => handleItemClick(item.href)}
+                  to={item.href!}
+                  onClick={() => onOpenChange(false)}
                   className={cn(
                     "flex items-center gap-3 w-full px-4 py-3 rounded-lg transition-colors text-left",
                     isActive
@@ -95,7 +89,7 @@ export function MobileSidebar({ open, onOpenChange }: MobileSidebarProps) {
                   {item.showLabel && (
                     <span className="text-base">{item.label}</span>
                   )}
-                </button>
+                </Link>
               )
             })}
             
@@ -130,6 +124,7 @@ export function MobileSidebar({ open, onOpenChange }: MobileSidebarProps) {
                   return {
                     label: action.label,
                     icon: <Icon className="h-4 w-4" />,
+                    href: action.href,
                     onClick: () => handleUserAction(action.action, action.href),
                     variant: action.variant
                   }

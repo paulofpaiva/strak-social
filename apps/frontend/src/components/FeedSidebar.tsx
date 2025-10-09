@@ -8,7 +8,7 @@ import { useCreatePost } from '@/contexts/CreatePostContext'
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { ResponsiveDropdown } from '@/components/ui/responsive-dropdown'
-import { useNavigate, useLocation } from 'react-router'
+import { useNavigate, useLocation, Link } from 'react-router'
 import { useEffect, useState } from 'react'
 import { 
   getDesktopSidebarItems, 
@@ -47,12 +47,6 @@ export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
     }
   }
 
-  const handleItemClick = (href?: string) => {
-    if (href) {
-      navigate(href)
-    }
-  }
-
   const handleUserAction = async (action?: string, href?: string) => {
     if (action === 'logout') {
       await handleLogout()
@@ -81,9 +75,9 @@ export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
             : location.pathname === item.href
           
           return (
-            <button
+            <Link
               key={item.id}
-              onClick={() => handleItemClick(item.href)}
+              to={item.href!}
               className={cn(
                 "flex items-center w-full text-left rounded-full transition-colors cursor-pointer",
                 isCompact ? "justify-center px-2 py-3" : "px-4 py-3",
@@ -95,7 +89,7 @@ export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
             >
               <Icon className={cn("h-6 w-6", !isCompact && "mr-4")} />
               {!isCompact && item.showLabel && <span className="text-lg">{item.label}</span>}
-            </button>
+            </Link>
           )
         })}
       </nav>
@@ -162,7 +156,8 @@ export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
               return {
                 label: action.label,
                 icon: <Icon className="h-4 w-4" />,
-                onClick: () => handleUserAction(action.action, action.href),
+                href: action.href,
+                onClick: action.action === 'logout' ? () => handleLogout() : undefined,
                 variant: action.variant
               }
             })}
