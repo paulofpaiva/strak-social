@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { getProfileApi } from '@/api/profile'
 import { getUserByUsernameApi } from '@/api/users'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { CheckCircle, FileText } from 'lucide-react'
+import { CheckCircle, FileText, Image, Heart, Users, Settings, Bookmark, Calendar, MessageSquare, Share2 } from 'lucide-react'
 import { ProfileSkeleton } from '../../../components/skeleton/ProfileSkeleton'
 import { UserProfileSkeleton } from '../../../components/skeleton/UserProfileSkeleton'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
@@ -13,7 +13,7 @@ import { ProfileHeader } from '@/pages/app/Profile/components/ProfileHeader'
 import { ProfileInfo } from '@/pages/app/Profile/components/ProfileInfo'
 import { ProfileActions } from '@/pages/app/Profile/components/ProfileActions'
 import { ProfileStats } from '@/pages/app/Profile/components/ProfileStats'
-import { ResponsiveTabs } from '@/components/ui/responsive-tabs-sidebar'
+import { ScrollableTabs } from '@/components/ui/scrollable-tabs'
 import { PostsList } from '@/pages/app/Profile/components/PostsList'
 import { useState } from 'react'
 import { useAuth, useSearchNavigation, useFollowToggle } from '@/hooks'
@@ -24,7 +24,6 @@ export function Profile() {
   const navigate = useNavigate()
   
   const [editOpen, setEditOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState('posts')
   
   const { getReturnUrl } = useSearchNavigation({
     basePath: username ? '/explore' : '/feed',
@@ -120,15 +119,111 @@ export function Profile() {
         )}
         
         <div className="mt-6">
-          <ResponsiveTabs
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
+          <ScrollableTabs
             tabs={[
               {
                 id: 'posts',
                 label: 'Posts',
                 icon: FileText,
                 content: <PostsList userId={user.id} readOnly={!isOwnProfile} />
+              },
+              {
+                id: 'media',
+                label: 'Media',
+                icon: Image,
+                content: (
+                  <div className="text-center py-12">
+                    <Image className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold text-foreground mb-2">No media yet</h3>
+                    <p className="text-muted-foreground">
+                      {isOwnProfile ? "You haven't posted any media yet." : "This user hasn't posted any media yet."}
+                    </p>
+                  </div>
+                )
+              },
+              {
+                id: 'likes',
+                label: 'Likes',
+                icon: Heart,
+                content: (
+                  <div className="text-center py-12">
+                    <Heart className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold text-foreground mb-2">No likes yet</h3>
+                    <p className="text-muted-foreground">
+                      {isOwnProfile ? "You haven't liked any posts yet." : "This user hasn't liked any posts yet."}
+                    </p>
+                  </div>
+                )
+              },
+              {
+                id: 'bookmarks',
+                label: 'Bookmarks',
+                icon: Bookmark,
+                content: (
+                  <div className="text-center py-12">
+                    <Bookmark className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold text-foreground mb-2">No bookmarks yet</h3>
+                    <p className="text-muted-foreground">
+                      {isOwnProfile ? "You haven't bookmarked any posts yet." : "This user hasn't bookmarked any posts yet."}
+                    </p>
+                  </div>
+                )
+              },
+              {
+                id: 'comments',
+                label: 'Comments',
+                icon: MessageSquare,
+                content: (
+                  <div className="text-center py-12">
+                    <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold text-foreground mb-2">No comments yet</h3>
+                    <p className="text-muted-foreground">
+                      {isOwnProfile ? "You haven't commented on any posts yet." : "This user hasn't commented on any posts yet."}
+                    </p>
+                  </div>
+                )
+              },
+              {
+                id: 'shared',
+                label: 'Shared',
+                icon: Share2,
+                content: (
+                  <div className="text-center py-12">
+                    <Share2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold text-foreground mb-2">No shared posts yet</h3>
+                    <p className="text-muted-foreground">
+                      {isOwnProfile ? "You haven't shared any posts yet." : "This user hasn't shared any posts yet."}
+                    </p>
+                  </div>
+                )
+              },
+              {
+                id: 'followers',
+                label: 'Followers',
+                icon: Users,
+                content: (
+                  <div className="text-center py-12">
+                    <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold text-foreground mb-2">Followers</h3>
+                    <p className="text-muted-foreground">
+                      {isOwnProfile ? "Manage your followers here." : "View this user's followers."}
+                    </p>
+                  </div>
+                )
+              },
+              {
+                id: 'activity',
+                label: 'Activity',
+                icon: Calendar,
+                content: (
+                  <div className="text-center py-12">
+                    <Calendar className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold text-foreground mb-2">Activity Timeline</h3>
+                    <p className="text-muted-foreground">
+                      {isOwnProfile ? "View your recent activity." : "View this user's recent activity."}
+                    </p>
+                  </div>
+                )
               }
             ]}
           />
