@@ -96,6 +96,10 @@ export function useLikePostMutation() {
         queryKey: ['user-posts'],
         refetchType: 'all'
       })
+      await queryClient.invalidateQueries({ 
+        queryKey: ['following-posts'],
+        refetchType: 'all'
+      })
       
       await queryClient.invalidateQueries({ 
         queryKey: ['post', postId],

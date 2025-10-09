@@ -1,8 +1,9 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar } from "@/components/ui/avatar"
 import { useAuth } from "@/hooks"
-import { User, Mail, Calendar } from "lucide-react"
+import { Users, Sparkles } from "lucide-react"
 import { useNavigationTracking } from '@/utils/navigation'
+import { ScrollableTabs } from '@/components/ui/scrollable-tabs'
+import { FollowingFeed } from './Feed/components/FollowingFeed'
+import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from '@/components/ui/empty'
 
 export function Feed() {
   const { user } = useAuth()
@@ -24,9 +25,38 @@ export function Feed() {
     <>
       <div className="mb-8">
         <h2 className="text-3xl font-bold mb-2">Feed</h2>
-        <p className="text-muted-foreground">Welcome to your control panel</p>
+        <p className="text-muted-foreground">Explore posts from people you follow</p>
       </div>
 
+      <ScrollableTabs
+        defaultIndex={0}
+        tabs={[
+          {
+            id: 'following',
+            label: 'Following',
+            icon: Users,
+            content: <FollowingFeed />
+          },
+          {
+            id: 'for-you',
+            label: 'For You',
+            icon: Sparkles,
+            content: (
+              <Empty>
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <Sparkles className="h-6 w-6" />
+                  </EmptyMedia>
+                  <EmptyTitle>Coming Soon</EmptyTitle>
+                  <EmptyDescription>
+                    The For You feed is currently under development. Stay tuned!
+                  </EmptyDescription>
+                </EmptyHeader>
+              </Empty>
+            )
+          }
+        ]}
+      />
     </>
   )
 }

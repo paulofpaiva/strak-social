@@ -7,11 +7,13 @@ import updateRouter from './update'
 import deleteRouter from './delete'
 import likeRouter from './like'
 import commentsRouter from './comments'
+import followingRouter from './following'
 
 const router = Router()
 
 router.use('/', createRouter)
 router.use('/', listRouter)
+router.use('/', followingRouter)
 router.use('/', listByUserRouter)
 router.use('/', getByIdRouter)
 router.use('/', updateRouter)

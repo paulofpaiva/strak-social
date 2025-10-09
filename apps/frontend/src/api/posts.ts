@@ -92,3 +92,11 @@ export const toggleLikePostApi = async (postId: string) => {
   return response.data
 }
 
+export const getFollowingPostsApi = async (page: number = 1, limit: number = 10): Promise<PostsResponse> => {
+  const response = await api.get('/posts/following', {
+    params: { page, limit }
+  })
+  
+  return response.data.data
+}
+

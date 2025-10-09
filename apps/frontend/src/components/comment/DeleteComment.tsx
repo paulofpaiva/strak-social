@@ -58,7 +58,7 @@ export function DeleteComment({ open, onOpenChange, comment, onDeleteSuccess }: 
       disabled={deleteMutation.isPending}
       className="flex-1"
     >
-      {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+      Delete
     </Button>
   )
 

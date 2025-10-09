@@ -6,6 +6,14 @@ interface ProfileInfoProps {
   user: User
 }
 
+const ensureHttps = (url: string): string => {
+  if (!url) return url
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url
+  }
+  return `https://${url}`
+}
+
 export function ProfileInfo({ user }: ProfileInfoProps) {
   return (
     <div className="space-y-1">
@@ -31,7 +39,7 @@ export function ProfileInfo({ user }: ProfileInfoProps) {
             <div className="flex items-center gap-1 w-full sm:w-auto">
               <LinkIcon className="h-4 w-4 text-muted-foreground" />
               <a
-                href={user.website}
+                href={ensureHttps(user.website)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-500 hover:underline break-all"
