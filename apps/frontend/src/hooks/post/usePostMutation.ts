@@ -61,6 +61,11 @@ export function usePostMutation(options: UsePostMutationOptions) {
       })
       
       await queryClient.invalidateQueries({ 
+        queryKey: ['following-posts'],
+        refetchType: 'active'
+      })
+      
+      await queryClient.invalidateQueries({ 
         queryKey: ['bookmarks'],
         refetchType: 'active'
       })

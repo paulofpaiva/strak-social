@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { getProfileApi } from '@/api/profile'
 import { getUserByUsernameApi } from '@/api/users'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { CheckCircle, FileText, Bookmark } from 'lucide-react'
+import { CheckCircle } from 'lucide-react'
 import { ProfileSkeleton } from '../../../components/skeleton/ProfileSkeleton'
 import { UserProfileSkeleton } from '../../../components/skeleton/UserProfileSkeleton'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
@@ -124,12 +124,10 @@ export function Profile() {
           <Tabs defaultValue="posts" className="w-full">
             <TabsList>
               <TabsTrigger value="posts" className="cursor-pointer">
-                <FileText className="h-4 w-4" />
                 Posts
               </TabsTrigger>
               {isOwnProfile && (
                 <TabsTrigger value="bookmarks" className="cursor-pointer">
-                  <Bookmark className="h-4 w-4" />
                   Bookmarks
                 </TabsTrigger>
               )}

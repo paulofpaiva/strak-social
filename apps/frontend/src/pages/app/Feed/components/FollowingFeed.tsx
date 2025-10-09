@@ -6,6 +6,8 @@ import { useInfiniteScroll } from '@/hooks'
 import { Loader2, Users } from 'lucide-react'
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from '@/components/ui/empty'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
+import { CreatePostInline } from '@/components/post/CreatePostInline'
+import { PullToRefresh } from '@/components/ui/pull-to-refresh'
 
 export function FollowingFeed() {
   const {
@@ -52,38 +54,48 @@ export function FollowingFeed() {
 
   const posts = data?.pages.flatMap((page) => page.posts) || []
 
+  const handleRefresh = async () => {
+    await refetch()
+  }
+
   if (posts.length === 0) {
     return (
-      <Empty>
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <Users className="h-6 w-6" />
-          </EmptyMedia>
-          <EmptyTitle>No posts yet</EmptyTitle>
-          <EmptyDescription>
-            Posts from people you follow will appear here. Start following users to see their posts!
-          </EmptyDescription>
-        </EmptyHeader>
-      </Empty>
+      <>
+        <CreatePostInline />
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Users className="h-6 w-6" />
+            </EmptyMedia>
+            <EmptyTitle>No posts yet</EmptyTitle>
+            <EmptyDescription>
+              Posts from people you follow will appear here. Start following users to see their posts!
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      </>
     )
   }
 
   return (
-    <div>
+    <PullToRefresh onRefresh={handleRefresh}>
       <div>
-        {posts.map(post => (
-          <PostCard key={post.id} post={post} />
-        ))}
-      </div>
-
-      {hasNextPage && (
-        <div ref={sentinelRef} className="flex justify-center py-4">
-          {isFetchingNextPage && (
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          )}
+        <CreatePostInline />
+        <div>
+          {posts.map(post => (
+            <PostCard key={post.id} post={post} />
+          ))}
         </div>
-      )}
-    </div>
+
+        {hasNextPage && (
+          <div ref={sentinelRef} className="flex justify-center py-4">
+            {isFetchingNextPage && (
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            )}
+          </div>
+        )}
+      </div>
+    </PullToRefresh>
   )
 }
 

@@ -8,7 +8,7 @@ import { comments } from '../../schemas/comments'
 import { bookmarks } from '../../schemas/bookmarks'
 import { followers } from '../../schemas/followers'
 import { authenticateToken } from '../../middleware/auth'
-import { eq, desc, asc, and } from 'drizzle-orm'
+import { eq, desc, asc, and, inArray } from 'drizzle-orm'
 import { asyncHandler } from '../../middleware/asyncHandler'
 import { ApiResponse } from '../../utils/response'
 
@@ -19,6 +19,15 @@ router.get('/following', authenticateToken, asyncHandler(async (req: Request, re
   const limit = parseInt(req.query.limit as string) || 10
   const offset = (page - 1) * limit
   const userId = req.user!.id
+
+  const followingUsers = await db
+    .select({ followingId: followers.followingId })
+    .from(followers)
+    .where(eq(followers.followerId, userId))
+
+  const followingIds = followingUsers.map(f => f.followingId)
+  
+  const userIds = [...followingIds, userId]
 
   const postsWithUsers = await db
     .select({
@@ -37,8 +46,7 @@ router.get('/following', authenticateToken, asyncHandler(async (req: Request, re
     })
     .from(posts)
     .innerJoin(users, eq(posts.userId, users.id))
-    .innerJoin(followers, eq(posts.userId, followers.followingId))
-    .where(eq(followers.followerId, userId))
+    .where(inArray(posts.userId, userIds))
     .orderBy(desc(posts.createdAt))
     .limit(limit)
     .offset(offset)

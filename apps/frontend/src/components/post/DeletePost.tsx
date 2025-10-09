@@ -31,6 +31,11 @@ export function DeletePost({ open, onOpenChange, post }: DeletePostProps) {
       })
       
       await queryClient.invalidateQueries({ 
+        queryKey: ['following-posts'],
+        refetchType: 'active'
+      })
+      
+      await queryClient.invalidateQueries({ 
         queryKey: ['bookmarks'],
         refetchType: 'active'
       })
