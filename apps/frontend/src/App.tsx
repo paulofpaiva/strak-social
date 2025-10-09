@@ -138,21 +138,6 @@ function AppRoutes() {
       />
 
       <Route 
-        path="/profile" 
-        element={
-          <ProtectedRoute>
-            <AppLayout>
-              <Outlet />
-            </AppLayout>
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<Profile />} />
-        <Route path="following" element={<Following />} />
-        <Route path="followers" element={<Followers />} />
-      </Route>
-      
-      <Route 
         path="/settings/:tab" 
         element={
           <ProtectedRoute>
@@ -168,11 +153,15 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <AppLayout>
-              <Profile />
+              <Outlet />
             </AppLayout>
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<Profile />} />
+        <Route path="following" element={<Following />} />
+        <Route path="followers" element={<Followers />} />
+      </Route>
            
       <Route path="/app/*" element={<Navigate to="/feed" replace />} />
       

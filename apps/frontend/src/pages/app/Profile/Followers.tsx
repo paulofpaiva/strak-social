@@ -2,6 +2,8 @@ import { useState, useMemo } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getUserFollowersApi, removeFollowerApi } from '@/api/follow'
 import { useAuth } from '@/hooks'
+import { useParams } from 'react-router-dom'
+import { getUserByUsernameApi } from '@/api/users'
 import { FollowList } from './components/FollowList'
 import { FollowListSkeleton } from '../../../components/skeleton/FollowListSkeleton'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
@@ -12,15 +14,26 @@ import { Spinner } from '@/components/ui/spinner'
 import { toast } from 'sonner'
 
 export function Followers() {
-  const { user } = useAuth()
+  const { username } = useParams<{ username: string }>()
+  const { user: currentUser } = useAuth()
   const [page, setPage] = useState(1)
   const [limit] = useState(20)
   const [search, setSearch] = useState('')
   const [allUsers, setAllUsers] = useState<any[]>([])
   const [loadingUsers, setLoadingUsers] = useState<Set<string>>(new Set())
 
-  const userId = user?.id || ''
   const queryClient = useQueryClient()
+  
+  const { data: userData, isLoading: isLoadingUser } = useQuery({
+    queryKey: ['user-profile', username],
+    queryFn: () => getUserByUsernameApi(username!),
+    enabled: !!username,
+    retry: false,
+    refetchOnWindowFocus: false,
+  })
+
+  const userId = userData?.id || ''
+  const isOwnProfile = currentUser?.username === username
 
   const { data, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ['followers', userId, page, limit, search],
@@ -82,9 +95,13 @@ export function Followers() {
     }
   }
 
+  if (isLoadingUser) {
+    return <FollowListSkeleton />
+  }
+
   return (
     <>
-      <Breadcrumb to="/profile" label={`Followers`} />
+      <Breadcrumb to={`/${username}`} label={`Followers`} />
 
       <div className="pt-5 w-full md:w-96">
         <SearchInput
@@ -111,8 +128,9 @@ export function Followers() {
             users={allUsers} 
             variant="followers" 
             hasSearch={search.trim().length > 0}
-            onRemoveFollower={handleRemoveFollower}
+            onRemoveFollower={isOwnProfile ? handleRemoveFollower : undefined}
             loadingUsers={loadingUsers}
+            isOwnProfile={isOwnProfile}
           />
           
           {allUsers.length > 0 && isFetching && (

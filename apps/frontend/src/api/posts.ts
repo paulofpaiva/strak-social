@@ -107,3 +107,11 @@ export const getFollowingPostsApi = async (page: number = 1, limit: number = 10)
   return response.data.data
 }
 
+export const getTrendingPostsApi = async (page: number = 1, limit: number = 10): Promise<PostsResponse> => {
+  const response = await api.get('/posts/trending', {
+    params: { page, limit }
+  })
+  
+  return response.data.data
+}
+

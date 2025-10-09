@@ -21,6 +21,7 @@ interface FollowersListProps {
   onToggleFollow?: (userId: string) => void
   onRemoveFollower?: (userId: string) => void
   loadingUsers?: Set<string>
+  isOwnProfile?: boolean
 }
 
 export function FollowList({ 
@@ -31,7 +32,8 @@ export function FollowList({
   showFollowButton = false,
   onToggleFollow,
   onRemoveFollower,
-  loadingUsers = new Set()
+  loadingUsers = new Set(),
+  isOwnProfile = true
 }: FollowersListProps) {
   if (!users || users.length === 0) {
     return (
@@ -39,9 +41,13 @@ export function FollowList({
         {hasSearch ? (
           <p className="text-sm text-muted-foreground">No users found matching your search.</p>
         ) : variant === 'following' ? (
-          <p className="text-sm text-muted-foreground">You are not following anyone yet.</p>
+          <p className="text-sm text-muted-foreground">
+            {isOwnProfile ? 'You are not following anyone yet.' : 'This user is not following anyone yet.'}
+          </p>
         ) : (
-          <p className="text-sm text-muted-foreground">You have no followers yet.</p>
+          <p className="text-sm text-muted-foreground">
+            {isOwnProfile ? 'You have no followers yet.' : 'This user has no followers yet.'}
+          </p>
         )}
       </div>
     )

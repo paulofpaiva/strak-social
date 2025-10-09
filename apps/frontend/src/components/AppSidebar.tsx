@@ -70,14 +70,15 @@ export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
       <nav className={cn("space-y-1", isCompact ? "px-2" : "px-4")}>
         {menuItems.map((item) => {
           const Icon = item.icon
+          const href = item.id === 'profile' && user ? `/${user.username}` : item.href!
           const isActive = item.matchPattern === 'startsWith'
-            ? location.pathname.startsWith(item.href!)
-            : location.pathname === item.href
+            ? location.pathname.startsWith(href)
+            : location.pathname === href
           
           return (
             <Link
               key={item.id}
-              to={item.href!}
+              to={href}
               className={cn(
                 "flex items-center w-full text-left rounded-full transition-colors cursor-pointer",
                 isCompact ? "justify-center px-2 py-3" : "px-4 py-3",
@@ -153,10 +154,11 @@ export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
             }
             items={userMenuActions.map(action => {
               const Icon = action.icon
+              const href = action.id === 'profile' && user ? `/${user.username}` : action.href
               return {
                 label: action.label,
                 icon: <Icon className="h-4 w-4" />,
-                href: action.href,
+                href: href,
                 onClick: action.action === 'logout' ? () => handleLogout() : undefined,
                 variant: action.variant
               }

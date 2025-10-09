@@ -26,16 +26,16 @@ export function Profile() {
   const [editOpen, setEditOpen] = useState(false)
   
   const { getReturnUrl } = useSearchNavigation({
-    basePath: username ? '/explore' : '/feed',
-    defaultReturnPath: username ? '/explore' : '/feed'
+    basePath: '/explore',
+    defaultReturnPath: '/feed'
   })
 
-  const isOwnProfile = !username || currentUser?.username === username
+  const isOwnProfile = currentUser?.username === username
 
   const { data: ownProfileData, isLoading: ownLoading, error: ownError, refetch: refetchOwn } = useQuery({
     queryKey: ['profile'],
     queryFn: getProfileApi,
-    enabled: isOwnProfile && !username,
+    enabled: isOwnProfile,
     retry: false,
     refetchOnWindowFocus: false,
   })
@@ -48,10 +48,10 @@ export function Profile() {
     refetchOnWindowFocus: false,
   })
 
-  const user = isOwnProfile && !username ? ownProfileData?.user : otherUserData
-  const isLoading = isOwnProfile && !username ? ownLoading : otherLoading
-  const error = isOwnProfile && !username ? ownError : otherError
-  const refetch = isOwnProfile && !username ? refetchOwn : refetchOther
+  const user = isOwnProfile ? ownProfileData?.user : otherUserData
+  const isLoading = isOwnProfile ? ownLoading : otherLoading
+  const error = isOwnProfile ? ownError : otherError
+  const refetch = isOwnProfile ? refetchOwn : refetchOther
 
   const { isFollowing, isLoading: isFollowLoading, toggleFollow } = useFollowToggle({
     userId: user?.id || '',
@@ -103,8 +103,8 @@ export function Profile() {
           followersCount={user.followersCount}
           followingCount={user.followingCount}
           isOwnProfile={isOwnProfile}
-          onFollowersClick={() => navigate('/profile/followers')}
-          onFollowingClick={() => navigate('/profile/following')}
+          onFollowersClick={() => navigate(`/${username}/followers`)}
+          onFollowingClick={() => navigate(`/${username}/following`)}
         />
 
         {isOwnProfile && !user.isVerified && (

@@ -21,33 +21,25 @@ export function ProfileStats({
         <span className={isOwnProfile ? "font-semibold text-foreground" : "font-medium"}>
           {followersCount || 0}
         </span>
-        {isOwnProfile ? (
-          <Button
-            variant="link"
-            className="text-muted-foreground h-auto p-0 font-normal"
-            onClick={onFollowersClick}
-          >
-            Followers
-          </Button>
-        ) : (
-          <span className="text-muted-foreground">followers</span>
-        )}
+        <Button
+          variant="link"
+          className="text-muted-foreground h-auto p-0 font-normal"
+          onClick={onFollowersClick}
+        >
+          Followers
+        </Button>
       </div>
       <div className="flex items-center space-x-1">
         <span className={isOwnProfile ? "font-semibold text-foreground" : "font-medium"}>
           {followingCount || 0}
         </span>
-        {isOwnProfile ? (
-          <Button
-            variant="link"
-            className="text-muted-foreground h-auto p-0 font-normal"
-            onClick={onFollowingClick}
-          >
-            Following
-          </Button>
-        ) : (
-          <span className="text-muted-foreground">following</span>
-        )}
+        <Button
+          variant="link"
+          className="text-muted-foreground h-auto p-0 font-normal"
+          onClick={onFollowingClick}
+        >
+          Following
+        </Button>
       </div>
     </div>
   )

@@ -2,6 +2,7 @@ import { useLocation, Link } from "react-router"
 import { useIsMobile } from "@/hooks/useIsMobile"
 import { useCreatePost } from "@/contexts/CreatePostContext"
 import { useScrollDirection } from "@/hooks/useScrollDirection"
+import { useAuth } from "@/hooks"
 import { cn } from "@/lib/utils"
 import { 
   getBottomNavItems, 
@@ -12,6 +13,7 @@ export function BottomNavigation() {
   const isMobile = useIsMobile()
   const location = useLocation()
   const { openCreatePost } = useCreatePost()
+  const { user } = useAuth()
   const scrollDirection = useScrollDirection(10)
 
   const navItems = getBottomNavItems()
@@ -33,14 +35,15 @@ export function BottomNavigation() {
         <div className="flex items-center justify-around px-2 py-2">
           {navItems.map((item) => {
             const Icon = item.icon
+            const href = item.id === 'profile' && user ? `/${user.username}` : item.href!
             const isActive = item.matchPattern === 'startsWith'
-              ? location.pathname.startsWith(item.href!)
-              : location.pathname === item.href
+              ? location.pathname.startsWith(href)
+              : location.pathname === href
             
             return (
               <Link
                 key={item.id}
-                to={item.href!}
+                to={href}
                 className={cn(
                   "flex items-center justify-center p-3 rounded-lg transition-all duration-300 min-w-0 flex-1",
                   scrollDirection === 'down' && "opacity-60",

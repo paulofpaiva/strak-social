@@ -66,6 +66,11 @@ export function usePostMutation(options: UsePostMutationOptions) {
       })
       
       await queryClient.invalidateQueries({ 
+        queryKey: ['trending-posts'],
+        refetchType: 'active'
+      })
+      
+      await queryClient.invalidateQueries({ 
         queryKey: ['bookmarks'],
         refetchType: 'active'
       })
@@ -112,6 +117,11 @@ export function useLikePostMutation() {
       })
       
       await queryClient.invalidateQueries({ 
+        queryKey: ['trending-posts'],
+        refetchType: 'all'
+      })
+      
+      await queryClient.invalidateQueries({ 
         queryKey: ['bookmarks'],
         refetchType: 'all'
       })
@@ -152,6 +162,12 @@ export function useBookmarkPostMutation() {
         queryKey: ['following-posts'],
         refetchType: 'all'
       })
+      
+      await queryClient.invalidateQueries({ 
+        queryKey: ['trending-posts'],
+        refetchType: 'all'
+      })
+      
       await queryClient.invalidateQueries({ 
         queryKey: ['bookmarks'],
         refetchType: 'all'

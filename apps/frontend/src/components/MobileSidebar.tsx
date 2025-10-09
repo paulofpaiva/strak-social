@@ -69,14 +69,15 @@ export function MobileSidebar({ open, onOpenChange }: MobileSidebarProps) {
           <nav className="flex-1 px-4 py-0 space-y-1 overflow-y-auto">
             {menuItems.map((item) => {
               const Icon = item.icon
+              const href = item.id === 'profile' && user ? `/${user.username}` : item.href!
               const isActive = item.matchPattern === 'startsWith'
-                ? location.pathname.startsWith(item.href!)
-                : location.pathname === item.href
+                ? location.pathname.startsWith(href)
+                : location.pathname === href
 
               return (
                 <Link
                   key={item.id}
-                  to={item.href!}
+                  to={href}
                   onClick={() => onOpenChange(false)}
                   className={cn(
                     "flex items-center gap-3 w-full px-4 py-3 rounded-lg transition-colors text-left",
@@ -121,11 +122,12 @@ export function MobileSidebar({ open, onOpenChange }: MobileSidebarProps) {
                 }
                 items={userMenuActions.map(action => {
                   const Icon = action.icon
+                  const href = action.id === 'profile' && user ? `/${user.username}` : action.href
                   return {
                     label: action.label,
                     icon: <Icon className="h-4 w-4" />,
-                    href: action.href,
-                    onClick: () => handleUserAction(action.action, action.href),
+                    href: href,
+                    onClick: () => handleUserAction(action.action, href),
                     variant: action.variant
                   }
                 })}

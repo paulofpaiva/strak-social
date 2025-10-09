@@ -78,6 +78,11 @@ export function useCommentMutation(options: UseCommentMutationOptions) {
       })
       
       await queryClient.invalidateQueries({ 
+        queryKey: ['trending-posts'],
+        refetchType: 'all'
+      })
+      
+      await queryClient.invalidateQueries({ 
         queryKey: ['bookmarks'],
         refetchType: 'all'
       })
@@ -141,6 +146,11 @@ export function useLikeCommentMutation() {
         refetchType: 'all'
       })
       
+      await queryClient.invalidateQueries({ 
+        queryKey: ['trending-posts'],
+        refetchType: 'all'
+      })
+      
       if (variables.parentCommentId) {
         await queryClient.invalidateQueries({ 
           queryKey: ['comment-replies-infinite', variables.parentCommentId],
@@ -201,6 +211,11 @@ export function useDeleteCommentMutation() {
       
       await queryClient.invalidateQueries({ 
         queryKey: ['following-posts'],
+        refetchType: 'all'
+      })
+      
+      await queryClient.invalidateQueries({ 
+        queryKey: ['trending-posts'],
         refetchType: 'all'
       })
       
