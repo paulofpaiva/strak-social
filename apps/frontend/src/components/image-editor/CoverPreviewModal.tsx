@@ -77,11 +77,7 @@ export function CoverPreviewModal({
             disabled={isDeleting}
             className="border-0 shadow-none flex-1 flex-col h-auto py-3 gap-2"
           >
-            {isDeleting ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              <Trash2 className="h-5 w-5" />
-            )}
+            <Trash2 className="h-5 w-5" />
             <span className="text-xs">Delete</span>
           </Button>
         )}

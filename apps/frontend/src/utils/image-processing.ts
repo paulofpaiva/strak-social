@@ -31,7 +31,9 @@ function rotateSize(width: number, height: number, rotation: number): { width: n
 export async function getCroppedImg(
   imageSrc: string,
   pixelCrop: Area,
-  rotation = 0
+  rotation = 0,
+  flipHorizontal = false,
+  flipVertical = false
 ): Promise<Blob> {
   const image = await createImage(imageSrc)
   const canvas = document.createElement('canvas')
@@ -43,23 +45,24 @@ export async function getCroppedImg(
 
   const rotRad = getRadianAngle(rotation)
 
-  // Calculate bounding box of the rotated image
   const { width: bBoxWidth, height: bBoxHeight } = rotateSize(
     pixelCrop.width,
     pixelCrop.height,
     rotation
   )
 
-  // Set canvas size to match the bounding box
   canvas.width = bBoxWidth
   canvas.height = bBoxHeight
 
-  // Translate canvas context to a central location to allow rotating around the center
   ctx.translate(bBoxWidth / 2, bBoxHeight / 2)
   ctx.rotate(rotRad)
+  
+  const scaleX = flipHorizontal ? -1 : 1
+  const scaleY = flipVertical ? -1 : 1
+  ctx.scale(scaleX, scaleY)
+  
   ctx.translate(-pixelCrop.width / 2, -pixelCrop.height / 2)
 
-  // Draw rotated image
   ctx.drawImage(
     image,
     pixelCrop.x,
@@ -87,7 +90,6 @@ export async function optimizeBlobSize(
   blob: Blob,
   maxSizeBytes: number = 5 * 1024 * 1024
 ): Promise<Blob> {
-  // If already under the limit, return as is
   if (blob.size <= maxSizeBytes) {
     return blob
   }
@@ -99,13 +101,11 @@ export async function optimizeBlobSize(
     throw new Error('Could not create canvas context')
   }
 
-  // Load the blob as an image
   const image = await createImage(URL.createObjectURL(blob))
   canvas.width = image.width
   canvas.height = image.height
   ctx.drawImage(image, 0, 0)
 
-  // Try different quality levels until we're under the size limit
   const qualities = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4]
 
   for (const quality of qualities) {
@@ -118,7 +118,6 @@ export async function optimizeBlobSize(
     }
   }
 
-  // If still too large, return the lowest quality
   return new Promise<Blob>((resolve) => {
     canvas.toBlob((blob) => resolve(blob!), 'image/jpeg', 0.4)
   })

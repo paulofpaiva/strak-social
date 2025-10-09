@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import { ResponsiveModal } from '@/components/ui/responsive-modal'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
-import { RotateCcw, RotateCw, ZoomIn, RotateCcw as StraightenIcon, Image } from 'lucide-react'
+import { RotateCcw, RotateCw, ZoomIn, RotateCcw as StraightenIcon, Image, FlipHorizontal, FlipVertical } from 'lucide-react'
 import Cropper from 'react-easy-crop'
 import { getCroppedImg, optimizeBlobSize, type Area } from '@/utils/image-processing'
 import { toast } from 'sonner'
@@ -28,6 +28,8 @@ export function AvatarCropModal({
   const [crop, setCrop] = useState({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
   const [rotation, setRotation] = useState(0)
+  const [flipHorizontal, setFlipHorizontal] = useState(false)
+  const [flipVertical, setFlipVertical] = useState(false)
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const isMobile = useIsMobile()
@@ -46,6 +48,8 @@ export function AvatarCropModal({
     setCrop({ x: 0, y: 0 })
     setZoom(1)
     setRotation(0)
+    setFlipHorizontal(false)
+    setFlipVertical(false)
     setCroppedAreaPixels(null)
   }
 
@@ -61,7 +65,9 @@ export function AvatarCropModal({
       const croppedBlob = await getCroppedImg(
         imageUrl,
         croppedAreaPixels,
-        rotation
+        rotation,
+        flipHorizontal,
+        flipVertical
       )
 
       const optimizedBlob = await optimizeBlobSize(croppedBlob)
@@ -94,25 +100,52 @@ export function AvatarCropModal({
   const modalContent = (
     <div className="space-y-6">
       <div className="relative bg-gray-900 flex items-center justify-center h-[400px] w-full max-w-[400px] mx-auto overflow-hidden rounded-lg">
-        <Cropper
-          image={imageUrl}
-          crop={crop}
-          zoom={zoom}
-          rotation={rotation}
-          aspect={ASPECT_RATIO}
-          cropShape="round"
-          onCropChange={setCrop}
-          onZoomChange={setZoom}
-          onRotationChange={setRotation}
-          onCropComplete={onCropComplete}
-        />
+        <div 
+          style={{
+            transform: `scaleX(${flipHorizontal ? -1 : 1}) scaleY(${flipVertical ? -1 : 1})`,
+            width: '100%',
+            height: '100%'
+          }}
+        >
+          <Cropper
+            image={imageUrl}
+            crop={crop}
+            zoom={zoom}
+            rotation={rotation}
+            aspect={ASPECT_RATIO}
+            cropShape="round"
+            onCropChange={setCrop}
+            onZoomChange={setZoom}
+            onRotationChange={setRotation}
+            onCropComplete={onCropComplete}
+          />
+        </div>
       </div>
 
-      <div className="space-y-6">
+      <div className={`space-y-6 ${isMobile ? 'space-y-8' : ''}`}>
+        <div className="flex items-center justify-center gap-3">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setFlipHorizontal(!flipHorizontal)}
+            className={`${isMobile ? 'h-10 w-10' : 'h-8 w-8'}`}
+          >
+            <FlipHorizontal className={`${isMobile ? 'h-5 w-5' : 'h-4 w-4'}`} />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setFlipVertical(!flipVertical)}
+            className={`${isMobile ? 'h-10 w-10' : 'h-8 w-8'}`}
+          >
+            <FlipVertical className={`${isMobile ? 'h-5 w-5' : 'h-4 w-4'}`} />
+          </Button>
+        </div>
+
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
+          <div className={`flex items-center justify-between ${isMobile ? 'text-base' : 'text-sm'}`}>
             <span className="flex items-center gap-2">
-              <ZoomIn className="h-4 w-4" />
+              <ZoomIn className={`${isMobile ? 'h-5 w-5' : 'h-4 w-4'}`} />
               Zoom
             </span>
             <span className="text-muted-foreground">
@@ -125,14 +158,14 @@ export function AvatarCropModal({
             min={1}
             max={3}
             step={0.1}
-            className="w-full"
+            className={`w-full ${isMobile ? 'h-6' : ''}`}
           />
         </div>
 
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
+          <div className={`flex items-center justify-between ${isMobile ? 'text-base' : 'text-sm'}`}>
             <span className="flex items-center gap-2">
-              <StraightenIcon className="h-4 w-4" />
+              <StraightenIcon className={`${isMobile ? 'h-5 w-5' : 'h-4 w-4'}`} />
               Straighten
             </span>
             <span className="text-muted-foreground">
@@ -145,9 +178,9 @@ export function AvatarCropModal({
               size="icon"
               onClick={handleRotateLeft}
               disabled={rotation <= -45}
-              className="h-8 w-8"
+              className={`${isMobile ? 'h-10 w-10' : 'h-8 w-8'}`}
             >
-              <RotateCcw className="h-4 w-4" />
+              <RotateCcw className={`${isMobile ? 'h-5 w-5' : 'h-4 w-4'}`} />
             </Button>
             <Slider
               value={[rotation]}
@@ -155,16 +188,16 @@ export function AvatarCropModal({
               min={-45}
               max={45}
               step={1}
-              className="flex-1"
+              className={`flex-1 ${isMobile ? 'h-6' : ''}`}
             />
             <Button
               variant="outline"
               size="icon"
               onClick={handleRotateRight}
               disabled={rotation >= 45}
-              className="h-8 w-8"
+              className={`${isMobile ? 'h-10 w-10' : 'h-8 w-8'}`}
             >
-              <RotateCw className="h-4 w-4" />
+              <RotateCw className={`${isMobile ? 'h-5 w-5' : 'h-4 w-4'}`} />
             </Button>
           </div>
         </div>
@@ -173,19 +206,19 @@ export function AvatarCropModal({
   )
 
   const actionButton = (
-    <div className="flex gap-3 w-full">
+    <div className="flex gap-3 w-full items-center">
       <Button
         variant="outline"
         onClick={onChangePhoto}
         disabled={isProcessing}
-        className={isMobile ? "h-10 w-10 p-0" : "flex-1"}
+        className={isMobile ? "h-10 w-10 p-0" : "flex-1 h-10"}
       >
         {isMobile ? <Image className="h-4 w-4" /> : "Change photo"}
       </Button>
       <Button
         onClick={handleApply}
         disabled={isProcessing || !croppedAreaPixels}
-        className="flex-1"
+        className="flex-1 h-10"
       >
         Apply
       </Button>
@@ -197,7 +230,7 @@ export function AvatarCropModal({
       isOpen={open}
       onClose={handleCancel}
       title="Avatar image"
-      className="sm:max-w-2xl"
+      className={isMobile ? "max-h-screen" : "sm:max-w-2xl"}
       actionButton={actionButton}
       onCancel={handleCancel}
       cancelText="Cancel"
