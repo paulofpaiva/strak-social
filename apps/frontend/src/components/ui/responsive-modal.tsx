@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import { useIsMobile } from "@/hooks/useIsMobile"
@@ -78,6 +78,9 @@ export function ResponsiveModal({
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           <DialogTitle className="sr-only">{title}</DialogTitle>
+          <DialogDescription className="sr-only">
+            {description || title}
+          </DialogDescription>
           
           <div className="mb-4">
             <h2 className="text-lg font-semibold">{title}</h2>

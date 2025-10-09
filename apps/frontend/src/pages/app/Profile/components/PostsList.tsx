@@ -1,10 +1,8 @@
-import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getUserPostsApi } from '@/api/posts'
-import type { Post } from '@/api/posts'
 import { PostCard } from '../../../../components/post/PostCard'
 import { PostCardSkeleton } from '../../../../components/skeleton/PostCardSkeleton'
-import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
+import { useInfiniteScroll, useInfinitePagination } from '@/hooks'
 import { Spinner } from '@/components/ui/spinner'
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from '@/components/ui/empty'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
@@ -17,37 +15,30 @@ interface PostsListProps {
 }
 
 export function PostsList({ userId, className, readOnly = false }: PostsListProps) {
-  const [page, setPage] = useState(1)
-  const [limit] = useState(10)
-  const [allPosts, setAllPosts] = useState<Post[]>([])
+  const paginatedData = useInfinitePagination({
+    initialPage: 1,
+    limit: 10,
+  })
 
   const { data, isLoading, error, refetch, isFetching } = useQuery({
-    queryKey: ['user-posts', userId, page, limit],
-    queryFn: () => getUserPostsApi(userId, page, limit),
+    queryKey: ['user-posts', userId, paginatedData.page, paginatedData.limit],
+    queryFn: () => getUserPostsApi(userId, paginatedData.page, paginatedData.limit),
     enabled: !!userId,
     retry: false,
     refetchOnWindowFocus: false,
   })
 
-  useMemo(() => {
-    if (data?.posts) {
-      if (page === 1) {
-        setAllPosts(data.posts)
-      } else {
-        setAllPosts(prev => [...prev, ...data.posts])
-      }
-    }
-  }, [data?.posts, page])
-
-  const loadMore = () => {
-    if (data?.pagination.hasMore && !isFetching) {
-      setPage(prev => prev + 1)
-    }
-  }
+  const { items, hasMore, loadMore, totalItems } = useInfinitePagination({
+    data: data?.posts,
+    currentPage: data?.pagination.page,
+    hasMore: data?.pagination.hasMore,
+    isFetching,
+    limit: 10,
+  })
 
   const setSentinelRef = useInfiniteScroll(
     loadMore,
-    data?.pagination.hasMore || false,
+    hasMore,
     isFetching
   )
 
@@ -70,7 +61,7 @@ export function PostsList({ userId, className, readOnly = false }: PostsListProp
     )
   }
 
-  if (!allPosts || allPosts.length === 0) {
+  if (!items || items.length === 0) {
     return (
       <Empty className={className}>
         <EmptyHeader>
@@ -89,18 +80,18 @@ export function PostsList({ userId, className, readOnly = false }: PostsListProp
   return (
     <div className={className}>
       <div>
-        {allPosts.map(post => (
+        {items.map(post => (
           <PostCard key={post.id} post={post} readOnly={readOnly} />
         ))}
       </div>
 
-      {allPosts.length > 0 && isFetching && (
+      {totalItems > 0 && isFetching && (
         <div className="flex justify-center py-6">
           <Spinner size="md" />
         </div>
       )}
 
-      {allPosts.length > 0 && data?.pagination.hasMore && (
+      {totalItems > 0 && hasMore && (
         <div ref={setSentinelRef} className="h-1" />
       )}
     </div>

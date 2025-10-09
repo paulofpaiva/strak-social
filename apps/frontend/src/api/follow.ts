@@ -1,5 +1,6 @@
 import { api } from './auth'
 import type { User } from './users'
+import { handleApiError } from '@/utils/api-error-handler'
 
 export interface ListResponse<T> {
   success: boolean
@@ -23,13 +24,7 @@ export const getUserFollowingApi = async (
     }
     return d
   } catch (error: any) {
-    if (error.response?.data?.message) {
-      throw new Error(error.response.data.message)
-    }
-    if (error.request) {
-      throw new Error('Connection error. Please check your internet and try again.')
-    }
-    throw new Error('Failed to load following list. Please try again.')
+    handleApiError(error, 'Failed to load following list. Please try again.')
   }
 }
 
@@ -49,13 +44,7 @@ export const getUserFollowersApi = async (
     }
     return d
   } catch (error: any) {
-    if (error.response?.data?.message) {
-      throw new Error(error.response.data.message)
-    }
-    if (error.request) {
-      throw new Error('Connection error. Please check your internet and try again.')
-    }
-    throw new Error('Failed to load followers list. Please try again.')
+    handleApiError(error, 'Failed to load followers list. Please try again.')
   }
 }
 
@@ -76,13 +65,7 @@ export const toggleFollowApi = async (userId: string): Promise<{ isFollowing: bo
     })
     return response.data.data
   } catch (error: any) {
-    if (error.response?.data?.message) {
-      throw new Error(error.response.data.message)
-    }
-    if (error.request) {
-      throw new Error('Connection error. Please check your internet and try again.')
-    }
-    throw new Error('Failed to toggle follow status. Please try again.')
+    handleApiError(error, 'Failed to toggle follow status. Please try again.')
   }
 }
 
@@ -103,13 +86,7 @@ export const removeFollowerApi = async (userId: string): Promise<{ isFollowing: 
     })
     return response.data.data
   } catch (error: any) {
-    if (error.response?.data?.message) {
-      throw new Error(error.response.data.message)
-    }
-    if (error.request) {
-      throw new Error('Connection error. Please check your internet and try again.')
-    }
-    throw new Error('Failed to remove follower. Please try again.')
+    handleApiError(error, 'Failed to remove follower. Please try again.')
   }
 }
 

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type { SignUpFormData, SignInFormData } from '@/schemas/auth'
+import { handleApiError } from '@/utils/api-error-handler'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
 
@@ -30,24 +31,7 @@ export const signUpApi = async (data: SignUpFormData): Promise<ApiResponse> => {
     const response = await api.post<ApiResponse>('/auth/sign-up', data)
     return response.data
   } catch (error: any) {
-    if (error.response?.data) {
-      const apiError = error.response.data
-      
-      if (apiError.errors && Array.isArray(apiError.errors)) {
-        const validationErrors = apiError.errors.map((err: any) => err.message).join(', ')
-        throw new Error(`Validation error: ${validationErrors}`)
-      }
-      
-      if (apiError.message) {
-        throw new Error(apiError.message)
-      }
-      
-      throw new Error('Sign up failed. Please try again.')
-    } else if (error.request) {
-      throw new Error('Connection error. Please check your internet and try again.')
-    } else {
-      throw new Error('An unexpected error occurred')
-    }
+    handleApiError(error, 'Sign up failed. Please try again.')
   }
 }
 
@@ -56,19 +40,7 @@ export const signInApi = async (data: SignInFormData): Promise<ApiResponse> => {
     const response = await api.post<ApiResponse>('/auth/sign-in', data)
     return response.data
   } catch (error: any) {
-    if (error.response?.data) {
-      const apiError = error.response.data
-      
-      if (apiError.message) {
-        throw new Error(apiError.message)
-      }
-      
-      throw new Error('Login failed. Please try again.')
-    } else if (error.request) {
-      throw new Error('Connection error. Please check your internet and try again.')
-    } else {
-      throw new Error('An unexpected error occurred')
-    }
+    handleApiError(error, 'Login failed. Please try again.')
   }
 }
 
@@ -94,19 +66,10 @@ export const checkUsernameApi = async (username: string): Promise<{ available: b
     const response = await api.get<{ success: boolean; available: boolean; message: string }>(`/auth/check-username?username=${encodeURIComponent(username)}`)
     return response.data
   } catch (error: any) {
-    if (error.response?.data) {
-      const apiError = error.response.data
-      
-      if (apiError.available === false) {
-        return { available: false, message: apiError.message }
-      }
-      
-      throw new Error(apiError.message || 'Username check failed')
-    } else if (error.request) {
-      throw new Error('Connection error. Please check your internet and try again.')
-    } else {
-      throw new Error('An unexpected error occurred')
+    if (error.response?.data?.available === false) {
+      return { available: false, message: error.response.data.message }
     }
+    handleApiError(error, 'Username check failed')
   }
 }
 

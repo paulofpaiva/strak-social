@@ -1,4 +1,5 @@
 import { api } from './auth'
+import { handleApiError } from '@/utils/api-error-handler'
 
 export interface User {
   id: string
@@ -34,19 +35,7 @@ export const getUserByIdApi = async (userId: string): Promise<User> => {
     const response = await api.get<UserResponse>(`/users/${userId}`)
     return response.data.data
   } catch (error: any) {
-    if (error.response?.data) {
-      const apiError = error.response.data
-      
-      if (apiError.message) {
-        throw new Error(apiError.message)
-      }
-      
-      throw new Error('Failed to fetch user. Please try again.')
-    } else if (error.request) {
-      throw new Error('Connection error. Please check your internet and try again.')
-    } else {
-      throw new Error('An unexpected error occurred')
-    }
+    handleApiError(error, 'Failed to fetch user. Please try again.')
   }
 }
 
@@ -55,19 +44,7 @@ export const getUserByUsernameApi = async (username: string): Promise<User> => {
     const response = await api.get<UserResponse>(`/users/username/${username}`)
     return response.data.data
   } catch (error: any) {
-    if (error.response?.data) {
-      const apiError = error.response.data
-      
-      if (apiError.message) {
-        throw new Error(apiError.message)
-      }
-      
-      throw new Error('Failed to fetch user. Please try again.')
-    } else if (error.request) {
-      throw new Error('Connection error. Please check your internet and try again.')
-    } else {
-      throw new Error('An unexpected error occurred')
-    }
+    handleApiError(error, 'Failed to fetch user. Please try again.')
   }
 }
 
@@ -104,13 +81,7 @@ export const searchUsersApi = async (
     }
     return { items: d?.users || [], page: 1, limit, hasMore: false }
   } catch (error: any) {
-    if (error.response?.data?.message) {
-      throw new Error(error.response.data.message)
-    }
-    if (error.request) {
-      throw new Error('Connection error. Please check your internet and try again.')
-    }
-    throw new Error('Failed to search users. Please try again.')
+    handleApiError(error, 'Failed to search users. Please try again.')
   }
 }
 
