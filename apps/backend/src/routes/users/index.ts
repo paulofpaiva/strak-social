@@ -10,3 +10,4 @@ router.use('/', getByUsernameRouter)
 router.use('/', getByIdRouter)
 
 export default router
+
