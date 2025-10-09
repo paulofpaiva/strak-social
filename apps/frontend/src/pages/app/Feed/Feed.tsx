@@ -8,7 +8,7 @@ export function Feed() {
   useNavigationTracking('/feed')
 
   return (
-    <>
+    <div className="container mx-auto">
       <Tabs defaultValue="following" className="w-full">
         <TabsList>
           <TabsTrigger value="following" className="cursor-pointer">
@@ -36,6 +36,6 @@ export function Feed() {
           </Empty>
         </TabsContent>
       </Tabs>
-    </>
+    </div>
   )
 }

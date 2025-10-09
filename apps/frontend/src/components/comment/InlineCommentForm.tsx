@@ -95,7 +95,7 @@ export function InlineCommentForm({
           <Avatar
             src={user.avatar || undefined}
             name={user.name}
-            size="sm"
+            size="md"
             className="flex-shrink-0 mt-1"
           />
           

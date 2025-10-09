@@ -19,17 +19,16 @@ export function Bookmarks() {
     <div className="container mx-auto">
       <Breadcrumb to="/feed" label="Bookmarks" />
       
-      <div className="px-4 py-6">
-        <div className="mb-6 w-full max-w-md">
-          <SearchInput
+      <div className="pt-5 w-full md:w-96">
+        <SearchInput
             value={search}
             onChange={handleSearchChange}
             placeholder="Search bookmarks..."
           />
-        </div>
-        
-        <BookmarksList search={search} />
       </div>
+
+      <BookmarksList search={search} />
+      
     </div>
   )
 }

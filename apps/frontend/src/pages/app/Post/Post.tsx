@@ -47,7 +47,7 @@ export function Post() {
   }
 
   return (
-    <div className="container mx-auto">
+    <div className="container w-4xl mx-auto overflow-x-hidden">
        <Breadcrumb to={getReturnUrl()} label="Back" />
       <div className="border-b border-border">
         <PostCard post={post} readOnly={false} disableNavigation={true} isPostView={true} />

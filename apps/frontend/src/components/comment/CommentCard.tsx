@@ -84,6 +84,7 @@ export function CommentCard({
     <article
       className={cn(
         'relative p-4 transition-colors border-b border-border last:border-b-0',
+        !disableNavigation && 'cursor-pointer',
         isReply && 'pl-12'
       )}
     >
@@ -94,11 +95,10 @@ export function CommentCard({
           aria-label={`View comment by ${comment.user.name}`}
         />
       )}
-      <div className="flex items-start gap-3 mb-3 relative z-10">
+      <div className="flex items-start gap-3 mb-3 relative z-10 pointer-events-none">
         <Link 
           to={`/${comment.user.username}`}
-          className="flex-shrink-0"
-          onClick={(e) => e.stopPropagation()}
+          className="flex-shrink-0 pointer-events-auto relative z-10"
         >
           <Avatar
             src={comment.user.avatar || undefined}
@@ -109,15 +109,14 @@ export function CommentCard({
         
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
-            <Link 
-              to={`/${comment.user.username}`}
-              className="flex-1 flex flex-col min-w-0"
-              onClick={(e) => e.stopPropagation()}
-            >
+            <div className="flex flex-col min-w-0 w-fit">
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-foreground truncate hover:underline">
+                <Link 
+                  to={`/${comment.user.username}`}
+                  className="font-semibold text-foreground truncate hover:underline pointer-events-auto relative z-10"
+                >
                   {comment.user.name}
-                </span>
+                </Link>
                 {comment.user.isVerified && (
                   <BadgeCheck className="h-4 w-4 text-primary flex-shrink-0" />
                 )}
@@ -130,13 +129,16 @@ export function CommentCard({
                   </>
                 )}
               </div>
-              <span className="text-muted-foreground text-sm truncate hover:underline">
+              <Link 
+                to={`/${comment.user.username}`}
+                className="text-muted-foreground text-sm truncate hover:underline pointer-events-auto relative z-10 w-fit"
+              >
                 @{comment.user.username}
-              </span>
-            </Link>
+              </Link>
+            </div>
             
             {isOwner && (
-              <div onClick={(e) => e.stopPropagation()} className="relative z-10">
+              <div className="relative z-10 pointer-events-auto">
                 <ResponsiveDropdown
                   trigger={
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -166,7 +168,7 @@ export function CommentCard({
       </div>
 
       {comment.content && (
-        <div className="mb-3 relative z-10">
+        <div className="mb-3 relative z-10 pointer-events-none">
           <p className="text-foreground whitespace-pre-wrap break-words">
             {comment.content}
           </p>
@@ -174,27 +176,24 @@ export function CommentCard({
       )}
 
       {comment.media && comment.media.length > 0 && (
-        <div className="mb-3 relative z-10">
+        <div className="mb-3 relative z-10 pointer-events-none">
           <PostMedia media={comment.media as MediaItem[]} />
         </div>
       )}
 
       {showFullDate && (
-        <div className="mb-3 relative z-10">
+        <div className="mb-3 relative z-10 pointer-events-none">
           <p className="text-sm text-muted-foreground">
             {formatFullPostDate(comment.createdAt)}
           </p>
         </div>
       )}
 
-      <div className="flex items-center gap-6 text-muted-foreground text-sm relative z-10">
+      <div className="flex items-center gap-6 text-muted-foreground text-sm relative z-10 pointer-events-none">
         <button 
-          onClick={(e) => {
-            e.stopPropagation()
-            handleLike()
-          }}
+          onClick={handleLike}
           disabled={likeMutation.isPending}
-          className="flex items-center gap-1.5 hover:text-red-500 transition-colors disabled:opacity-50 cursor-pointer"
+          className="flex items-center gap-1.5 hover:text-red-500 transition-colors disabled:opacity-50 cursor-pointer relative z-10 pointer-events-auto"
         >
           <Heart 
             className={cn(
@@ -206,12 +205,8 @@ export function CommentCard({
         </button>
         
         <button 
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            setIsCommentModalOpen(true)
-          }}
-          className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer"
+          onClick={setIsCommentModalOpen.bind(null, true)}
+          className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer relative z-10 pointer-events-auto"
         >
           <MessageCircle className="h-5 w-5" />
           <span>{comment.repliesCount || 0}</span>

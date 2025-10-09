@@ -81,7 +81,7 @@ export function Profile() {
   }
 
   return (
-    <div className="container mx-auto overflow-x-hidden">
+    <div className="container mx-auto">
       <Breadcrumb to={isOwnProfile ? "/feed" : getReturnUrl()} label={`${user.username}`} />
       
       <ProfileHeader user={user} isOwnProfile={isOwnProfile} />

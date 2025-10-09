@@ -20,7 +20,7 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
           className="h-32 sm:h-48 md:h-64 w-full"
         />
       ) : (
-        <div className="h-32 sm:h-48 md:h-64 w-full bg-gray-800 rounded-lg overflow-hidden relative">
+        <div className="h-32 sm:h-48 md:h-64 w-full bg-gray-800 overflow-hidden relative">
           {user.cover ? (
             <>
               {imageLoading && (
