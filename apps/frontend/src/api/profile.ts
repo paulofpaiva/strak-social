@@ -72,9 +72,13 @@ export const changePasswordApi = async (data: { currentPassword: string; newPass
   }
 }
 
-export const getBookmarksApi = async (page: number = 1, limit: number = 10): Promise<PostsResponse> => {
+export const getBookmarksApi = async (
+  page: number = 1, 
+  limit: number = 10,
+  search?: string
+): Promise<PostsResponse> => {
   const response = await api.get('/auth/profile/bookmarks', {
-    params: { page, limit }
+    params: { page, limit, search }
   })
   
   return response.data.data

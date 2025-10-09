@@ -15,7 +15,6 @@ import { ProfileActions } from '@/pages/app/Profile/components/ProfileActions'
 import { ProfileStats } from '@/pages/app/Profile/components/ProfileStats'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PostsList } from '@/pages/app/Profile/components/PostsList'
-import { BookmarksList } from '@/pages/app/Profile/components/BookmarksList'
 import { useState } from 'react'
 import { useAuth, useSearchNavigation, useFollowToggle } from '@/hooks'
 
@@ -126,20 +125,10 @@ export function Profile() {
               <TabsTrigger value="posts" className="cursor-pointer">
                 Posts
               </TabsTrigger>
-              {isOwnProfile && (
-                <TabsTrigger value="bookmarks" className="cursor-pointer">
-                  Bookmarks
-                </TabsTrigger>
-              )}
             </TabsList>
             <TabsContent value="posts">
               <PostsList userId={user.id} readOnly={!isOwnProfile} />
             </TabsContent>
-            {isOwnProfile && (
-              <TabsContent value="bookmarks">
-                <BookmarksList />
-              </TabsContent>
-            )}
           </Tabs>
         </div>
       </div>

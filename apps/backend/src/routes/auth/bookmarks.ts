@@ -7,7 +7,7 @@ import { likes } from '../../schemas/likes'
 import { comments } from '../../schemas/comments'
 import { bookmarks } from '../../schemas/bookmarks'
 import { authenticateToken } from '../../middleware/auth'
-import { eq, desc, asc, and } from 'drizzle-orm'
+import { eq, desc, asc, and, or, ilike } from 'drizzle-orm'
 import { asyncHandler } from '../../middleware/asyncHandler'
 import { ApiResponse } from '../../utils/response'
 
@@ -17,6 +17,7 @@ router.get('/bookmarks', authenticateToken, asyncHandler(async (req: Request, re
   const userId = req.user!.id
   const page = parseInt(req.query.page as string) || 1
   const limit = parseInt(req.query.limit as string) || 10
+  const search = req.query.search as string || ''
   const offset = (page - 1) * limit
 
   const userBookmarks = await db
@@ -38,7 +39,18 @@ router.get('/bookmarks', authenticateToken, asyncHandler(async (req: Request, re
     .from(bookmarks)
     .innerJoin(posts, eq(bookmarks.postId, posts.id))
     .innerJoin(users, eq(posts.userId, users.id))
-    .where(eq(bookmarks.userId, userId))
+    .where(
+      search 
+        ? and(
+            eq(bookmarks.userId, userId),
+            or(
+              ilike(users.name, `%${search}%`),
+              ilike(users.username, `%${search}%`),
+              ilike(posts.content, `%${search}%`)
+            )
+          )
+        : eq(bookmarks.userId, userId)
+    )
     .orderBy(desc(bookmarks.createdAt))
     .limit(limit)
     .offset(offset)

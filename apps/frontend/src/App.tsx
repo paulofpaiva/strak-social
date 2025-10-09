@@ -19,6 +19,7 @@ import { Followers } from "@/pages/app/Profile/Followers"
 import { Explore } from "@/pages/app/Explore/Explore"
 import { Post } from "@/pages/app/Post/Post"
 import { Comment } from "@/pages/app/Comment/Comment"
+import { Bookmarks } from "@/pages/app/Bookmarks/Bookmarks"
 import { queryClient } from '@/utils/query-client'
 
 function App() {
@@ -98,6 +99,17 @@ function AppRoutes() {
           <ProtectedRoute>
             <AppLayout>
               <Explore />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route 
+        path="/bookmarks" 
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <Bookmarks />
             </AppLayout>
           </ProtectedRoute>
         }

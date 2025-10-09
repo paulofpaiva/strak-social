@@ -9,9 +9,10 @@ import { ErrorEmpty } from '@/components/ErrorEmpty'
 
 interface BookmarksListProps {
   className?: string
+  search?: string
 }
 
-export function BookmarksList({ className }: BookmarksListProps) {
+export function BookmarksList({ className, search }: BookmarksListProps) {
   const {
     data,
     isLoading,
@@ -21,8 +22,8 @@ export function BookmarksList({ className }: BookmarksListProps) {
     isFetchingNextPage,
     refetch
   } = useInfiniteQuery({
-    queryKey: ['bookmarks'],
-    queryFn: ({ pageParam = 1 }) => getBookmarksApi(pageParam, 10),
+    queryKey: ['bookmarks', search],
+    queryFn: ({ pageParam = 1 }) => getBookmarksApi(pageParam, 10, search),
     getNextPageParam: (lastPage) => {
       return lastPage.pagination.hasMore 
         ? lastPage.pagination.page + 1 
@@ -67,9 +68,17 @@ export function BookmarksList({ className }: BookmarksListProps) {
           <EmptyMedia variant="icon">
             <Bookmark className="h-6 w-6" />
           </EmptyMedia>
-          <EmptyTitle>No bookmarks yet</EmptyTitle>
+          <EmptyTitle>
+            {search && search.trim().length > 0 
+              ? "No bookmarks found" 
+              : "No bookmarks yet"
+            }
+          </EmptyTitle>
           <EmptyDescription>
-            When you bookmark posts, they will appear here.
+            {search && search.trim().length > 0
+              ? "Try searching with different keywords or check your spelling."
+              : "When you bookmark posts, they will appear here."
+            }
           </EmptyDescription>
         </EmptyHeader>
       </Empty>

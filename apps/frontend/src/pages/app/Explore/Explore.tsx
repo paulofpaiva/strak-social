@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { searchUsersApi } from '@/api/users'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
-import { FloatingInput } from '@/components/ui/floating-input'
+  import { SearchInput } from '@/components/ui/search-input'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { UserListSkeleton } from '../../../components/skeleton/UserListSkeleton'
 import { UserList } from './UserList'
@@ -56,10 +56,10 @@ export function Explore() {
       <Breadcrumb to="/feed" label={`Explore`} />
 
       <div className="pt-5 w-full md:w-96">
-        <FloatingInput
+        <SearchInput
           value={search}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          label="Search users"
+          onChange={handleSearchChange}
+          placeholder="Search users..."
         />
       </div>
 

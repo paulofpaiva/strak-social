@@ -1,4 +1,4 @@
-import { LucideIcon, Home, Search, User, Settings, LogOut, PenSquare } from "lucide-react"
+import { LucideIcon, Home, Search, User, Settings, LogOut, PenSquare, Bookmark } from "lucide-react"
 
 export interface NavigationItem {
   id: string
@@ -39,6 +39,17 @@ export const navigationItems: NavigationItem[] = [
     showLabel: true
   },
   {
+    id: 'bookmarks',
+    label: 'Bookmarks',
+    icon: Bookmark,
+    href: '/bookmarks',
+    matchPattern: 'exact',
+    showBottom: false,
+    showDesktopSidebar: true,
+    showMobileSidebar: true,
+    showLabel: true
+  },
+  {
     id: 'profile',
     label: 'Profile',
     icon: User,
@@ -46,9 +57,10 @@ export const navigationItems: NavigationItem[] = [
     matchPattern: 'startsWith',
     showBottom: true,
     showDesktopSidebar: true,
-    showMobileSidebar: false,
+    showMobileSidebar: true,
     showLabel: true
   },
+ 
   {
     id: 'settings',
     label: 'Settings',
@@ -57,7 +69,7 @@ export const navigationItems: NavigationItem[] = [
     matchPattern: 'startsWith',
     showBottom: true,
     showDesktopSidebar: true,
-    showMobileSidebar: false,
+    showMobileSidebar: true,
     showLabel: true
   }
 ]

@@ -9,7 +9,7 @@ interface TabsProps {
   tabs: {
     id: string
     label: string
-    icon: React.ComponentType<{ className?: string }>
+    icon?: React.ComponentType<{ className?: string }>
     content: ReactNode
   }[]
 }
@@ -24,7 +24,7 @@ export function ResponsiveTabs({ className, activeTab, onTabChange, tabs }: Tabs
   if (shouldUseTabs) {
     return (
       <div className={cn("", className)}>
-        <nav className="flex space-x-8 overflow-x-auto border-b">
+        <nav className="flex overflow-x-auto border-b border-border">
           {tabs.map((item) => {
             const Icon = item.icon
             const isActive = activeTab === item.id
@@ -34,13 +34,13 @@ export function ResponsiveTabs({ className, activeTab, onTabChange, tabs }: Tabs
                 key={item.id}
                 onClick={() => onTabChange(item.id)}
                 className={cn(
-                  "flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors cursor-pointer",
+                  "inline-flex items-center justify-center gap-2 px-4 py-4 text-sm font-medium whitespace-nowrap transition-colors border-b-2 border-transparent cursor-pointer",
                   isActive
-                    ? "border-primary-foreground"
-                    : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground"
+                    ? "border-primary text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <Icon className="h-4 w-4" />
+                {Icon && <Icon className="h-4 w-4" />}
                 <span>{item.label}</span>
               </button>
             )
@@ -74,7 +74,7 @@ export function ResponsiveTabs({ className, activeTab, onTabChange, tabs }: Tabs
                   : "text-muted-foreground hover:text-foreground hover:bg-accent"
               )}
             >
-              <Icon className="mr-3 h-4 w-4" />
+              {Icon && <Icon className="mr-3 h-4 w-4" />}
               {item.label}
             </button>
           )

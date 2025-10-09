@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks'
 import { FollowList } from './components/FollowList'
 import { FollowListSkeleton } from '../../../components/skeleton/FollowListSkeleton'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
-import { FloatingInput } from '@/components/ui/floating-input'
+import { SearchInput } from '@/components/ui/search-input'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
 import { Spinner } from '@/components/ui/spinner'
@@ -87,10 +87,10 @@ export function Followers() {
       <Breadcrumb to="/profile" label={`Followers`} />
 
       <div className="mb-4 pt-6 w-full md:w-96">
-        <FloatingInput
+        <SearchInput
           value={search}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          label="Search by name"
+          onChange={handleSearchChange}
+          placeholder="Search by name..."
         />
       </div>
 
