@@ -95,7 +95,7 @@ export function CommentCard({
           aria-label={`View comment by ${comment.user.name}`}
         />
       )}
-      <div className="flex items-start gap-3 mb-3 relative z-10 pointer-events-none">
+      <div className="flex items-center gap-3 mb-3 relative z-10 pointer-events-none">
         <Link 
           to={`/${comment.user.username}`}
           className="flex-shrink-0 pointer-events-auto relative z-10"

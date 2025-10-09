@@ -15,9 +15,9 @@ export function FloatingTextarea({ className, label, id, rows = 4, ...props }: F
         placeholder=" "
         rows={rows}
         className={cn(
-          "peer w-full rounded-sm border border-input bg-transparent px-4 pt-6 pb-3 text-base md:text-base",
-          "text-foreground placeholder:text-transparent focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-[color,box-shadow] outline-none",
-          "disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30 resize-none",
+          "peer w-full rounded-sm bg-transparent px-4 pt-6 pb-3 text-base md:text-base",
+          "text-foreground placeholder:text-transparent transition-colors outline-none",
+          "disabled:cursor-not-allowed disabled:opacity-50 resize-none",
           className
         )}
         {...props}

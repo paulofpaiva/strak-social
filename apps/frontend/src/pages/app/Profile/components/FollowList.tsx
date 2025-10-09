@@ -48,9 +48,9 @@ export function FollowList({
   }
 
   return (
-    <div className={cn('space-y-4 pt-4', className)}>
+    <div className={cn('pt-5', className)}>
       {users.map((u) => (
-        <div key={u.id} className="flex items-center gap-4">
+        <div key={u.id} className="flex items-center gap-4 p-4 border-b border-border last:border-b-0">
           <Link 
             to={`/${u.username}`}
             className="flex-shrink-0"
@@ -62,12 +62,12 @@ export function FollowList({
             className="flex-1 min-w-0"
           >
             <div className="flex items-center gap-1">
-              <p className="text-sm font-medium truncate hover:underline">{u.name}</p>
+              <p className="font-semibold text-foreground truncate hover:underline">{u.name}</p>
               {u.isVerified && (
-                <BadgeCheck className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                <BadgeCheck className="h-4 w-4 text-primary flex-shrink-0" />
               )}
             </div>
-            <p className="text-xs text-muted-foreground truncate hover:underline">@{u.username}</p>
+            <p className="text-sm text-muted-foreground truncate hover:underline">@{u.username}</p>
           </Link>
           {variant === 'followers' && onRemoveFollower ? (
             <Button

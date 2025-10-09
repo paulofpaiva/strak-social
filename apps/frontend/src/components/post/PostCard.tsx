@@ -87,7 +87,7 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
           aria-label={`View post by ${post.user.name}`}
         />
       )}
-      <div className="flex items-start gap-3 mb-3 relative z-10 pointer-events-none">
+      <div className="flex items-center gap-3 mb-3 relative z-10 pointer-events-none">
         <Link 
           to={`/${post.user.username}`}
           className="flex-shrink-0 pointer-events-auto relative z-10"
@@ -197,12 +197,12 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
         <button 
           onClick={handleLike}
           disabled={likeMutation.isPending}
-          className="flex items-center gap-1.5 hover:text-red-500 transition-colors disabled:opacity-50 cursor-pointer relative z-10 pointer-events-auto"
+          className="flex items-center gap-1.5 hover:text-primary transition-colors disabled:opacity-50 cursor-pointer relative z-10 pointer-events-auto"
         >
           <Heart 
             className={cn(
               'h-5 w-5 transition-all',
-              isLiked && 'fill-red-500 text-red-500'
+              isLiked && 'fill-primary text-primary'
             )} 
           />
           <span>{likesCount}</span>

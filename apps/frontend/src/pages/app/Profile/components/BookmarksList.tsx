@@ -6,6 +6,7 @@ import { useInfiniteScroll } from '@/hooks'
 import { Loader2, Bookmark } from 'lucide-react'
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from '@/components/ui/empty'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
+import { cn } from '@/lib/utils'
 
 interface BookmarksListProps {
   className?: string
@@ -86,7 +87,7 @@ export function BookmarksList({ className, search }: BookmarksListProps) {
   }
 
   return (
-    <div className={className}>
+    <div className={cn('pt-5', className)}>
       <div>
         {posts.map(post => (
           <PostCard key={post.id} post={post} />

@@ -86,7 +86,7 @@ export function Following() {
     <div className="container mx-auto">
       <Breadcrumb to="/profile" label={`Following`} />
 
-      <div className="mb-4 pt-6 w-full md:w-96">
+      <div className="pt-5 w-full md:w-96">
         <SearchInput
           value={search}
           onChange={handleSearchChange}

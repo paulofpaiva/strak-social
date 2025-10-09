@@ -106,7 +106,7 @@ export function Comment() {
   }
 
   return (
-    <div className="container w-4xl mx-auto overflow-x-hidden">
+    <div className="container mx-auto overflow-x-hidden">
       <Breadcrumb to={backUrl} label={breadcrumbLabel} />
       
       <div className="border-b border-border">
