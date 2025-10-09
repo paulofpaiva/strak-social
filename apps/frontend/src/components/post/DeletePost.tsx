@@ -30,6 +30,11 @@ export function DeletePost({ open, onOpenChange, post }: DeletePostProps) {
         refetchType: 'active'
       })
       
+      await queryClient.invalidateQueries({ 
+        queryKey: ['bookmarks'],
+        refetchType: 'active'
+      })
+      
       queryClient.removeQueries({ 
         queryKey: ['post', post.id]
       })

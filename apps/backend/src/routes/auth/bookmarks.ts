@@ -13,19 +13,20 @@ import { ApiResponse } from '../../utils/response'
 
 const router = Router()
 
-router.get('/user/:userId', authenticateToken, asyncHandler(async (req: Request, res: Response) => {
-  const { userId } = req.params
+router.get('/bookmarks', authenticateToken, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user!.id
   const page = parseInt(req.query.page as string) || 1
   const limit = parseInt(req.query.limit as string) || 10
   const offset = (page - 1) * limit
 
-  const postsWithUsers = await db
+  const userBookmarks = await db
     .select({
       id: posts.id,
       userId: posts.userId,
       content: posts.content,
       createdAt: posts.createdAt,
       updatedAt: posts.updatedAt,
+      bookmarkCreatedAt: bookmarks.createdAt,
       user: {
         id: users.id,
         name: users.name,
@@ -34,15 +35,16 @@ router.get('/user/:userId', authenticateToken, asyncHandler(async (req: Request,
         isVerified: users.isVerified,
       }
     })
-    .from(posts)
+    .from(bookmarks)
+    .innerJoin(posts, eq(bookmarks.postId, posts.id))
     .innerJoin(users, eq(posts.userId, users.id))
-    .where(eq(posts.userId, userId))
-    .orderBy(desc(posts.createdAt))
+    .where(eq(bookmarks.userId, userId))
+    .orderBy(desc(bookmarks.createdAt))
     .limit(limit)
     .offset(offset)
 
   const postsWithMedia = await Promise.all(
-    postsWithUsers.map(async (post: typeof postsWithUsers[0]) => {
+    userBookmarks.map(async (bookmark) => {
       const media = await db
         .select({
           id: postMedia.id,
@@ -52,42 +54,41 @@ router.get('/user/:userId', authenticateToken, asyncHandler(async (req: Request,
           order: postMedia.order,
         })
         .from(postMedia)
-        .where(eq(postMedia.postId, post.id))
+        .where(eq(postMedia.postId, bookmark.id))
         .orderBy(asc(postMedia.order))
 
       const likesCount = await db
         .select({ count: likes.id })
         .from(likes)
-        .where(eq(likes.postId, post.id))
+        .where(eq(likes.postId, bookmark.id))
 
       const userLiked = await db
         .select({ id: likes.id })
         .from(likes)
-        .where(and(eq(likes.postId, post.id), eq(likes.userId, req.user!.id)))
+        .where(and(eq(likes.postId, bookmark.id), eq(likes.userId, userId)))
         .limit(1)
 
       const commentsCount = await db
         .select({ count: comments.id })
         .from(comments)
-        .where(eq(comments.postId, post.id))
-
-      const userBookmarked = await db
-        .select({ id: bookmarks.id })
-        .from(bookmarks)
-        .where(and(eq(bookmarks.postId, post.id), eq(bookmarks.userId, req.user!.id)))
-        .limit(1)
+        .where(eq(comments.postId, bookmark.id))
 
       const bookmarksCount = await db
         .select({ count: bookmarks.id })
         .from(bookmarks)
-        .where(eq(bookmarks.postId, post.id))
+        .where(eq(bookmarks.postId, bookmark.id))
 
       return {
-        ...post,
+        id: bookmark.id,
+        userId: bookmark.userId,
+        content: bookmark.content,
+        createdAt: bookmark.createdAt,
+        updatedAt: bookmark.updatedAt,
+        user: bookmark.user,
         media,
         likesCount: likesCount.length,
         userLiked: userLiked.length > 0,
-        userBookmarked: userBookmarked.length > 0,
+        userBookmarked: true,
         bookmarksCount: bookmarksCount.length,
         commentsCount: commentsCount.length,
       }
@@ -99,9 +100,9 @@ router.get('/user/:userId', authenticateToken, asyncHandler(async (req: Request,
     pagination: {
       page,
       limit,
-      hasMore: postsWithUsers.length === limit
+      hasMore: userBookmarks.length === limit
     }
-  }, 'User posts retrieved successfully')
+  }, 'Bookmarks retrieved successfully')
 }))
 
 export default router

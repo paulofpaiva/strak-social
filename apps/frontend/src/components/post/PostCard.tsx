@@ -3,7 +3,7 @@ import { Avatar } from '@/components/ui/avatar'
 import { PostMedia } from './PostMedia'
 import { formatPostDate, formatFullPostDate } from '@/utils/date'
 import type { Post } from '@/api/posts'
-import { Heart, MessageCircle, MoreVertical, Trash2, Edit, BadgeCheck } from 'lucide-react'
+import { Heart, MessageCircle, MoreVertical, Trash2, Edit, BadgeCheck, Bookmark, Share, Link } from 'lucide-react'
 import { ResponsiveDropdown } from '@/components/ui/responsive-dropdown'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/stores/authStore'
@@ -12,27 +12,31 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { EditPost } from './EditPost'
 import { DeletePost } from './DeletePost'
 import { CreateComment } from '@/components/comment/CreateComment'
-import { useLikePostMutation } from '@/hooks/post'
+import { useLikePostMutation, useBookmarkPostMutation } from '@/hooks/post'
+import { toast } from 'sonner'
 
 interface PostCardProps {
   post: Post
   className?: string
   readOnly?: boolean
   disableNavigation?: boolean
-  showFullDate?: boolean
+  isPostView?: boolean
 }
 
-export function PostCard({ post, className, readOnly = false, disableNavigation = false, showFullDate = false }: PostCardProps) {
+export function PostCard({ post, className, readOnly = false, disableNavigation = false, isPostView = false }: PostCardProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false)
   const [isLiked, setIsLiked] = useState(post.userLiked)
   const [likesCount, setLikesCount] = useState(post.likesCount)
+  const [isBookmarked, setIsBookmarked] = useState(post.userBookmarked)
+  const [bookmarksCount, setBookmarksCount] = useState(post.bookmarksCount)
   const { user } = useAuthStore()
   const navigate = useNavigate()
   const location = useLocation()
   const isOwner = user?.id === post.userId
   const likeMutation = useLikePostMutation()
+  const bookmarkMutation = useBookmarkPostMutation()
 
   const handleLike = () => {
     setIsLiked(!isLiked)
@@ -44,6 +48,28 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
         setLikesCount(likesCount)
       }
     })
+  }
+
+  const handleBookmark = () => {
+    setIsBookmarked(!isBookmarked)
+    setBookmarksCount(prev => isBookmarked ? prev - 1 : prev + 1)
+    
+    bookmarkMutation.mutate(post.id, {
+      onError: () => {
+        setIsBookmarked(isBookmarked)
+        setBookmarksCount(bookmarksCount)
+      }
+    })
+  }
+
+  const handleCopyLink = async () => {
+    const postUrl = `${window.location.origin}/post/${post.id}`
+    try {
+      await navigator.clipboard.writeText(postUrl)
+      toast.success('Link copied to clipboard!')
+    } catch (error) {
+      toast.error('Failed to copy link')
+    }
   }
 
   const handleNavigateToPost = () => {
@@ -79,7 +105,7 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
                 {post.user.isVerified && (
                   <BadgeCheck className="h-4 w-4 text-primary flex-shrink-0" />
                 )}
-                {!showFullDate && (
+                {!isPostView && (
                   <>
                     <span className="text-muted-foreground text-sm">·</span>
                     <span className="text-muted-foreground text-sm">
@@ -93,7 +119,7 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
               </span>
             </div>
             
-            {isOwner && !readOnly && (
+            {!readOnly && (
               <div onClick={(e) => e.stopPropagation()}>
                 <ResponsiveDropdown
                   trigger={
@@ -107,17 +133,25 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
                   }
                   items={[
                     {
-                      label: 'Edit',
-                      icon: <Edit className="h-4 w-4" />,
-                      onClick: () => setIsEditModalOpen(true),
-                      variant: 'default'
+                      label: isBookmarked ? 'Remove Bookmark' : 'Bookmark',
+                      icon: <Bookmark className="h-4 w-4" />,
+                      onClick: handleBookmark,
+                      variant: 'default' as const
                     },
-                    {
-                      label: 'Delete',
-                      icon: <Trash2 className="h-4 w-4" />,
-                      onClick: () => setIsDeleteModalOpen(true),
-                      variant: 'destructive'
-                    }
+                    ...(isOwner ? [
+                      {
+                        label: 'Edit',
+                        icon: <Edit className="h-4 w-4" />,
+                        onClick: () => setIsEditModalOpen(true),
+                        variant: 'default' as const
+                      },
+                      {
+                        label: 'Delete',
+                        icon: <Trash2 className="h-4 w-4" />,
+                        onClick: () => setIsDeleteModalOpen(true),
+                        variant: 'destructive' as const
+                      }
+                    ] : [])
                   ]}
                   align="end"
                 />
@@ -141,7 +175,7 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
         </div>
       )}
 
-      {showFullDate && (
+      {isPostView && (
         <div className="mb-3">
           <p className="text-sm text-muted-foreground">
             {formatFullPostDate(post.createdAt)}
@@ -178,6 +212,46 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
           <MessageCircle className="h-5 w-5" />
           <span>{post.commentsCount}</span>
         </button>
+
+        <div className="flex items-center gap-4 ml-auto">
+          <div onClick={(e) => e.stopPropagation()}>
+            <ResponsiveDropdown
+              trigger={
+                <button className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+                  <Share className="h-5 w-5" />
+                </button>
+              }
+              items={[
+                {
+                  label: 'Copy Link',
+                  icon: <Link className="h-4 w-4" />,
+                  onClick: handleCopyLink,
+                  variant: 'default' as const
+                }
+              ]}
+              align="end"
+            />
+          </div>
+
+          {!readOnly && (
+            <button 
+              onClick={(e) => {
+                e.stopPropagation()
+                handleBookmark()
+              }}
+              disabled={bookmarkMutation.isPending}
+              className="flex items-center gap-1.5 hover:text-primary transition-colors disabled:opacity-50 cursor-pointer"
+            >
+              <Bookmark 
+                className={cn(
+                  'h-5 w-5 transition-all',
+                  isBookmarked && 'fill-primary text-primary'
+                )} 
+              />
+              {isPostView && <span>{bookmarksCount}</span>}
+            </button>
+          )}
+        </div>
       </div>
 
       {isOwner && !readOnly && (

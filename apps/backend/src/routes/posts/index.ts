@@ -8,6 +8,7 @@ import deleteRouter from './delete'
 import likeRouter from './like'
 import commentsRouter from './comments'
 import followingRouter from './following'
+import bookmarkRouter from './bookmark'
 
 const router = Router()
 
@@ -20,6 +21,7 @@ router.use('/', updateRouter)
 router.use('/', deleteRouter)
 router.use('/', likeRouter)
 router.use('/', commentsRouter)
+router.use('/', bookmarkRouter)
 
 export default router
 

@@ -11,7 +11,7 @@ import { AppLayout } from '@/layouts/AppLayout'
 import { AuthLayout } from '@/layouts/AuthLayout'
 import Landing from "@/pages/landing/Landing"
 import { Auth } from "@/pages/auth/Auth"
-import { Feed } from "@/pages/app/Feed"
+import { Feed } from "@/pages/app/Feed/Feed"
 import { Settings } from "@/pages/app/Settings/Settings"
 import { Profile } from "@/pages/app/Profile/Profile"
 import { Following } from "@/pages/app/Profile/Following"

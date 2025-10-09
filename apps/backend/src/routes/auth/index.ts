@@ -6,6 +6,7 @@ import signOutRouter from './signOut'
 import sessionRouter from './session'
 import profileRouter from './profile'
 import changePasswordRouter from './changePassword'
+import bookmarksRouter from './bookmarks'
 
 const router = Router()
 
@@ -15,6 +16,7 @@ router.use('/check-username', checkUsernameRouter)
 router.use('/sign-out', signOutRouter)
 router.use('/session', sessionRouter)
 router.use('/profile', profileRouter)
+router.use('/profile', bookmarksRouter)
 router.use('/change-password', changePasswordRouter)
 
 export default router

@@ -131,3 +131,14 @@ export const searchLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 })
+
+export const bookmarkLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  message: {
+    success: false,
+    message: 'Too many bookmark actions. Please try again soon.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+})

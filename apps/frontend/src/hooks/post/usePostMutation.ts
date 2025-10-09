@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { createPostApi, updatePostApi, toggleLikePostApi } from '@/api/posts'
+import { createPostApi, updatePostApi, toggleLikePostApi, toggleBookmarkPostApi } from '@/api/posts'
 import type { MediaFile, MediaOrder } from './types'
 
 type MutationType = 'create' | 'update'
@@ -60,6 +60,11 @@ export function usePostMutation(options: UsePostMutationOptions) {
         refetchType: 'active'
       })
       
+      await queryClient.invalidateQueries({ 
+        queryKey: ['bookmarks'],
+        refetchType: 'active'
+      })
+      
       if (postId) {
         await queryClient.invalidateQueries({ 
           queryKey: ['post', postId],
@@ -102,6 +107,11 @@ export function useLikePostMutation() {
       })
       
       await queryClient.invalidateQueries({ 
+        queryKey: ['bookmarks'],
+        refetchType: 'all'
+      })
+      
+      await queryClient.invalidateQueries({ 
         queryKey: ['post', postId],
         refetchType: 'all'
       })
@@ -110,6 +120,47 @@ export function useLikePostMutation() {
       const errorMessage = error.response?.data?.message 
         || error.message 
         || 'Failed to like post'
+      toast.error(errorMessage)
+    },
+  })
+
+  return mutation
+}
+
+export function useBookmarkPostMutation() {
+  const queryClient = useQueryClient()
+
+  const mutation = useMutation({
+    mutationFn: async (postId: string) => {
+      return toggleBookmarkPostApi(postId)
+    },
+    onSuccess: async (_data, postId) => {
+      await queryClient.invalidateQueries({ 
+        queryKey: ['posts'],
+        refetchType: 'all'
+      })
+      await queryClient.invalidateQueries({ 
+        queryKey: ['user-posts'],
+        refetchType: 'all'
+      })
+      await queryClient.invalidateQueries({ 
+        queryKey: ['following-posts'],
+        refetchType: 'all'
+      })
+      await queryClient.invalidateQueries({ 
+        queryKey: ['bookmarks'],
+        refetchType: 'all'
+      })
+      
+      await queryClient.invalidateQueries({ 
+        queryKey: ['post', postId],
+        refetchType: 'all'
+      })
+    },
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.message 
+        || error.message 
+        || 'Failed to bookmark post'
       toast.error(errorMessage)
     },
   })

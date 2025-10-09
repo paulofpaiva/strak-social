@@ -77,6 +77,11 @@ export function useCommentMutation(options: UseCommentMutationOptions) {
         refetchType: 'all'
       })
       
+      await queryClient.invalidateQueries({ 
+        queryKey: ['bookmarks'],
+        refetchType: 'all'
+      })
+      
       if (parentCommentId) {
         await queryClient.invalidateQueries({ 
           queryKey: ['comment-replies-infinite', parentCommentId],
@@ -196,6 +201,11 @@ export function useDeleteCommentMutation() {
       
       await queryClient.invalidateQueries({ 
         queryKey: ['following-posts'],
+        refetchType: 'all'
+      })
+      
+      await queryClient.invalidateQueries({ 
+        queryKey: ['bookmarks'],
         refetchType: 'all'
       })
       

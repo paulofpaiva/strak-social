@@ -4,6 +4,8 @@ import { posts } from '../../schemas/posts'
 import { postMedia } from '../../schemas/postMedia'
 import { users } from '../../schemas/auth'
 import { likes } from '../../schemas/likes'
+import { comments } from '../../schemas/comments'
+import { bookmarks } from '../../schemas/bookmarks'
 import { authenticateToken } from '../../middleware/auth'
 import { eq, desc, asc, and } from 'drizzle-orm'
 import { asyncHandler } from '../../middleware/asyncHandler'
@@ -61,11 +63,30 @@ router.get('/', authenticateToken, asyncHandler(async (req: Request, res: Respon
         .where(and(eq(likes.postId, post.id), eq(likes.userId, req.user!.id)))
         .limit(1)
 
+      const commentsCount = await db
+        .select({ count: comments.id })
+        .from(comments)
+        .where(eq(comments.postId, post.id))
+
+      const userBookmarked = await db
+        .select({ id: bookmarks.id })
+        .from(bookmarks)
+        .where(and(eq(bookmarks.postId, post.id), eq(bookmarks.userId, req.user!.id)))
+        .limit(1)
+
+      const bookmarksCount = await db
+        .select({ count: bookmarks.id })
+        .from(bookmarks)
+        .where(eq(bookmarks.postId, post.id))
+
       return {
         ...post,
         media,
         likesCount: likesCount.length,
         userLiked: userLiked.length > 0,
+        userBookmarked: userBookmarked.length > 0,
+        bookmarksCount: bookmarksCount.length,
+        commentsCount: commentsCount.length,
       }
     })
   )

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { getProfileApi } from '@/api/profile'
 import { getUserByUsernameApi } from '@/api/users'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { CheckCircle, FileText } from 'lucide-react'
+import { CheckCircle, FileText, Bookmark } from 'lucide-react'
 import { ProfileSkeleton } from '../../../components/skeleton/ProfileSkeleton'
 import { UserProfileSkeleton } from '../../../components/skeleton/UserProfileSkeleton'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
@@ -13,8 +13,9 @@ import { ProfileHeader } from '@/pages/app/Profile/components/ProfileHeader'
 import { ProfileInfo } from '@/pages/app/Profile/components/ProfileInfo'
 import { ProfileActions } from '@/pages/app/Profile/components/ProfileActions'
 import { ProfileStats } from '@/pages/app/Profile/components/ProfileStats'
-import { ScrollableTabs } from '@/components/ui/scrollable-tabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PostsList } from '@/pages/app/Profile/components/PostsList'
+import { BookmarksList } from '@/pages/app/Profile/components/BookmarksList'
 import { useState } from 'react'
 import { useAuth, useSearchNavigation, useFollowToggle } from '@/hooks'
 
@@ -120,16 +121,28 @@ export function Profile() {
         )}
         
         <div className="mt-6">
-          <ScrollableTabs
-            tabs={[
-              {
-                id: 'posts',
-                label: 'Posts',
-                icon: FileText,
-                content: <PostsList userId={user.id} readOnly={!isOwnProfile} />
-              }
-            ]}
-          />
+          <Tabs defaultValue="posts" className="w-full">
+            <TabsList>
+              <TabsTrigger value="posts" className="cursor-pointer">
+                <FileText className="h-4 w-4" />
+                Posts
+              </TabsTrigger>
+              {isOwnProfile && (
+                <TabsTrigger value="bookmarks" className="cursor-pointer">
+                  <Bookmark className="h-4 w-4" />
+                  Bookmarks
+                </TabsTrigger>
+              )}
+            </TabsList>
+            <TabsContent value="posts">
+              <PostsList userId={user.id} readOnly={!isOwnProfile} />
+            </TabsContent>
+            {isOwnProfile && (
+              <TabsContent value="bookmarks">
+                <BookmarksList />
+              </TabsContent>
+            )}
+          </Tabs>
         </div>
       </div>
 

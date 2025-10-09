@@ -1,5 +1,6 @@
 import { api } from './auth'
 import { handleApiError } from '@/utils/api-error-handler'
+import type { PostsResponse } from './posts'
 
 export interface ApiResponse<T = any> {
   success: boolean
@@ -69,4 +70,12 @@ export const changePasswordApi = async (data: { currentPassword: string; newPass
   } catch (error: any) {
     handleApiError(error, 'Password change failed. Please try again.')
   }
+}
+
+export const getBookmarksApi = async (page: number = 1, limit: number = 10): Promise<PostsResponse> => {
+  const response = await api.get('/auth/profile/bookmarks', {
+    params: { page, limit }
+  })
+  
+  return response.data.data
 }

@@ -26,7 +26,9 @@ export interface Post {
   media: PostMedia[]
   likesCount: number
   commentsCount: number
+  bookmarksCount: number
   userLiked: boolean
+  userBookmarked: boolean
 }
 
 export interface PostsResponse {
@@ -89,6 +91,11 @@ export const updatePostApi = async (
 
 export const toggleLikePostApi = async (postId: string) => {
   const response = await api.post(`/posts/${postId}/like`)
+  return response.data
+}
+
+export const toggleBookmarkPostApi = async (postId: string) => {
+  const response = await api.post(`/posts/${postId}/bookmark`)
   return response.data
 }
 
