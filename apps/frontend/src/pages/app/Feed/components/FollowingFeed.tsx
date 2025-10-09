@@ -7,7 +7,6 @@ import { Loader2, Users } from 'lucide-react'
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from '@/components/ui/empty'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { CreatePostInline } from '@/components/post/CreatePostInline'
-import { PullToRefresh } from '@/components/ui/pull-to-refresh'
 
 export function FollowingFeed() {
   const {
@@ -54,10 +53,6 @@ export function FollowingFeed() {
 
   const posts = data?.pages.flatMap((page) => page.posts) || []
 
-  const handleRefresh = async () => {
-    await refetch()
-  }
-
   if (posts.length === 0) {
     return (
       <>
@@ -78,24 +73,22 @@ export function FollowingFeed() {
   }
 
   return (
-    <PullToRefresh onRefresh={handleRefresh}>
+    <div>
+      <CreatePostInline />
       <div>
-        <CreatePostInline />
-        <div>
-          {posts.map(post => (
-            <PostCard key={post.id} post={post} />
-          ))}
-        </div>
-
-        {hasNextPage && (
-          <div ref={sentinelRef} className="flex justify-center py-4">
-            {isFetchingNextPage && (
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            )}
-          </div>
-        )}
+        {posts.map(post => (
+          <PostCard key={post.id} post={post} />
+        ))}
       </div>
-    </PullToRefresh>
+
+      {hasNextPage && (
+        <div ref={sentinelRef} className="flex justify-center py-4">
+          {isFetchingNextPage && (
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          )}
+        </div>
+      )}
+    </div>
   )
 }
 
