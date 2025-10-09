@@ -16,8 +16,8 @@ const colorMap = {
       primaryForeground: 'oklch(0.985 0.002 247.839)',
     },
     dark: {
-      primary: 'oklch(0.44 0.07 262.1)',
-      primaryForeground: 'oklch(0.985 0.002 247.839)',
+      primary: 'oklch(0.985 0.002 247.839)',
+      primaryForeground: 'oklch(0.25 0.05 261.692)',
     },
     name: 'Default',
     color: '#000000'

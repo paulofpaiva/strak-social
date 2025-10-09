@@ -8,7 +8,6 @@ import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { ScrollToTop } from '@/components/ScrollToTop'
 import { useNProgress } from '@/hooks/useNProgress'
 import { AppLayout } from '@/layouts/AppLayout'
-import { FeedLayout } from '@/layouts/FeedLayout'
 import { AuthLayout } from '@/layouts/AuthLayout'
 import Landing from "@/pages/landing/Landing"
 import { Auth } from "@/pages/auth/Auth"
@@ -76,9 +75,9 @@ function AppRoutes() {
         path="/feed" 
         element={
           <ProtectedRoute>
-            <FeedLayout>
+            <AppLayout showNewsColumn={true}>
               <Feed />
-            </FeedLayout>
+            </AppLayout>
           </ProtectedRoute>
         } 
       />

@@ -56,7 +56,7 @@ export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
   }
 
   return (
-    <div className={cn("flex flex-col h-full", isCompact && "w-16")}>
+    <div className={cn("flex flex-col", isCompact && "w-16")}>
       <div className={cn("flex items-center justify-center", isCompact ? "p-4" : "p-6")}>
         <div className="w-8 h-8 flex items-center justify-center">
           <img 
@@ -67,7 +67,7 @@ export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
         </div>
       </div>
 
-      <nav className={cn("flex-1 space-y-1", isCompact ? "px-2" : "px-4")}>
+      <nav className={cn("space-y-1", isCompact ? "px-2" : "px-4")}>
         {menuItems.map((item) => {
           const Icon = item.icon
           const isActive = item.matchPattern === 'startsWith'
@@ -82,8 +82,8 @@ export function FeedSidebar({ isCompact = false }: FeedSidebarProps) {
                 "flex items-center w-full text-left rounded-full transition-colors cursor-pointer",
                 isCompact ? "justify-center px-2 py-3" : "px-4 py-3",
                 isActive
-                  ? "bg-primary text-primary-foreground font-semibold"
-                  : "text-foreground hover:bg-accent hover:text-accent-foreground"
+                  ? "text-primary font-semibold"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
               )}
               title={isCompact ? item.label : undefined}
             >

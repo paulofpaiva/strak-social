@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/ui/avatar'
 import { PostMedia, type MediaItem } from '../post/PostMedia'
+import { MediaViewer } from '@/components/MediaViewer'
 import { formatPostDate, formatFullPostDate } from '@/utils/date'
 import type { Comment } from '@/api/comments'
 import { Heart, MessageCircle, MoreVertical, Trash2, Edit, BadgeCheck } from 'lucide-react'
@@ -22,6 +23,7 @@ interface CommentCardProps {
   showRepliesButton?: boolean
   disableNavigation?: boolean
   showFullDate?: boolean
+  isCommentView?: boolean
 }
 
 export function CommentCard({ 
@@ -31,11 +33,14 @@ export function CommentCard({
   onViewRepliesClick,
   showRepliesButton = true,
   disableNavigation = false,
-  showFullDate = false
+  showFullDate = false,
+  isCommentView = false
 }: CommentCardProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false)
+  const [isMediaViewerOpen, setIsMediaViewerOpen] = useState(false)
+  const [mediaViewerIndex, setMediaViewerIndex] = useState(0)
   const [isLiked, setIsLiked] = useState(comment.userLiked)
   const [likesCount, setLikesCount] = useState(comment.likesCount)
   const { user } = useAuthStore()
@@ -60,6 +65,11 @@ export function CommentCard({
         }
       }
     )
+  }
+
+  const handleMediaClick = (index: number) => {
+    setMediaViewerIndex(index)
+    setIsMediaViewerOpen(true)
   }
 
   const getCommentUrl = () => {
@@ -176,8 +186,15 @@ export function CommentCard({
       )}
 
       {comment.media && comment.media.length > 0 && (
-        <div className="mb-3 relative z-10 pointer-events-none">
-          <PostMedia media={comment.media as MediaItem[]} />
+        <div className={cn(
+          'mb-3 relative z-10',
+          isCommentView ? 'pointer-events-auto' : 'pointer-events-none'
+        )}>
+          <PostMedia 
+            media={comment.media as MediaItem[]}
+            isPostView={isCommentView}
+            onMediaClick={isCommentView ? handleMediaClick : undefined}
+          />
         </div>
       )}
 
@@ -235,6 +252,15 @@ export function CommentCard({
         postId={comment.postId}
         parentCommentId={comment.id}
       />
+
+      {comment.media && comment.media.length > 0 && (
+        <MediaViewer
+          media={comment.media as MediaItem[]}
+          initialIndex={mediaViewerIndex}
+          isOpen={isMediaViewerOpen}
+          onClose={() => setIsMediaViewerOpen(false)}
+        />
+      )}
     </article>
   )
 }

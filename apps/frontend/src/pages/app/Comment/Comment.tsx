@@ -116,6 +116,7 @@ export function Comment() {
           showRepliesButton={false}
           disableNavigation={true}
           showFullDate={true}
+          isCommentView={true}
         />
       </div>
 
