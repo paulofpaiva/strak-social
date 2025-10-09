@@ -15,6 +15,9 @@ export function ProfileStats({
   onFollowersClick,
   onFollowingClick
 }: ProfileStatsProps) {
+  const followersLabel = followersCount === 1 ? 'Follower' : 'Followers'
+  const followingLabel = 'Following'
+
   return (
     <div className="flex items-center space-x-4 text-sm mb-6">
       <div className="flex items-center space-x-1">
@@ -26,7 +29,7 @@ export function ProfileStats({
           className="text-muted-foreground h-auto p-0 font-normal"
           onClick={onFollowersClick}
         >
-          Followers
+          {followersLabel}
         </Button>
       </div>
       <div className="flex items-center space-x-1">
@@ -38,7 +41,7 @@ export function ProfileStats({
           className="text-muted-foreground h-auto p-0 font-normal"
           onClick={onFollowingClick}
         >
-          Following
+          {followingLabel}
         </Button>
       </div>
     </div>

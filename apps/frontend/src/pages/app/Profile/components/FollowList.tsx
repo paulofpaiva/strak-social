@@ -22,6 +22,7 @@ interface FollowersListProps {
   onRemoveFollower?: (userId: string) => void
   loadingUsers?: Set<string>
   isOwnProfile?: boolean
+  currentUserId?: string
 }
 
 export function FollowList({ 
@@ -33,7 +34,8 @@ export function FollowList({
   onToggleFollow,
   onRemoveFollower,
   loadingUsers = new Set(),
-  isOwnProfile = true
+  isOwnProfile = true,
+  currentUserId
 }: FollowersListProps) {
   if (!users || users.length === 0) {
     return (
@@ -85,7 +87,7 @@ export function FollowList({
             >
               Remove
             </Button>
-          ) : showFollowButton && onToggleFollow ? (
+          ) : showFollowButton && onToggleFollow && currentUserId !== u.id ? (
             <Button
               variant={u.isFollowing ? "secondary" : "default"}
               size="sm"
@@ -98,7 +100,7 @@ export function FollowList({
             >
               {u.isFollowing ? "Following" : "Follow"}
             </Button>
-          ) : (
+          ) : !isOwnProfile && currentUserId !== u.id ? (
             <Button
               variant="default"
               size="sm"
@@ -107,7 +109,7 @@ export function FollowList({
             >
               Following
             </Button>
-          )}
+          ) : null}
         </div>
       ))}
     </div>

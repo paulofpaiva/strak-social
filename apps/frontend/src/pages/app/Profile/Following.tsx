@@ -132,6 +132,7 @@ export function Following() {
             onToggleFollow={handleToggleFollow}
             loadingUsers={loadingUsers}
             isOwnProfile={isOwnProfile}
+            currentUserId={currentUser?.id}
           />
           
           {allUsers.length > 0 && isFetching && (

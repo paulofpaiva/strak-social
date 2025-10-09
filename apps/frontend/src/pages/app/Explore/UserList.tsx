@@ -5,7 +5,7 @@ import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { toggleFollowApi } from '@/api/follow'
 import { toast } from 'sonner'
-import { useSearchNavigation } from '@/hooks'
+import { useSearchNavigation, useAuth } from '@/hooks'
 import { BadgeCheck } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
@@ -26,6 +26,7 @@ interface UserListProps {
 export function UserList({ users, className, onFollowToggled }: UserListProps) {
   const [loadingUsers, setLoadingUsers] = useState<Set<string>>(new Set())
   const queryClient = useQueryClient()
+  const { user: currentUser } = useAuth()
   const { navigateToUserProfile } = useSearchNavigation({
     basePath: '/explore',
     defaultReturnPath: '/explore'
@@ -94,18 +95,20 @@ export function UserList({ users, className, onFollowToggled }: UserListProps) {
               <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{u.bio}</p>
             )}
           </Link>
-          <Button
-            variant={u.isFollowing ? "secondary" : "default"}
-            size="sm"
-            onClick={(e) => {
-              e.preventDefault()
-              handleToggleFollow(u.id, !!u.isFollowing)
-            }}
-            disabled={loadingUsers.has(u.id)}
-            className="rounded-full"
-          >
-            {u.isFollowing ? "Following" : "Follow"}
-          </Button>
+          {currentUser?.id !== u.id && (
+            <Button
+              variant={u.isFollowing ? "secondary" : "default"}
+              size="sm"
+              onClick={(e) => {
+                e.preventDefault()
+                handleToggleFollow(u.id, !!u.isFollowing)
+              }}
+              disabled={loadingUsers.has(u.id)}
+              className="rounded-full"
+            >
+              {u.isFollowing ? "Following" : "Follow"}
+            </Button>
+          )}
         </div>
       ))}
     </div>

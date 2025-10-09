@@ -131,6 +131,7 @@ export function Followers() {
             onRemoveFollower={isOwnProfile ? handleRemoveFollower : undefined}
             loadingUsers={loadingUsers}
             isOwnProfile={isOwnProfile}
+            currentUserId={currentUser?.id}
           />
           
           {allUsers.length > 0 && isFetching && (
