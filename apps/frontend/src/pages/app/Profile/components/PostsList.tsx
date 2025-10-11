@@ -62,7 +62,10 @@ export function PostsList({ userId, className, readOnly = false }: PostsListProp
     )
   }
 
-  const posts = data?.pages.flatMap((page) => page.posts) || []
+  const allPosts = data?.pages.flatMap((page) => page.posts) || []
+  const posts = Array.from(
+    new Map(allPosts.map(post => [post.id, post])).values()
+  )
 
   if (posts.length === 0) {
     return (

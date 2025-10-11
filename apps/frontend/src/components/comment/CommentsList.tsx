@@ -41,7 +41,10 @@ export function CommentsList({ postId }: CommentsListProps) {
     )
   }
 
-  const comments = data?.pages.flatMap((page) => page.comments) || []
+  const allComments = data?.pages.flatMap((page) => page.comments) || []
+  const comments = Array.from(
+    new Map(allComments.map(comment => [comment.id, comment])).values()
+  )
 
   if (comments.length === 0) {
     return null

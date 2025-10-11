@@ -42,8 +42,10 @@ export function useNews({
 export function useNewsArticles(options?: UseNewsOptions) {
   const query = useNews(options)
   
-  const articles: NewsArticle[] =
-    query.data?.pages.flatMap((page) => page.articles) ?? []
+  const allArticles = query.data?.pages.flatMap((page) => page.articles) ?? []
+  const articles: NewsArticle[] = Array.from(
+    new Map(allArticles.map(article => [article.url, article])).values()
+  )
   
   return {
     ...query,
