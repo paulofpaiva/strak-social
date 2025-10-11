@@ -13,14 +13,14 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
   const [imageLoading, setImageLoading] = useState(user.cover ? true : false)
 
   return (
-    <div className="relative mt-8 -mx-4 sm:mx-0">
+    <div className="relative -mx-4 sm:mx-0">
       {isOwnProfile ? (
         <CoverEditor 
           src={user.cover ?? undefined} 
-          className="h-32 sm:h-48 md:h-64 w-full"
+          className="h-48 sm:h-48 md:h-64 w-full"
         />
       ) : (
-        <div className="h-32 sm:h-48 md:h-64 w-full bg-gray-800 overflow-hidden relative">
+        <div className="h-48 sm:h-48 md:h-64 w-full bg-gray-800 overflow-hidden relative">
           {user.cover ? (
             <>
               {imageLoading && (

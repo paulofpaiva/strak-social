@@ -9,11 +9,12 @@ import { ResponsiveDropdown } from '@/components/ui/responsive-dropdown'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/stores/authStore'
 import { useState } from 'react'
-import { useLocation, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { EditPost } from './EditPost'
 import { DeletePost } from './DeletePost'
 import { CreateComment } from '@/components/comment/CreateComment'
 import { useLikePostMutation, useBookmarkPostMutation } from '@/hooks/post'
+import { useNavigationState } from '@/hooks/useNavigationState'
 import { toast } from 'sonner'
 
 interface PostCardProps {
@@ -35,7 +36,7 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
   const [isBookmarked, setIsBookmarked] = useState(post.userBookmarked)
   const [bookmarksCount, setBookmarksCount] = useState(post.bookmarksCount)
   const { user } = useAuthStore()
-  const location = useLocation()
+  const { navigateWithReturn } = useNavigationState()
   const isOwner = user?.id === post.userId
   const likeMutation = useLikePostMutation()
   const bookmarkMutation = useBookmarkPostMutation()
@@ -79,7 +80,11 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
     setIsMediaViewerOpen(true)
   }
 
-  const postUrl = `/post/${post.id}?return=${location.pathname}`
+  const handlePostClick = () => {
+    if (!disableNavigation) {
+      navigateWithReturn(`/post/${post.id}`)
+    }
+  }
 
   return (
     <article
@@ -89,8 +94,8 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
       )}
     >
       {!disableNavigation && (
-        <Link 
-          to={postUrl}
+        <div 
+          onClick={handlePostClick}
           className="absolute inset-0 z-0"
           aria-label={`View post by ${post.user.name}`}
         />

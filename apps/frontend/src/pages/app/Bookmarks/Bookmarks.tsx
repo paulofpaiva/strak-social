@@ -1,4 +1,3 @@
-import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { SearchInput } from '@/components/ui/search-input'
 import { BookmarksList } from '@/pages/app/Profile/components/BookmarksList'
 import { useSearchNavigation } from '@/hooks'
@@ -17,9 +16,7 @@ export function Bookmarks() {
 
   return (
     <>
-      <Breadcrumb to="/feed" label="Bookmarks" />
-
-      <div className="pt-5 w-full md:w-96">
+      <div className="w-full md:w-96">
         <SearchInput
           value={search}
           onChange={handleSearchChange}

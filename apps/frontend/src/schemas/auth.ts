@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { calculateAge } from '@/utils/date'
 
 export const signUpSchema = z.object({
   name: z
@@ -23,7 +24,15 @@ export const signUpSchema = z.object({
     .max(100, 'Password must be at most 100 characters')
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain at least one lowercase letter, one uppercase letter, and one number'),
   
-  birthDate: z.string().min(1, 'Birth date is required')
+  birthDate: z
+    .string()
+    .min(1, 'Birth date is required')
+    .refine((date) => {
+      const age = calculateAge(date)
+      return age >= 18
+    }, {
+      message: 'You must be at least 18 years old to sign up'
+    })
 })
 
 export const signInSchema = z.object({

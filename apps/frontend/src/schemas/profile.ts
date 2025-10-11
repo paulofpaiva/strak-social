@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { calculateAge } from '@/utils/date'
 
 const bioString = z.string().max(160, 'Bio must have at most 160 characters')
 const locationString = z.string().max(80, 'Location must have at most 80 characters')
@@ -41,4 +42,34 @@ export const editProfileFieldMax = {
   website: 200, // Max length defined in websiteString refine
 }
 
+export const editNameSchema = z.object({
+  name: z
+    .string()
+    .min(2, 'Name must be at least 2 characters')
+    .max(50, 'Name must be at most 50 characters')
+})
+
+export const editUsernameSchema = z.object({
+  username: z
+    .string()
+    .min(3, 'Username must be at least 3 characters')
+    .max(15, 'Username must be at most 15 characters')
+    .regex(/^[a-zA-Z0-9_.]+$/, 'Username can only contain letters (a-z, A-Z), numbers (0-9), underscores (_), and dots (.)')
+})
+
+export const editBirthDateSchema = z.object({
+  birthDate: z
+    .string()
+    .min(1, 'Birth date is required')
+    .refine((date) => {
+      const age = calculateAge(date)
+      return age >= 18
+    }, {
+      message: 'You must be at least 18 years old'
+    })
+})
+
+export type EditNameFormData = z.infer<typeof editNameSchema>
+export type EditUsernameFormData = z.infer<typeof editUsernameSchema>
+export type EditBirthDateFormData = z.infer<typeof editBirthDateSchema>
 

@@ -1,7 +1,8 @@
 import { ResponsiveModal } from '@/components/ui/responsive-modal'
 import { Button } from '@/components/ui/button'
 import { useDeleteCommentMutation } from '@/hooks/comment'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
+import { useNavigationState } from '@/hooks/useNavigationState'
 import type { Comment } from '@/api/comments'
 
 interface DeleteCommentProps {
@@ -13,8 +14,8 @@ interface DeleteCommentProps {
 
 export function DeleteComment({ open, onOpenChange, comment, onDeleteSuccess }: DeleteCommentProps) {
   const deleteMutation = useDeleteCommentMutation()
-  const navigate = useNavigate()
   const location = useLocation()
+  const { navigateBack, navigateWithReturn } = useNavigationState()
 
   const handleDelete = () => {
     deleteMutation.mutate(
@@ -28,17 +29,10 @@ export function DeleteComment({ open, onOpenChange, comment, onDeleteSuccess }: 
           onOpenChange(false)
           
           if (location.pathname === `/comment/${comment.id}`) {
-            const searchParams = new URLSearchParams(location.search)
-            const returnUrl = searchParams.get('return')
-            
             if (comment.parentCommentId) {
-              navigate(`/comment/${comment.parentCommentId}${location.search}`)
-            } 
-            else if (returnUrl) {
-              navigate(returnUrl)
-            } 
-            else {
-              navigate('/feed')
+              navigateWithReturn(`/comment/${comment.parentCommentId}`)
+            } else {
+              navigateBack('/feed')
             }
           }
           

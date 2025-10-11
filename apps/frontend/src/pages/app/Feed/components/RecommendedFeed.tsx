@@ -8,7 +8,7 @@ import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from '@/
 import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { CreatePostInline } from '@/components/post/CreatePostInline'
 
-export function TrendingFeed() {
+export function RecommendedFeed() {
   const {
     data,
     isLoading,
@@ -44,7 +44,7 @@ export function TrendingFeed() {
     return (
       <ErrorEmpty
         title="Failed to load posts"
-        description="Unable to load trending posts. Please try again."
+        description="Unable to load recommended posts. Please try again."
         onRetry={() => refetch()}
         retryText="Try again"
       />
@@ -62,9 +62,9 @@ export function TrendingFeed() {
             <EmptyMedia variant="icon">
               <TrendingUp className="h-6 w-6" />
             </EmptyMedia>
-            <EmptyTitle>No trending posts yet</EmptyTitle>
+            <EmptyTitle>No recommended posts yet</EmptyTitle>
             <EmptyDescription>
-              Trending posts will appear here. Start engaging with posts to see what's popular!
+              Recommended posts will appear here. Start engaging with posts to see what's popular!
             </EmptyDescription>
           </EmptyHeader>
         </Empty>

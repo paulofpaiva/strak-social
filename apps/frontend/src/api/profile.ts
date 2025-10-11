@@ -72,6 +72,33 @@ export const changePasswordApi = async (data: { currentPassword: string; newPass
   }
 }
 
+export const updateNameApi = async (name: string): Promise<ApiResponse> => {
+  try {
+    const response = await api.put<ApiResponse>('/auth/profile/name', { name })
+    return response.data
+  } catch (error: any) {
+    handleApiError(error, 'Name update failed. Please try again.')
+  }
+}
+
+export const updateUsernameApi = async (username: string): Promise<ApiResponse> => {
+  try {
+    const response = await api.put<ApiResponse>('/auth/profile/username', { username })
+    return response.data
+  } catch (error: any) {
+    handleApiError(error, 'Username update failed. Please try again.')
+  }
+}
+
+export const updateBirthDateApi = async (birthDate: string): Promise<ApiResponse> => {
+  try {
+    const response = await api.put<ApiResponse>('/auth/profile/birthdate', { birthDate })
+    return response.data
+  } catch (error: any) {
+    handleApiError(error, 'Birth date update failed. Please try again.')
+  }
+}
+
 export const getBookmarksApi = async (
   page: number = 1, 
   limit: number = 10,

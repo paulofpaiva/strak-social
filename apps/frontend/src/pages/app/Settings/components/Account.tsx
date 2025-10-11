@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { getProfileApi } from '@/api/profile'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { getProfileApi, updateNameApi, updateUsernameApi, updateBirthDateApi } from '@/api/profile'
 import { formatDate } from '@/utils/date'
 import { 
   Item, 
@@ -14,11 +14,16 @@ import {
 import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { SkeletonItemGroup } from '@/components/skeleton/SkeletonItemGroup'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { ChevronRight, Lock } from 'lucide-react'
 import { ChangePassword } from './ChangePassword'
+import { EditFieldModal } from './EditFieldModal'
+import { editNameSchema, editUsernameSchema, editBirthDateSchema } from '@/schemas/profile'
 
 export function Account() {
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false)
+  const [editingField, setEditingField] = useState<'name' | 'username' | 'birthDate' | null>(null)
+  const queryClient = useQueryClient()
   
   const { data: profileData, isLoading, error, refetch } = useQuery({
     queryKey: ['profile'],
@@ -28,6 +33,27 @@ export function Account() {
   })
 
   const user = profileData?.user
+
+  const handleSaveName = async (name: string) => {
+    await updateNameApi(name)
+    await queryClient.invalidateQueries({ queryKey: ['profile'] })
+  }
+
+  const handleSaveUsername = async (username: string) => {
+    await updateUsernameApi(username)
+    await queryClient.invalidateQueries({ queryKey: ['profile'] })
+  }
+
+  const handleSaveBirthDate = async (birthDate: string) => {
+    await updateBirthDateApi(birthDate)
+    await queryClient.invalidateQueries({ queryKey: ['profile'] })
+  }
+
+  const formatBirthDateForInput = (date: Date | string | null) => {
+    if (!date) return ''
+    const d = new Date(date)
+    return d.toISOString().split('T')[0]
+  }
 
   return (
     <div className="space-y-6">
@@ -51,7 +77,8 @@ export function Account() {
       ) : (
         <ItemGroup className='px-0'>
           <Item 
-            className="cursor-pointer transition-colors px-0"
+            className="cursor-pointer transition-colors hover:bg-accent px-0"
+            onClick={() => setEditingField('name')}
           >
             <ItemContent>
               <ItemTitle>Full Name</ItemTitle>
@@ -64,7 +91,8 @@ export function Account() {
           <ItemSeparator />
 
           <Item 
-            className="cursor-pointer transition-colors px-0"
+            className="cursor-pointer transition-colors hover:bg-accent px-0"
+            onClick={() => setEditingField('username')}
           >
             <ItemContent>
               <ItemTitle>Username</ItemTitle>
@@ -77,20 +105,23 @@ export function Account() {
           <ItemSeparator />
 
           <Item 
-            className="cursor-pointer transition-colors px-0"
+            className="px-0"
           >
             <ItemContent>
               <ItemTitle>Email</ItemTitle>
-              <ItemDescription>{user.email}</ItemDescription>
+              <ItemDescription className="flex flex-col gap-1">
+                <span>{user.email}</span>
+                <Badge variant="default" className="text-xs w-fit bg-green-600 hover:bg-green-600">
+                  Email changes coming soon
+                </Badge>
+              </ItemDescription>
             </ItemContent>
-            <ItemActions>
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            </ItemActions>
           </Item>
           <ItemSeparator />
 
           <Item 
-            className="cursor-pointer transition-colors px-0"
+            className="cursor-pointer transition-colors hover:bg-accent px-0"
+            onClick={() => setEditingField('birthDate')}
           >
             <ItemContent>
               <ItemTitle>Birth Date</ItemTitle>
@@ -108,7 +139,7 @@ export function Account() {
           <ItemSeparator />
           <ItemSeparator />
           <Item 
-            className="cursor-pointer transition-colors px-0"
+            className="px-0"
           >
             <ItemContent>
               <ItemTitle>Member Since</ItemTitle>
@@ -140,6 +171,40 @@ export function Account() {
       <ChangePassword 
         isOpen={isChangePasswordOpen}
         onClose={() => setIsChangePasswordOpen(false)}
+      />
+      
+      <EditFieldModal
+        open={editingField === 'name'}
+        onOpenChange={(open) => !open && setEditingField(null)}
+        fieldName="name"
+        fieldLabel="Full Name"
+        fieldType="text"
+        currentValue={user?.name || ''}
+        schema={editNameSchema}
+        onSave={handleSaveName}
+      />
+
+      <EditFieldModal
+        open={editingField === 'username'}
+        onOpenChange={(open) => !open && setEditingField(null)}
+        fieldName="username"
+        fieldLabel="Username"
+        fieldType="text"
+        currentValue={user?.username || ''}
+        schema={editUsernameSchema}
+        onSave={handleSaveUsername}
+        showUsernameCheck={true}
+      />
+
+      <EditFieldModal
+        open={editingField === 'birthDate'}
+        onOpenChange={(open) => !open && setEditingField(null)}
+        fieldName="birthDate"
+        fieldLabel="Birth Date"
+        fieldType="date"
+        currentValue={formatBirthDateForInput(user?.birthDate || null)}
+        schema={editBirthDateSchema}
+        onSave={handleSaveBirthDate}
       />
     </div>
   )

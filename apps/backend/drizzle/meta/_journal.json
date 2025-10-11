@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1759698319010,
-      "tag": "0000_military_bullseye",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1759769526585,
-      "tag": "0001_mature_thunderball",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1759966281927,
-      "tag": "0002_ambiguous_cyclops",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1760024209886,
-      "tag": "0003_famous_thaddeus_ross",
+      "when": 1760207735726,
+      "tag": "0000_smiling_epoch",
       "breakpoints": true
     }
   ]

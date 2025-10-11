@@ -1,7 +1,8 @@
 import { ResponsiveModal } from '@/components/ui/responsive-modal'
 import { Button } from '@/components/ui/button'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
+import { useNavigationState } from '@/hooks/useNavigationState'
 import { deletePostApi } from '@/api/posts'
 import { toast } from 'sonner'
 import type { Post } from '@/api/posts'
@@ -14,8 +15,8 @@ interface DeletePostProps {
 
 export function DeletePost({ open, onOpenChange, post }: DeletePostProps) {
   const queryClient = useQueryClient()
-  const navigate = useNavigate()
   const location = useLocation()
+  const { navigateBack } = useNavigationState()
 
   const deletePostMutation = useMutation({
     mutationFn: deletePostApi,
@@ -48,15 +49,7 @@ export function DeletePost({ open, onOpenChange, post }: DeletePostProps) {
       toast.success('Post deleted successfully')
       
       if (location.pathname === `/post/${post.id}`) {
-        const searchParams = new URLSearchParams(location.search)
-        const returnUrl = searchParams.get('return')
-        
-        if (returnUrl) {
-          navigate(returnUrl)
-        } 
-        else {
-          navigate('/feed')
-        }
+        navigateBack('/feed')
       }
     },
     onError: (error: any) => {

@@ -9,11 +9,12 @@ import { ResponsiveDropdown } from '@/components/ui/responsive-dropdown'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/stores/authStore'
 import { useState } from 'react'
-import { useLocation, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { EditComment } from './EditComment'
 import { DeleteComment } from './DeleteComment'
 import { CreateComment } from './CreateComment'
 import { useLikeCommentMutation } from '@/hooks/comment'
+import { useNavigationState } from '@/hooks/useNavigationState'
 
 interface CommentCardProps {
   comment: Comment
@@ -44,7 +45,7 @@ export function CommentCard({
   const [isLiked, setIsLiked] = useState(comment.userLiked)
   const [likesCount, setLikesCount] = useState(comment.likesCount)
   const { user } = useAuthStore()
-  const location = useLocation()
+  const { navigateWithReturn } = useNavigationState()
   const isOwner = user?.id === comment.userId
   const likeMutation = useLikeCommentMutation()
 
@@ -72,20 +73,10 @@ export function CommentCard({
     setIsMediaViewerOpen(true)
   }
 
-  const getCommentUrl = () => {
-    const searchParams = new URLSearchParams(location.search)
-    const currentReturn = searchParams.get('return')
-    
-    let returnPath: string
-    if (location.pathname.startsWith('/post/')) {
-      returnPath = location.pathname + (currentReturn ? `?return=${currentReturn}` : '')
-    } else if (currentReturn) {
-      returnPath = currentReturn
-    } else {
-      returnPath = location.pathname
+  const handleCommentClick = () => {
+    if (!disableNavigation) {
+      navigateWithReturn(`/comment/${comment.id}`)
     }
-    
-    return `/comment/${comment.id}?return=${returnPath}`
   }
 
   const hasReplies = comment.repliesCount && comment.repliesCount > 0
@@ -99,8 +90,8 @@ export function CommentCard({
       )}
     >
       {!disableNavigation && (
-        <Link 
-          to={getCommentUrl()}
+        <div 
+          onClick={handleCommentClick}
           className="absolute inset-0 z-0"
           aria-label={`View comment by ${comment.user.name}`}
         />

@@ -2,43 +2,19 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 
 interface SearchNavigationOptions {
   basePath: string
-  defaultReturnPath: string
+  defaultReturnPath?: string
 }
 
-export function useSearchNavigation({ basePath, defaultReturnPath }: SearchNavigationOptions) {
+/**
+ * Hook simplificado para gerenciar search params e navegação
+ * Para navegação com return/back, use useNavigationState
+ */
+export function useSearchNavigation({ basePath }: SearchNavigationOptions) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
 
   const getCurrentSearchParams = () => {
     return searchParams.toString()
-  }
-
-  const navigateToUserProfile = (username: string) => {
-    const currentParams = getCurrentSearchParams()
-    
-    if (currentParams) {
-      navigate(`/${username}?return=${basePath}&${currentParams}`)
-    } else {
-      navigate(`/${username}?return=${basePath}`)
-    }
-  }
-
-  const getReturnUrl = () => {
-    const returnParam = searchParams.get('return')
-    
-    if (!returnParam) {
-      return defaultReturnPath
-    }
-
-    const newSearchParams = new URLSearchParams()
-    searchParams.forEach((value, key) => {
-      if (key !== 'return') {
-        newSearchParams.set(key, value)
-      }
-    })
-    
-    const paramsString = newSearchParams.toString()
-    return `${returnParam}${paramsString ? `?${paramsString}` : ''}`
   }
 
   const updateSearchParams = (updates: Record<string, string | null>) => {
@@ -63,8 +39,6 @@ export function useSearchNavigation({ basePath, defaultReturnPath }: SearchNavig
 
   return {
     getCurrentSearchParams,
-    navigateToUserProfile,
-    getReturnUrl,
     updateSearchParams,
     navigateWithParams,
     searchParams

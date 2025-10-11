@@ -5,7 +5,7 @@ import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { toggleFollowApi } from '@/api/follow'
 import { toast } from 'sonner'
-import { useSearchNavigation, useAuth } from '@/hooks'
+import { useAuth } from '@/hooks'
 import { BadgeCheck } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
@@ -27,10 +27,6 @@ export function UserList({ users, className, onFollowToggled }: UserListProps) {
   const [loadingUsers, setLoadingUsers] = useState<Set<string>>(new Set())
   const queryClient = useQueryClient()
   const { user: currentUser } = useAuth()
-  const { navigateToUserProfile } = useSearchNavigation({
-    basePath: '/explore',
-    defaultReturnPath: '/explore'
-  })
 
   if (!users || users.length === 0) {
     return (

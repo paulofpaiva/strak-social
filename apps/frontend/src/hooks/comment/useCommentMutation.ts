@@ -224,6 +224,14 @@ export function useDeleteCommentMutation() {
         refetchType: 'all'
       })
       
+      queryClient.removeQueries({ 
+        queryKey: ['comment', variables.commentId]
+      })
+      
+      queryClient.removeQueries({ 
+        queryKey: ['comment-replies-infinite', variables.commentId]
+      })
+      
       if (variables.parentCommentId) {
         await queryClient.invalidateQueries({ 
           queryKey: ['comment-replies-infinite', variables.parentCommentId],

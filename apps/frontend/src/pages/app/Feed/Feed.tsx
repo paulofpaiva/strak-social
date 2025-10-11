@@ -1,28 +1,38 @@
-import { TrendingUp } from "lucide-react"
 import { useNavigationTracking } from '@/utils/navigation'
+import { useSearchParams } from 'react-router-dom'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { FollowingFeed } from './components/FollowingFeed'
-import { TrendingFeed } from './components/TrendingFeed'
+import { RecommendedFeed } from './components/RecommendedFeed'
 
 export function Feed() {
   useNavigationTracking('/feed')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const activeTab = searchParams.get('tab') || 'following'
+
+  const handleTabChange = (value: string) => {
+    if (value === 'following') {
+      searchParams.delete('tab')
+      setSearchParams(searchParams)
+    } else {
+      setSearchParams({ tab: value })
+    }
+  }
 
   return (
-    <Tabs defaultValue="following" className="w-full">
+    <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList>
           <TabsTrigger value="following" className="cursor-pointer">
             Following
           </TabsTrigger>
-          <TabsTrigger value="trending" className="cursor-pointer">
-            <TrendingUp className="h-4 w-4" />
-            Trending
+          <TabsTrigger value="recommended" className="cursor-pointer">
+            Recommended
           </TabsTrigger>
         </TabsList>
         <TabsContent value="following">
           <FollowingFeed />
         </TabsContent>
-        <TabsContent value="trending">
-          <TrendingFeed />
+        <TabsContent value="recommended">
+          <RecommendedFeed />
         </TabsContent>
     </Tabs>
   )

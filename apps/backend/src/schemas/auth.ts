@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { pgTable, text, timestamp, uuid, boolean } from 'drizzle-orm/pg-core';
+import { calculateAge } from '../utils/database';
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -26,7 +27,15 @@ export const signUpSchema = z.object({
     .regex(/^[a-zA-Z0-9_.]+$/, 'Username can only contain letters, numbers, underscores, and dots'),
   password: z.string().min(6, 'Password must have at least 6 characters'),
   name: z.string().min(2, 'Name must have at least 2 characters'),
-  birthDate: z.string().min(1, 'Birth date is required'),
+  birthDate: z
+    .string()
+    .min(1, 'Birth date is required')
+    .refine((date) => {
+      const age = calculateAge(date)
+      return age >= 18
+    }, {
+      message: 'You must be at least 18 years old to sign up'
+    }),
 });
 
 export const signInSchema = z.object({
@@ -81,8 +90,34 @@ export const updateProfileSchema = z.object({
     .optional(),
 });
 
+export const updateNameSchema = z.object({
+  name: z.string().min(2, 'Name must have at least 2 characters').max(50, 'Name must have at most 50 characters'),
+});
+
+export const updateUsernameSchema = z.object({
+  username: z.string()
+    .min(3, 'Username must have at least 3 characters')
+    .max(15, 'Username must have at most 15 characters')
+    .regex(/^[a-zA-Z0-9_.]+$/, 'Username can only contain letters, numbers, underscores, and dots'),
+});
+
+export const updateBirthDateSchema = z.object({
+  birthDate: z
+    .string()
+    .min(1, 'Birth date is required')
+    .refine((date) => {
+      const age = calculateAge(date)
+      return age >= 18
+    }, {
+      message: 'You must be at least 18 years old'
+    }),
+});
+
 export type SignUpInput = z.infer<typeof signUpSchema>;
 export type SignInInput = z.infer<typeof signInSchema>;
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
 export type CheckUsernameInput = z.infer<typeof checkUsernameSchema>;
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+export type UpdateNameInput = z.infer<typeof updateNameSchema>;
+export type UpdateUsernameInput = z.infer<typeof updateUsernameSchema>;
+export type UpdateBirthDateInput = z.infer<typeof updateBirthDateSchema>;

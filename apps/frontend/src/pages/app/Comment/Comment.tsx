@@ -1,4 +1,4 @@
-import { useParams, useLocation } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { CommentCard } from '@/components/comment/CommentCard'
@@ -6,8 +6,6 @@ import { InlineCommentForm } from '@/components/comment/InlineCommentForm'
 import { CommentCardSkeleton } from '@/components/skeleton/CommentCardSkeleton'
 import { CommentListSkeleton } from '@/components/skeleton/CommentListSkeleton'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
-import { Breadcrumb } from '@/components/ui/breadcrumb'
-import { useSearchNavigation } from '@/hooks'
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
 import { getCommentReplies } from '@/api/comments'
 import { api } from '@/api/auth'
@@ -20,12 +18,6 @@ const getCommentById = async (commentId: string): Promise<CommentType> => {
 
 export function Comment() {
   const { id } = useParams<{ id: string }>()
-  const location = useLocation()
-  
-  const { getReturnUrl } = useSearchNavigation({
-    basePath: '/comment',
-    defaultReturnPath: '/feed'
-  })
 
   const { data: comment, isLoading, isError } = useQuery({
     queryKey: ['comment', id],
@@ -68,46 +60,19 @@ export function Comment() {
 
   if (isError || !comment) {
     return (
-      <>
-        <Breadcrumb to={getReturnUrl()} label="Back" />
-        <div className="py-8">
-          <ErrorEmpty
-            title="Comment not found"
-            description="The comment you're looking for doesn't exist or has been deleted."
-          />
-        </div>
-      </>
+      <div className="py-8">
+        <ErrorEmpty
+          title="Comment not found"
+          description="The comment you're looking for doesn't exist or has been deleted."
+        />
+      </div>
     )
   }
 
   const replies = repliesData?.pages.flatMap((page) => page.replies) || []
 
-  const searchParams = new URLSearchParams(location.search)
-  const returnUrl = searchParams.get('return')
-  
-  let backUrl: string
-  let breadcrumbLabel: string
-  
-  if (comment.parentCommentId) {
-    backUrl = `/comment/${comment.parentCommentId}${location.search}`
-    breadcrumbLabel = "Back to Comment"
-  } else if (returnUrl) {
-    backUrl = returnUrl
-    if (returnUrl.startsWith('/post/')) {
-      breadcrumbLabel = "Back to Post"
-    } else if (returnUrl.startsWith('/comment/')) {
-      breadcrumbLabel = "Back to Comment"
-    } else {
-      breadcrumbLabel = "Back"
-    }
-  } else {
-    backUrl = getReturnUrl()
-    breadcrumbLabel = "Back"
-  }
-
   return (
     <>
-      <Breadcrumb to={backUrl} label={breadcrumbLabel} />
       
       <div className="border-b border-border">
         <CommentCard 

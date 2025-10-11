@@ -9,7 +9,9 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
 } from "@/components/ui/sheet"
+import { VisuallyHidden } from "@/components/ui/visually-hidden"
 import { 
   getMobileSidebarItems, 
   getUserMenuItemsForDesktop
@@ -50,6 +52,12 @@ export function MobileSidebar({ open, onOpenChange }: MobileSidebarProps) {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="left" className="w-[280px] p-0 bg-background border-border text-foreground">
         <SheetHeader className="pt-4 bg-background">
+          <VisuallyHidden>
+            <SheetTitle>Navigation Menu</SheetTitle>
+            <SheetDescription>
+              Access your profile and navigate through the app
+            </SheetDescription>
+          </VisuallyHidden>
         {user && (
             <div className="flex flex-col items-start p-6">
               <Avatar 

@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { searchUsersApi } from '@/api/users'
-import { Breadcrumb } from '@/components/ui/breadcrumb'
-  import { SearchInput } from '@/components/ui/search-input'
+import { SearchInput } from '@/components/ui/search-input'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { UserListSkeleton } from '../../../components/skeleton/UserListSkeleton'
 import { UserList } from './UserList'
@@ -53,9 +52,7 @@ export function Explore() {
 
   return (
     <>
-      <Breadcrumb to="/feed" label={`Explore`} />
-
-      <div className="pt-5 w-full md:w-96">
+      <div className="w-full md:w-96">
         <SearchInput
           value={search}
           onChange={handleSearchChange}

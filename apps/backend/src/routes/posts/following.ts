@@ -8,7 +8,7 @@ import { comments } from '../../schemas/comments'
 import { bookmarks } from '../../schemas/bookmarks'
 import { followers } from '../../schemas/followers'
 import { authenticateToken } from '../../middleware/auth'
-import { eq, desc, asc, and, inArray } from 'drizzle-orm'
+import { eq, desc, asc, and, inArray, isNull } from 'drizzle-orm'
 import { asyncHandler } from '../../middleware/asyncHandler'
 import { ApiResponse } from '../../utils/response'
 
@@ -79,7 +79,10 @@ router.get('/following', authenticateToken, asyncHandler(async (req: Request, re
       const commentsCount = await db
         .select({ count: comments.id })
         .from(comments)
-        .where(eq(comments.postId, post.id))
+        .where(and(
+          eq(comments.postId, post.id),
+          isNull(comments.parentCommentId)
+        ))
 
       const userBookmarked = await db
         .select({ id: bookmarks.id })

@@ -6,7 +6,6 @@ import { useParams } from 'react-router-dom'
 import { getUserByUsernameApi } from '@/api/users'
 import { FollowList } from './components/FollowList'
 import { FollowListSkeleton } from '../../../components/skeleton/FollowListSkeleton'
-import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { SearchInput } from '@/components/ui/search-input'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
@@ -101,9 +100,7 @@ export function Following() {
 
   return (
     <>
-      <Breadcrumb to={`/${username}`} label={`Following`} />
-
-      <div className="pt-5 w-full md:w-96">
+      <div className="w-full md:w-96">
         <SearchInput
           value={search}
           onChange={handleSearchChange}

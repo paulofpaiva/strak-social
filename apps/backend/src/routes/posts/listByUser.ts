@@ -7,7 +7,7 @@ import { likes } from '../../schemas/likes'
 import { comments } from '../../schemas/comments'
 import { bookmarks } from '../../schemas/bookmarks'
 import { authenticateToken } from '../../middleware/auth'
-import { eq, desc, asc, and } from 'drizzle-orm'
+import { eq, desc, asc, and, isNull } from 'drizzle-orm'
 import { asyncHandler } from '../../middleware/asyncHandler'
 import { ApiResponse } from '../../utils/response'
 
@@ -69,7 +69,10 @@ router.get('/user/:userId', authenticateToken, asyncHandler(async (req: Request,
       const commentsCount = await db
         .select({ count: comments.id })
         .from(comments)
-        .where(eq(comments.postId, post.id))
+        .where(and(
+          eq(comments.postId, post.id),
+          isNull(comments.parentCommentId)
+        ))
 
       const userBookmarked = await db
         .select({ id: bookmarks.id })

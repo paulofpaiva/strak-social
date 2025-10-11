@@ -7,7 +7,6 @@ import { CheckCircle } from 'lucide-react'
 import { ProfileSkeleton } from '../../../components/skeleton/ProfileSkeleton'
 import { UserProfileSkeleton } from '../../../components/skeleton/UserProfileSkeleton'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
-import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { EditProfile } from '@/pages/app/Profile/components/EditProfile'
 import { ProfileHeader } from '@/pages/app/Profile/components/ProfileHeader'
 import { ProfileInfo } from '@/pages/app/Profile/components/ProfileInfo'
@@ -16,7 +15,7 @@ import { ProfileStats } from '@/pages/app/Profile/components/ProfileStats'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PostsList } from '@/pages/app/Profile/components/PostsList'
 import { useState } from 'react'
-import { useAuth, useSearchNavigation, useFollowToggle } from '@/hooks'
+import { useAuth, useFollowToggle } from '@/hooks'
 
 export function Profile() {
   const { username } = useParams<{ username: string }>()
@@ -24,11 +23,6 @@ export function Profile() {
   const navigate = useNavigate()
   
   const [editOpen, setEditOpen] = useState(false)
-  
-  const { getReturnUrl } = useSearchNavigation({
-    basePath: '/explore',
-    defaultReturnPath: '/feed'
-  })
 
   const isOwnProfile = currentUser?.username === username
 
@@ -65,24 +59,20 @@ export function Profile() {
 
   if (error || !user) {
     return (
-      <>
-        <Breadcrumb to={isOwnProfile ? "/feed" : getReturnUrl()} label="Back" />
-        <ErrorEmpty
-          title={isOwnProfile ? "Failed to load profile" : "User not found"}
-          description={isOwnProfile 
-            ? "Unable to load profile information. Please check your connection and try again."
-            : "The user you're looking for doesn't exist or may have been removed."
-          }
-          onRetry={() => refetch()}
-          retryText="Try again"
-        />
-      </>
+      <ErrorEmpty
+        title={isOwnProfile ? "Failed to load profile" : "User not found"}
+        description={isOwnProfile 
+          ? "Unable to load profile information. Please check your connection and try again."
+          : "The user you're looking for doesn't exist or may have been removed."
+        }
+        onRetry={() => refetch()}
+        retryText="Try again"
+      />
     )
   }
 
   return (
     <>
-      <Breadcrumb to={isOwnProfile ? "/feed" : getReturnUrl()} label={`${user.username}`} />
       
       <ProfileHeader user={user} isOwnProfile={isOwnProfile} />
 
