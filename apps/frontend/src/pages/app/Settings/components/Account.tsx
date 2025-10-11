@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { getProfileApi, updateNameApi, updateUsernameApi, updateBirthDateApi } from '@/api/profile'
-import { formatDate } from '@/utils/date'
+import { useQuery } from '@tanstack/react-query'
+import { getProfileApi } from '@/api/profile'
+import { formatDate, formatDateForInput } from '@/utils/date'
+import { useAccountFieldUpdates } from '@/hooks/auth/useAccountFieldUpdates'
 import { 
   Item, 
   ItemContent, 
@@ -23,7 +24,6 @@ import { editNameSchema, editUsernameSchema, editBirthDateSchema } from '@/schem
 export function Account() {
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false)
   const [editingField, setEditingField] = useState<'name' | 'username' | 'birthDate' | null>(null)
-  const queryClient = useQueryClient()
   
   const { data: profileData, isLoading, error, refetch } = useQuery({
     queryKey: ['profile'],
@@ -32,28 +32,9 @@ export function Account() {
     refetchOnWindowFocus: false,
   })
 
+  const { updateName, updateUsername, updateBirthDate } = useAccountFieldUpdates()
+
   const user = profileData?.user
-
-  const handleSaveName = async (name: string) => {
-    await updateNameApi(name)
-    await queryClient.invalidateQueries({ queryKey: ['profile'] })
-  }
-
-  const handleSaveUsername = async (username: string) => {
-    await updateUsernameApi(username)
-    await queryClient.invalidateQueries({ queryKey: ['profile'] })
-  }
-
-  const handleSaveBirthDate = async (birthDate: string) => {
-    await updateBirthDateApi(birthDate)
-    await queryClient.invalidateQueries({ queryKey: ['profile'] })
-  }
-
-  const formatBirthDateForInput = (date: Date | string | null) => {
-    if (!date) return ''
-    const d = new Date(date)
-    return d.toISOString().split('T')[0]
-  }
 
   return (
     <div className="space-y-6">
@@ -109,12 +90,12 @@ export function Account() {
           >
             <ItemContent>
               <ItemTitle>Email</ItemTitle>
-              <ItemDescription className="flex flex-col gap-1">
-                <span>{user.email}</span>
+              <div className="flex flex-col gap-1.5">
+                <span className="text-muted-foreground text-sm">{user.email}</span>
                 <Badge variant="default" className="text-xs w-fit bg-green-600 hover:bg-green-600">
                   Email changes coming soon
                 </Badge>
-              </ItemDescription>
+              </div>
             </ItemContent>
           </Item>
           <ItemSeparator />
@@ -181,7 +162,7 @@ export function Account() {
         fieldType="text"
         currentValue={user?.name || ''}
         schema={editNameSchema}
-        onSave={handleSaveName}
+        onSave={updateName}
       />
 
       <EditFieldModal
@@ -192,7 +173,7 @@ export function Account() {
         fieldType="text"
         currentValue={user?.username || ''}
         schema={editUsernameSchema}
-        onSave={handleSaveUsername}
+        onSave={updateUsername}
         showUsernameCheck={true}
       />
 
@@ -202,9 +183,9 @@ export function Account() {
         fieldName="birthDate"
         fieldLabel="Birth Date"
         fieldType="date"
-        currentValue={formatBirthDateForInput(user?.birthDate || null)}
+        currentValue={formatDateForInput(user?.birthDate || null)}
         schema={editBirthDateSchema}
-        onSave={handleSaveBirthDate}
+        onSave={updateBirthDate}
       />
     </div>
   )

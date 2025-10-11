@@ -42,6 +42,7 @@ export function useAuth() {
 export { useSession } from './useSession'
 export { useAuthMutations } from './useAuthMutations'
 export { useProfileMutations } from './useProfileMutations'
+export { useAccountFieldUpdates } from './useAccountFieldUpdates'
 
 export const useLogin = () => {
   const { login, loginMutation } = useAuth()

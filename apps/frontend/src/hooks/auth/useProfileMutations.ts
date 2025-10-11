@@ -2,11 +2,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateProfileApi, updateAvatarApi, updateCoverApi, changePasswordApi } from '@/api/profile'
 import { useAuthStore } from '@/stores/authStore'
 
-function invalidateUserRelatedQueries(queryClient: ReturnType<typeof useQueryClient>) {
+export function invalidateUserRelatedQueries(queryClient: ReturnType<typeof useQueryClient>) {
   queryClient.invalidateQueries({ queryKey: ['session'] })
+  queryClient.invalidateQueries({ queryKey: ['profile'] })
   queryClient.invalidateQueries({ queryKey: ['posts'] })
   queryClient.invalidateQueries({ queryKey: ['user-posts'] })
   queryClient.invalidateQueries({ queryKey: ['comments'] })
+  queryClient.invalidateQueries({ queryKey: ['user-profile'] })
 }
 
 export function useProfileMutations() {

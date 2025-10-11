@@ -2,10 +2,12 @@ import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { VisuallyHidden } from "@/components/ui/visually-hidden"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -116,6 +118,12 @@ export function Header() {
                 </DialogTrigger>
                 <DialogContent className="max-w-[400px] w-[90vw]">
                   <DialogHeader>
+                    <VisuallyHidden>
+                      <DialogTitle>Navigation Menu</DialogTitle>
+                      <DialogDescription>
+                        Sign in or sign up to access Strak Social
+                      </DialogDescription>
+                    </VisuallyHidden>
                     <div className="flex items-center mb-2">
                       <img 
                         src={resolvedTheme === 'dark' ? StrakLogoWhite : StrakLogoBlack} 
