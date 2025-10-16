@@ -1,6 +1,4 @@
 node_modules
-npm-debug.log
-dist
 .git
 .gitignore
 README.md
@@ -13,3 +11,7 @@ README.md
 coverage
 .DS_Store
 *.log
+apps/frontend
+docs
+assets
+feed-implementation.plan.md
