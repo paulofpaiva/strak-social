@@ -27,6 +27,7 @@ app.set('trust proxy', 1)
 const allowedOrigins = [
   'http://localhost:5173',
   'https://monofrontend-production.up.railway.app',
+  'https://straksocial.up.railway.app',
 ]
 
 const corsOptions: cors.CorsOptions = {
