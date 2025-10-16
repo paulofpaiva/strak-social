@@ -45,6 +45,11 @@ export function DeletePost({ open, onOpenChange, post }: DeletePostProps) {
         queryKey: ['post', post.id]
       })
       
+      await queryClient.invalidateQueries({ 
+        queryKey: ['listPosts'],
+        refetchType: 'active'
+      })
+      
       onOpenChange(false)
       toast.success('Post deleted successfully')
       

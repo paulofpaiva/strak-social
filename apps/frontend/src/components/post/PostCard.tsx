@@ -4,7 +4,7 @@ import { PostMedia } from './PostMedia'
 import { MediaViewer } from '@/components/MediaViewer'
 import { formatPostDate, formatFullPostDate } from '@/utils/date'
 import type { Post } from '@/api/posts'
-import { Heart, MessageCircle, MoreVertical, Trash2, Edit, BadgeCheck, Bookmark, Share, Link as LinkIcon } from 'lucide-react'
+import { Heart, MessageCircle, MoreVertical, Trash2, Edit, BadgeCheck, Bookmark, Share, Link as LinkIcon, NotebookText } from 'lucide-react'
 import { ResponsiveDropdown } from '@/components/ui/responsive-dropdown'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/stores/authStore'
@@ -13,8 +13,11 @@ import { Link } from 'react-router-dom'
 import { EditPost } from './EditPost'
 import { DeletePost } from './DeletePost'
 import { CreateComment } from '@/components/comment/CreateComment'
+import { SaveToListsModal } from '@/components/list/SaveToListsModal'
 import { useLikePostMutation, useBookmarkPostMutation } from '@/hooks/post'
 import { useNavigationState } from '@/hooks/useNavigationState'
+import { removePostFromListApi } from '@/api/lists'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 interface PostCardProps {
@@ -23,12 +26,17 @@ interface PostCardProps {
   readOnly?: boolean
   disableNavigation?: boolean
   isPostView?: boolean
+  listContext?: {
+    listId: string
+    isOwner: boolean
+  }
 }
 
-export function PostCard({ post, className, readOnly = false, disableNavigation = false, isPostView = false }: PostCardProps) {
+export function PostCard({ post, className, readOnly = false, disableNavigation = false, isPostView = false, listContext }: PostCardProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false)
+  const [isSaveToListsModalOpen, setIsSaveToListsModalOpen] = useState(false)
   const [isMediaViewerOpen, setIsMediaViewerOpen] = useState(false)
   const [mediaViewerIndex, setMediaViewerIndex] = useState(0)
   const [isLiked, setIsLiked] = useState(post.userLiked)
@@ -37,9 +45,27 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
   const [bookmarksCount, setBookmarksCount] = useState(post.bookmarksCount)
   const { user } = useAuthStore()
   const { navigateWithReturn } = useNavigationState()
+  const queryClient = useQueryClient()
   const isOwner = user?.id === post.userId
   const likeMutation = useLikePostMutation()
   const bookmarkMutation = useBookmarkPostMutation()
+
+  const removeFromListMutation = useMutation({
+    mutationFn: ({ listId, postId }: { listId: string, postId: string }) => 
+      removePostFromListApi(listId, postId),
+    onSuccess: () => {
+      toast.success('Post removed from list')
+      if (listContext) {
+        queryClient.invalidateQueries({ queryKey: ['listPosts', listContext.listId] })
+        queryClient.invalidateQueries({ queryKey: ['list', listContext.listId] })
+        queryClient.invalidateQueries({ queryKey: ['postLists', post.id] })
+        queryClient.invalidateQueries({ queryKey: ['lists'] })
+      }
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Failed to remove post from list')
+    },
+  })
 
   const handleLike = () => {
     setIsLiked(!isLiked)
@@ -72,6 +98,15 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
       toast.success('Link copied to clipboard!')
     } catch (error) {
       toast.error('Failed to copy link')
+    }
+  }
+
+  const handleRemoveFromList = () => {
+    if (listContext) {
+      removeFromListMutation.mutate({
+        listId: listContext.listId,
+        postId: post.id
+      })
     }
   }
 
@@ -161,6 +196,20 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
                       onClick: handleBookmark,
                       variant: 'default' as const
                     },
+                    {
+                      label: 'Add/Remove from Lists',
+                      icon: <NotebookText className="h-4 w-4" />,
+                      onClick: () => setIsSaveToListsModalOpen(true),
+                      variant: 'default' as const
+                    },
+                    ...(listContext?.isOwner ? [
+                      {
+                        label: 'Remove from List',
+                        icon: <Trash2 className="h-4 w-4" />,
+                        onClick: handleRemoveFromList,
+                        variant: 'destructive' as const
+                      }
+                    ] : []),
                     ...(isOwner ? [
                       {
                         label: 'Edit',
@@ -302,6 +351,12 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
           onClose={() => setIsMediaViewerOpen(false)}
         />
       )}
+
+      <SaveToListsModal
+        isOpen={isSaveToListsModalOpen}
+        onClose={() => setIsSaveToListsModalOpen(false)}
+        postId={post.id}
+      />
     </article>
   )
 }

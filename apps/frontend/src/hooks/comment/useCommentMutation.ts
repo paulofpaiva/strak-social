@@ -87,6 +87,11 @@ export function useCommentMutation(options: UseCommentMutationOptions) {
         refetchType: 'all'
       })
       
+      await queryClient.invalidateQueries({ 
+        queryKey: ['listPosts'],
+        refetchType: 'all'
+      })
+      
       if (parentCommentId) {
         await queryClient.invalidateQueries({ 
           queryKey: ['comment-replies-infinite', parentCommentId],
@@ -148,6 +153,12 @@ export function useLikeCommentMutation() {
       
       await queryClient.invalidateQueries({ 
         queryKey: ['trending-posts'],
+        refetchType: 'all'
+      })
+      
+      // Invalidate list posts queries to update comment count in lists
+      await queryClient.invalidateQueries({ 
+        queryKey: ['listPosts'],
         refetchType: 'all'
       })
       
@@ -221,6 +232,11 @@ export function useDeleteCommentMutation() {
       
       await queryClient.invalidateQueries({ 
         queryKey: ['bookmarks'],
+        refetchType: 'all'
+      })
+      
+      await queryClient.invalidateQueries({ 
+        queryKey: ['listPosts'],
         refetchType: 'all'
       })
       

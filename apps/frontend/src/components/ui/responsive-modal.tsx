@@ -98,17 +98,17 @@ export function ResponsiveModal({
 
           {(actionButton || onCancel) && (
             <div className="flex gap-3 pt-4">
-              <Button 
-                variant="outline" 
-                onClick={onCancel || onClose}
-                className="flex-1"
-              >
-                {cancelText}
-              </Button>
-              {actionButton || (
-                <Button onClick={onClose} className="flex-1">
-                  {actionText}
+              {onCancel && (
+                <Button 
+                  variant="outline" 
+                  onClick={onCancel}
+                  className="flex-1"
+                >
+                  {cancelText}
                 </Button>
+              )}
+              {actionButton && (
+                <>{actionButton}</>
               )}
             </div>
           )}

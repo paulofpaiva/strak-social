@@ -29,7 +29,6 @@ export function FeedRightColumn() {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <h2 className="text-xl font-bold px-4 pt-4">Latest News</h2>
         <div className="space-y-3 px-4">
           {[...Array(5)].map((_, i) => (
             <NewsCardSkeleton key={i} />
@@ -54,7 +53,6 @@ export function FeedRightColumn() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold px-4 pt-4">Latest News</h2>
       
       <div className="space-y-3 px-4">
         {articles.map((article, index) => (

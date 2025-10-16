@@ -201,12 +201,12 @@ export function CommentCard({
         <button 
           onClick={handleLike}
           disabled={likeMutation.isPending}
-          className="flex items-center gap-1.5 hover:text-red-500 transition-colors disabled:opacity-50 cursor-pointer relative z-10 pointer-events-auto"
+          className="flex items-center gap-1.5 hover:text-primary transition-colors disabled:opacity-50 cursor-pointer relative z-10 pointer-events-auto"
         >
           <Heart 
             className={cn(
               'h-5 w-5 transition-all',
-              isLiked && 'fill-red-500 text-red-500'
+              isLiked && 'fill-primary text-primary'
             )} 
           />
           <span>{likesCount}</span>

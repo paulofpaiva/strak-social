@@ -20,6 +20,10 @@ import { Explore } from "@/pages/app/Explore/Explore"
 import { Post } from "@/pages/app/Post/Post"
 import { Comment } from "@/pages/app/Comment/Comment"
 import { Bookmarks } from "@/pages/app/Bookmarks/Bookmarks"
+import { Lists } from "@/pages/app/Lists/Lists"
+import { ListDetails } from "@/pages/app/Lists/ListDetails"
+import { EditList } from "@/pages/app/Lists/EditList"
+import { CreateList } from "@/pages/app/Lists/CreateList"
 import { queryClient } from '@/utils/query-client'
 
 function App() {
@@ -110,6 +114,50 @@ function AppRoutes() {
           <ProtectedRoute>
             <AppLayout>
               <Bookmarks />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route 
+        path="/lists" 
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <Lists />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route 
+        path="/lists/new" 
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <CreateList />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route 
+        path="/lists/:id" 
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <ListDetails />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route 
+        path="/lists/:id/edit" 
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <EditList />
             </AppLayout>
           </ProtectedRoute>
         }

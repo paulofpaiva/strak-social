@@ -92,7 +92,7 @@ export function Account() {
               <ItemTitle>Email</ItemTitle>
               <div className="flex flex-col gap-1.5">
                 <span className="text-muted-foreground text-sm">{user.email}</span>
-                <Badge variant="default" className="text-xs w-fit bg-green-600 hover:bg-green-600">
+                <Badge variant="default" className="text-xs w-fit">
                   Email changes coming soon
                 </Badge>
               </div>

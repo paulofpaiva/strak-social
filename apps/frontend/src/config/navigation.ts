@@ -1,4 +1,4 @@
-import { LucideIcon, Home, Search, User, Settings, LogOut, PenSquare, Bookmark } from "lucide-react"
+import { LucideIcon, Home, Search, User, Settings, LogOut, PenSquare, Bookmark, NotebookText } from "lucide-react"
 
 export interface NavigationItem {
   id: string
@@ -44,6 +44,17 @@ export const navigationItems: NavigationItem[] = [
     icon: Bookmark,
     href: '/bookmarks',
     matchPattern: 'exact',
+    showBottom: false,
+    showDesktopSidebar: true,
+    showMobileSidebar: true,
+    showLabel: true
+  },
+  {
+    id: 'lists',
+    label: 'Lists',
+    icon: NotebookText,
+    href: '/lists',
+    matchPattern: 'startsWith',
     showBottom: false,
     showDesktopSidebar: true,
     showMobileSidebar: true,

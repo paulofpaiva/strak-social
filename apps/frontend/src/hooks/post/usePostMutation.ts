@@ -82,6 +82,11 @@ export function usePostMutation(options: UsePostMutationOptions) {
         })
       }
       
+      await queryClient.invalidateQueries({ 
+        queryKey: ['listPosts'],
+        refetchType: 'active'
+      })
+      
       onSuccess?.()
     },
     onError: (error: any) => {
@@ -130,6 +135,12 @@ export function useLikePostMutation() {
         queryKey: ['post', postId],
         refetchType: 'all'
       })
+      
+      // Invalidate list posts queries to update like status in lists
+      await queryClient.invalidateQueries({ 
+        queryKey: ['listPosts'],
+        refetchType: 'all'
+      })
     },
     onError: (error: any) => {
       const errorMessage = error.response?.data?.message 
@@ -175,6 +186,12 @@ export function useBookmarkPostMutation() {
       
       await queryClient.invalidateQueries({ 
         queryKey: ['post', postId],
+        refetchType: 'all'
+      })
+      
+      // Invalidate list posts queries to update bookmark status in lists
+      await queryClient.invalidateQueries({ 
+        queryKey: ['listPosts'],
         refetchType: 'all'
       })
     },
