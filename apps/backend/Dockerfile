@@ -1,35 +1,27 @@
-# Use Node.js 20 LTS Alpine for smaller image size
-FROM node:20-alpine
-
-# Set working directory
+FROM node:20-alpine as builder
 WORKDIR /app
 
-# Install pnpm globally
-RUN npm install -g pnpm@9.15.9
+# Instala todas as dependências (incluindo devDependencies para build)
+COPY package.json package-lock.json* pnpm-lock.yaml* ./
+RUN npm install || pnpm install || true
 
-# Copy package files from root
-COPY package.json ./
-COPY ../../pnpm-lock.yaml ./
-COPY ../../pnpm-workspace.yaml ./
-
-# Install dependencies
-RUN pnpm install --frozen-lockfile
-
-# Copy source code
+# Copia código e compila TypeScript
 COPY . .
+RUN npm run build
 
-# Build the application
-RUN pnpm run build
+FROM node:20-alpine as runner
+WORKDIR /app
 
-# Remove dev dependencies and clean cache
-RUN pnpm prune --prod && pnpm store prune
+# Copia package.json e instala apenas dependências de produção
+COPY --from=builder /app/package.json ./
+RUN npm install --omit=dev --production || npm install --omit=dev || true
 
-# Set environment variables
+# Copia build compilado, migrations e configuração do drizzle
+COPY --from=builder /app/apps/backend/dist ./dist
+COPY --from=builder /app/apps/backend/drizzle ./drizzle
+COPY --from=builder /app/apps/backend/drizzle.config.ts ./drizzle.config.ts
+
 ENV NODE_ENV=production
 ENV PORT=3000
-
-# Expose port
 EXPOSE 3000
-
-# Start the application
 CMD ["node", "dist/index.js"]
