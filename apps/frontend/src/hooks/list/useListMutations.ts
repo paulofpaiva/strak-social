@@ -17,6 +17,7 @@ export function useCreateList() {
     mutationFn: createListApi,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['lists'] })
+      queryClient.invalidateQueries({ queryKey: ['search-lists'] })
       toast.success('List created successfully!')
     },
     onError: (error: any) => {
@@ -34,6 +35,7 @@ export function useUpdateList() {
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['lists'] })
       queryClient.invalidateQueries({ queryKey: ['list', variables.id] })
+      queryClient.invalidateQueries({ queryKey: ['search-lists'] })
       toast.success('List updated successfully!')
     },
     onError: (error: any) => {
@@ -50,6 +52,7 @@ export function useDeleteList() {
     mutationFn: deleteListApi,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['lists'] })
+      queryClient.invalidateQueries({ queryKey: ['search-lists'] })
       toast.success('List deleted successfully!')
     },
     onError: (error: any) => {
@@ -106,6 +109,7 @@ export function useRemoveMember() {
       queryClient.invalidateQueries({ queryKey: ['list-members', variables.listId] })
       queryClient.invalidateQueries({ queryKey: ['list', variables.listId] })
       queryClient.invalidateQueries({ queryKey: ['lists'] })
+      queryClient.invalidateQueries({ queryKey: ['search-lists'] })
       toast.success('Member removed successfully!')
     },
     onError: (error: any) => {

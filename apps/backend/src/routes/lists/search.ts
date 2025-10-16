@@ -73,6 +73,10 @@ router.get('/search', authenticateToken, asyncHandler(async (req: Request, res: 
     })
   )
 
+  if (search.trim().length === 0) {
+    listsWithInfo.sort((a, b) => b.membersCount - a.membersCount)
+  }
+
   return ApiResponse.success(res, {
     lists: listsWithInfo,
     pagination: {

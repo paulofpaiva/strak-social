@@ -93,7 +93,7 @@ export function CreatePostInline({ onSuccess }: CreatePostInlineProps) {
               value={form.watch('content')}
               onChange={(e) => form.setValue('content', e.target.value)}
               className={cn(
-                "min-h-[80px] resize-none border-0 px-3 py-2 text-base placeholder:text-muted-foreground focus-visible:ring-0",
+                "min-h-[80px] resize-none border px-3 py-2 text-base placeholder:text-muted-foreground focus-visible:ring-0",
                 form.formState.errors.content && 'border-destructive focus-visible:border-destructive'
               )}
               rows={1}

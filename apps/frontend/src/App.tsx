@@ -21,6 +21,7 @@ import { Post } from "@/pages/app/Post/Post"
 import { Comment } from "@/pages/app/Comment/Comment"
 import { Bookmarks } from "@/pages/app/Bookmarks/Bookmarks"
 import { Lists } from "@/pages/app/Lists/Lists"
+import { DiscoverLists } from "@/pages/app/Lists/DiscoverLists"
 import { ListDetails } from "@/pages/app/Lists/ListDetails"
 import { EditList } from "@/pages/app/Lists/EditList"
 import { CreateList } from "@/pages/app/Lists/CreateList"
@@ -125,6 +126,17 @@ function AppRoutes() {
           <ProtectedRoute>
             <AppLayout>
               <Lists />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route 
+        path="/lists/discover" 
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <DiscoverLists />
             </AppLayout>
           </ProtectedRoute>
         }

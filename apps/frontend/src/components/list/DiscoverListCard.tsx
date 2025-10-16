@@ -1,36 +1,54 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { List } from '@/api/lists'
 import { Avatar } from '@/components/ui/avatar'
-import { Lock, NotebookText } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Lock, NotebookText, Plus, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
+import { useFollowList } from '@/hooks/list/useListMutations'
 
-interface ListCardProps {
+interface DiscoverListCardProps {
   list: List
   className?: string
 }
 
-export function ListCard({ list, className }: ListCardProps) {
+export function DiscoverListCard({ list, className }: DiscoverListCardProps) {
   const navigate = useNavigate()
+  const [isFollowing, setIsFollowing] = useState(false)
+  const followListMutation = useFollowList()
 
   const handleCardClick = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest('[data-dropdown-trigger]')) {
+    if ((e.target as HTMLElement).closest('[data-button]')) {
       e.preventDefault()
       return
     }
     navigate(`/lists/${list.id}`)
   }
 
+  const handleFollowClick = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    try {
+      setIsFollowing(true)
+      await followListMutation.mutateAsync(list.id)
+    } catch (error) {
+    } finally {
+      setIsFollowing(false)
+    }
+  }
+
+  const showFollowButton = !list.isOwner && !list.isMember
+
   return (
-    <>
-      <div
-        onClick={handleCardClick}
-        className={cn(
-          "block border rounded-lg overflow-hidden hover:bg-accent/50 transition-colors cursor-pointer",
-          className
-        )}
-      >
-        <div className="flex gap-4 p-4">
+    <div
+      onClick={handleCardClick}
+      className={cn(
+        "block border rounded-lg overflow-hidden hover:bg-accent/50 transition-colors cursor-pointer",
+        className
+      )}
+    >
+      <div className="flex gap-4 p-4">
         <div className="flex-shrink-0">
           <div className="w-20 h-20 rounded-lg overflow-hidden bg-muted">
             {list.coverUrl ? (
@@ -76,9 +94,22 @@ export function ListCard({ list, className }: ListCardProps) {
             <span>@{list.owner.username}</span>
           </div>
         </div>
-        </div>
+
+        {showFollowButton && (
+          <div className="flex-shrink-0 flex items-center">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleFollowClick}
+              disabled={isFollowing || followListMutation.isPending}
+              data-button
+              className="h-8 w-8 p-0"
+            >
+             <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
-    </>
+    </div>
   )
 }
-

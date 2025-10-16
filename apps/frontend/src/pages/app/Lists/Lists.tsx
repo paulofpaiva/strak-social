@@ -1,13 +1,11 @@
 import { useNavigate } from 'react-router-dom'
-import { Button } from '@/components/ui/button'
-import { Plus, NotebookText, Loader2 } from 'lucide-react'
+import { NotebookText, Loader2, Compass, Plus } from 'lucide-react'
 import { useLists } from '@/hooks/list/useLists'
 import { ListCard } from '@/components/list/ListCard'
 import { useInfiniteScroll } from '@/hooks'
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from '@/components/ui/empty'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
 import { PostCardSkeleton } from '@/components/skeleton/PostCardSkeleton'
-import { SearchInput } from '@/components/ui/search-input'
 import { List } from '@/api/lists'
 
 export function Lists() {
@@ -38,21 +36,40 @@ export function Lists() {
 
   return (
     <>
-      <div className="w-full flex items-center justify-between gap-2">
-         <SearchInput
-           value=""
-           onChange={() => {}}
-           placeholder="Search lists..."
-           className="flex-1"
-         />
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => navigate('/lists/new')}
-          className="flex-shrink-0"
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div 
+          onClick={() => navigate('/lists/discover')}
+          className="p-4 border rounded-lg cursor-pointer hover:bg-accent/50 transition-colors"
         >
-          <Plus className="h-4 w-4 mr-1" />
-        </Button>
+          <div className="flex items-center gap-3">
+            <div className="flex-shrink-0">
+              <Compass className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-medium">Discover public lists</h3>
+              <p className="text-sm text-muted-foreground">
+                Explore and follow lists created by the community
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div 
+          onClick={() => navigate('/lists/new')}
+          className="p-4 border rounded-lg cursor-pointer hover:bg-accent/50 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex-shrink-0">
+              <Plus className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-medium">Create new list</h3>
+              <p className="text-sm text-muted-foreground">
+                Organize content and users in your own lists
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
        <div className="flex flex-col">

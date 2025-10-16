@@ -96,48 +96,76 @@ export function ListDetails() {
           )}
         </div>
 
-        {/* List Info */}
         <div className="p-4 space-y-4">
           <div className="space-y-2">
             <div className="flex items-start justify-between gap-2">
-              <div className="flex-1 space-y-2">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-2xl font-bold">{list.title}</h2>
-                  {list.isPrivate && (
-                    <Lock className="h-5 w-5 text-muted-foreground" />
-                  )}
+              <div className="flex-1 space-y-2 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <h2 className="text-2xl font-bold truncate">
+                      {list.title}
+                      <span className="text-sm text-muted-foreground font-normal"> · {list.membersCount} {list.membersCount === 1 ? 'member' : 'members'}</span>
+                    </h2>
+                    {list.isPrivate && (
+                      <Lock className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {!list.isOwner && list.isMember ? (
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="rounded-full"
+                        onClick={handleUnfollow}
+                        disabled={unfollowListMutation.isPending}
+                      >
+                        Unfollow
+                      </Button>
+                    ) : !list.isOwner && !list.isMember ? (
+                      <Button
+                        size="sm"
+                        className="rounded-full"
+                        onClick={handleFollow}
+                        disabled={followListMutation.isPending}
+                      >
+                        Follow
+                      </Button>
+                    ) : list.isOwner ? (
+                      <ResponsiveDropdown
+                        trigger={
+                          <Button size="sm" variant="outline" className="rounded-full">
+                            Edit List
+                          </Button>
+                        }
+                        items={[
+                          {
+                            label: 'Edit',
+                            icon: <Edit className="h-4 w-4" />,
+                            onClick: () => navigate(`/lists/${id}/edit`)
+                          },
+                          {
+                            label: 'Manage Members',
+                            icon: <Users className="h-4 w-4" />,
+                            onClick: () => setManageMembersOpen(true)
+                          },
+                          {
+                            label: 'Delete',
+                            icon: <Trash2 className="h-4 w-4" />,
+                            onClick: () => setDeleteDialogOpen(true),
+                            variant: 'destructive'
+                          }
+                        ]}
+                      />
+                    ) : null}
+                    
+                    
+                  </div>
                 </div>
                 {list.description && (
                   <p className="text-muted-foreground">{list.description}</p>
                 )}
               </div>
-              {list.isOwner && (
-                <ResponsiveDropdown
-                  trigger={
-                    <Button size="icon" variant="ghost">
-                      <MoreVertical className="h-5 w-5" />
-                    </Button>
-                  }
-                  items={[
-                    {
-                      label: 'Edit',
-                      icon: <Edit className="h-4 w-4" />,
-                      onClick: () => navigate(`/lists/${id}/edit`)
-                    },
-                    {
-                      label: 'Manage Members',
-                      icon: <Users className="h-4 w-4" />,
-                      onClick: () => setManageMembersOpen(true)
-                    },
-                    {
-                      label: 'Delete',
-                      icon: <Trash2 className="h-4 w-4" />,
-                      onClick: () => setDeleteDialogOpen(true),
-                      variant: 'destructive'
-                    }
-                  ]}
-                />
-              )}
             </div>
           </div>
 
@@ -154,33 +182,6 @@ export function ListDetails() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Users className="h-4 w-4" />
-                <span>{list.membersCount} {list.membersCount === 1 ? 'member' : 'members'}</span>
-              </div>
-
-              {!list.isOwner && list.isMember ? (
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="rounded-full"
-                  onClick={handleUnfollow}
-                  disabled={unfollowListMutation.isPending}
-                >
-                  Unfollow
-                </Button>
-              ) : !list.isOwner && !list.isMember ? (
-                <Button
-                  size="sm"
-                  className="rounded-full"
-                  onClick={handleFollow}
-                  disabled={followListMutation.isPending}
-                >
-                  Follow
-                </Button>
-              ) : null}
-            </div>
           </div>
         </div>
       </div>

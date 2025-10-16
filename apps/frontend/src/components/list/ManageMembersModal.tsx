@@ -118,7 +118,7 @@ export function ManageMembersModal({ open, onOpenChange, listId, isOwner }: Mana
                     <EmptyDescription>
                       {membersSearchQuery.trim().length > 0 
                         ? 'Try searching with different keywords'
-                        : 'Add members to this list from the "Add Members" tab'
+                        : 'Members will appear here when they join this list'
                       }
                     </EmptyDescription>
                   </EmptyHeader>
