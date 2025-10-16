@@ -22,7 +22,7 @@ router.post('/list-cover', authenticateToken, coverUploadLimiter, coverUpload.si
   try {
     const coverUrl = await uploadFile(
       req.file.buffer,
-      'lists',
+      'covers',
       filename,
       req.file.mimetype
     )
