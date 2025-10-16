@@ -16,8 +16,7 @@ import { CreateComment } from '@/components/comment/CreateComment'
 import { SaveToListsModal } from '@/components/list/SaveToListsModal'
 import { useLikePostMutation, useBookmarkPostMutation } from '@/hooks/post'
 import { useNavigationState } from '@/hooks/useNavigationState'
-import { removePostFromListApi } from '@/api/lists'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useRemovePostFromList } from '@/hooks/post/useRemovePostFromList'
 import { toast } from 'sonner'
 
 interface PostCardProps {
@@ -45,27 +44,10 @@ export function PostCard({ post, className, readOnly = false, disableNavigation 
   const [bookmarksCount, setBookmarksCount] = useState(post.bookmarksCount)
   const { user } = useAuthStore()
   const { navigateWithReturn } = useNavigationState()
-  const queryClient = useQueryClient()
   const isOwner = user?.id === post.userId
   const likeMutation = useLikePostMutation()
   const bookmarkMutation = useBookmarkPostMutation()
-
-  const removeFromListMutation = useMutation({
-    mutationFn: ({ listId, postId }: { listId: string, postId: string }) => 
-      removePostFromListApi(listId, postId),
-    onSuccess: () => {
-      toast.success('Post removed from list')
-      if (listContext) {
-        queryClient.invalidateQueries({ queryKey: ['listPosts', listContext.listId] })
-        queryClient.invalidateQueries({ queryKey: ['list', listContext.listId] })
-        queryClient.invalidateQueries({ queryKey: ['postLists', post.id] })
-        queryClient.invalidateQueries({ queryKey: ['lists'] })
-      }
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || 'Failed to remove post from list')
-    },
-  })
+  const removeFromListMutation = useRemovePostFromList()
 
   const handleLike = () => {
     setIsLiked(!isLiked)

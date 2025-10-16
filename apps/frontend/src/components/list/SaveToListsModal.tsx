@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { ResponsiveModal } from '@/components/ui/responsive-modal'
 import { Button } from '@/components/ui/button'
 import { Avatar } from '@/components/ui/avatar'
@@ -7,7 +7,8 @@ import { Check, Lock, NotebookText, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useInfiniteScroll } from '@/hooks'
 import { useLists } from '@/hooks/list/useLists'
-import { getPostListsApi, setPostListsApi, List } from '@/api/lists'
+import { getPostListsApi, List } from '@/api/lists'
+import { useSavePostToLists } from '@/hooks/list/useSavePostToLists'
 import { toast } from 'sonner'
 
 interface SaveToListsModalProps {
@@ -18,7 +19,6 @@ interface SaveToListsModalProps {
 
 export function SaveToListsModal({ isOpen, onClose, postId }: SaveToListsModalProps) {
   const [selectedListIds, setSelectedListIds] = useState<string[]>([])
-  const queryClient = useQueryClient()
 
   const { data: postListsData, isLoading: postListsLoading } = useQuery({
     queryKey: ['postLists', postId],
@@ -48,40 +48,7 @@ export function SaveToListsModal({ isOpen, onClose, postId }: SaveToListsModalPr
     new Map(allLists.map(list => [list.id, list])).values()
   )
 
-  const saveMutation = useMutation({
-    mutationFn: (listIds: string[]) => setPostListsApi(postId, listIds),
-    onSuccess: () => {
-      const originalIds = postListsData?.listIds || []
-      const currentIds = selectedListIds
-      
-      const addedCount = currentIds.filter((id: string) => !originalIds.includes(id)).length
-      const removedCount = originalIds.filter((id: string) => !currentIds.includes(id)).length
-      
-      let message = ''
-      if (addedCount > 0 && removedCount > 0) {
-        message = `Post updated in lists successfully`
-      } else if (addedCount > 0) {
-        message = `Post added to ${addedCount} list${addedCount > 1 ? 's' : ''} successfully`
-      } else if (removedCount > 0) {
-        message = `Post removed from ${removedCount} list${removedCount > 1 ? 's' : ''} successfully`
-      } else {
-        message = 'Post lists updated successfully'
-      }
-      
-      toast.success(message)
-      queryClient.invalidateQueries({ queryKey: ['postLists', postId] })
-      const allListIds = [...new Set([...selectedListIds, ...(postListsData?.listIds || [])])]
-      allListIds.forEach(listId => {
-        queryClient.invalidateQueries({ queryKey: ['listPosts', listId] })
-        queryClient.invalidateQueries({ queryKey: ['list', listId] })
-      })
-      queryClient.invalidateQueries({ queryKey: ['lists'] })
-      onClose()
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || 'Failed to save post to lists')
-    },
-  })
+  const saveMutation = useSavePostToLists()
 
   useEffect(() => {
     if (postListsData?.listIds) {
@@ -102,7 +69,11 @@ export function SaveToListsModal({ isOpen, onClose, postId }: SaveToListsModalPr
       toast.error('No changes to save')
       return
     }
-    saveMutation.mutate(selectedListIds)
+    saveMutation.mutate({ postId, listIds: selectedListIds }, {
+      onSuccess: () => {
+        onClose()
+      }
+    })
   }
 
   const isLoading = postListsLoading || listsLoading

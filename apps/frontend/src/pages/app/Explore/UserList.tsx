@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { toggleFollowApi } from '@/api/follow'
-import { toast } from 'sonner'
 import { useAuth } from '@/hooks'
 import { BadgeCheck } from 'lucide-react'
 import { Link } from 'react-router-dom'
@@ -52,7 +51,6 @@ export function UserList({ users, className, onFollowToggled }: UserListProps) {
       onFollowToggled?.(userId, !currentIsFollowing)
     } catch (error) {
       console.error('Failed to toggle follow:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to update follow status. Please try again.')
     } finally {
       setLoadingUsers(prev => {
         const newSet = new Set(prev)

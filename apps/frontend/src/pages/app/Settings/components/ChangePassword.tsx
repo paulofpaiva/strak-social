@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ResponsiveModal } from '@/components/ui/responsive-modal'
@@ -6,8 +5,7 @@ import { Button } from '@/components/ui/button'
 import { FloatingInput } from '@/components/ui/floating-input'
 import { useTogglePassword } from '@/hooks/useTogglePassword'
 import { changePasswordSchema, ChangePasswordFormData } from '@/schemas/auth'
-import { changePasswordApi } from '@/api/profile'
-import { toast } from 'sonner'
+import { useChangePassword } from '@/hooks/auth/useChangePassword'
 import { Eye, EyeOff } from 'lucide-react'
 
 interface ChangePasswordProps {
@@ -16,7 +14,7 @@ interface ChangePasswordProps {
 }
 
 export function ChangePassword({ isOpen, onClose }: ChangePasswordProps) {
-  const [isLoading, setIsLoading] = useState(false)
+  const changePasswordMutation = useChangePassword()
   
   const {
     showPassword: showCurrentPassword,
@@ -53,16 +51,10 @@ export function ChangePassword({ isOpen, onClose }: ChangePasswordProps) {
 
   const onSubmit = async (data: ChangePasswordFormData) => {
     try {
-      setIsLoading(true)
-      await changePasswordApi(data)
-      
-      toast.success("Password changed successfully!")
+      await changePasswordMutation.mutateAsync(data)
       reset()
       onClose()
     } catch (err: any) {
-      toast.error(err.message || "Failed to change password. Please try again.")
-    } finally {
-      setIsLoading(false)
     }
   }
 
@@ -83,7 +75,7 @@ export function ChangePassword({ isOpen, onClose }: ChangePasswordProps) {
       actionButton={
         <Button 
           onClick={handleSubmit(onSubmit)} 
-          disabled={isLoading || !isFormValid}
+          disabled={changePasswordMutation.isPending || !isFormValid}
           className="flex-1"
         >
           Save

@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { ListCoverEditor } from './ListCoverEditor'
 import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { toast } from 'sonner'
+import { useUploadListCover } from '@/hooks/list/useUploadListCover'
 
 interface ListFormProps {
   defaultValues?: Partial<CreateListFormData>
@@ -27,7 +27,7 @@ export function ListForm({
   showSubmitButton = true
 }: ListFormProps) {
   const [coverFile, setCoverFile] = useState<File | null>(null)
-  const [isUploadingCover, setIsUploadingCover] = useState(false)
+  const uploadCoverMutation = useUploadListCover()
   
   const {
     register,
@@ -59,18 +59,12 @@ export function ListForm({
 
   const handleFormSubmit = async (data: CreateListFormData) => {
     if (coverFile) {
-      setIsUploadingCover(true)
-      const { uploadListCoverApi } = await import('@/api/lists')
       try {
-        const result = await uploadListCoverApi(coverFile)
+        const result = await uploadCoverMutation.mutateAsync(coverFile)
         data.coverUrl = result.coverUrl
       } catch (error) {
         console.error('Error uploading cover:', error)
-        toast.error('Error uploading cover')
-        setIsUploadingCover(false)
         return
-      } finally {
-        setIsUploadingCover(false)
       }
     }
     onSubmit(data)
@@ -151,7 +145,7 @@ export function ListForm({
         <Button
           type="submit"
           className="w-full"
-          disabled={isSubmitting || isUploadingCover}
+          disabled={isSubmitting || uploadCoverMutation.isPending}
         >
           Save
         </Button>
