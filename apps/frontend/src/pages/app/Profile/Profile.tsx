@@ -2,8 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getProfileApi } from '@/api/profile'
 import { getUserByUsernameApi } from '@/api/users'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { CheckCircle } from 'lucide-react'
+import { VerificationAlert } from '@/components/verified'
 import { ProfileSkeleton } from '../../../components/skeleton/ProfileSkeleton'
 import { UserProfileSkeleton } from '../../../components/skeleton/UserProfileSkeleton'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
@@ -98,15 +97,9 @@ export function Profile() {
         />
 
         {isOwnProfile && !user.isVerified && (
-          <Alert className="mb-6 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800 w-fit max-w-md min-h-[100px] py-4">
-            <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-500" />
-            <AlertTitle className="text-emerald-900 dark:text-emerald-100 font-semibold">
-              You are not verified yet
-            </AlertTitle>
-            <AlertDescription className="text-emerald-800 dark:text-emerald-200 mt-2">
-              Verified accounts gain greater visibility and credibility on the platform. Get your verification badge to stand out and build trust with your audience.
-            </AlertDescription>
-          </Alert>
+          <div className="mb-6">
+            <VerificationAlert />
+          </div>
         )}
         
         <div className="mt-6">

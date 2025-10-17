@@ -1,36 +1,29 @@
-import { Loader2 } from 'lucide-react'
 import { useNewsArticles } from '@/hooks/news'
-import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
+import { useAuth } from '@/hooks'
 import { NewsCard } from './NewsCard'
 import { NewsCardSkeleton } from '@/components/skeleton/NewsCardSkeleton'
 import { ErrorEmpty } from '@/components/ErrorEmpty'
+import { VerificationAlert } from '@/components/verified'
 
 export function FeedRightColumn() {
+  const { user } = useAuth()
+  
   const {
     articles,
     isLoading,
     isError,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
     refetch
   } = useNewsArticles({
-    pageSize: 10,
+    pageSize: 3,
     country: 'us',
     category: 'technology'
   })
-
-  const sentinelRef = useInfiniteScroll(
-    () => fetchNextPage(),
-    hasNextPage || false,
-    isFetchingNextPage
-  )
 
   if (isLoading) {
     return (
       <div className="space-y-4">
         <div className="space-y-3 px-4">
-          {[...Array(5)].map((_, i) => (
+          {[...Array(3)].map((_, i) => (
             <NewsCardSkeleton key={i} />
           ))}
         </div>
@@ -52,20 +45,17 @@ export function FeedRightColumn() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pt-4">
+      {user && !user.isVerified && (
+        <div className="px-4 pt-4">
+          <VerificationAlert />
+        </div>
+      )}
       
       <div className="space-y-3 px-4">
         {articles.map((article, index) => (
           <NewsCard key={`${article.url}-${index}`} article={article} />
         ))}
-        
-        {isFetchingNextPage && (
-          <div className="flex justify-center py-4">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          </div>
-        )}
-        
-        <div ref={sentinelRef} className="h-4" />
       </div>
     </div>
   )

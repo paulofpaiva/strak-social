@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 const MOBILE_BREAKPOINT = 768
-const COMPACT_BREAKPOINT = 1024
+const COMPACT_BREAKPOINT = 1200
 
 /**
  * Hook to detect if the viewport is in mobile mode (< 768px)

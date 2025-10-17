@@ -1,10 +1,11 @@
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { getTopHeadlines, type NewsArticle } from '@/api/news'
 
 interface UseNewsOptions {
   pageSize?: number
   country?: string
   category?: string
+  page?: number
 }
 
 export function useNews({
@@ -40,16 +41,24 @@ export function useNews({
 }
 
 export function useNewsArticles(options?: UseNewsOptions) {
-  const query = useNews(options)
-  
-  const allArticles = query.data?.pages.flatMap((page) => page.articles) ?? []
-  const articles: NewsArticle[] = Array.from(
-    new Map(allArticles.map(article => [article.url, article])).values()
-  )
+  const query = useQuery({
+    queryKey: ['news', options?.country, options?.category, options?.pageSize],
+    queryFn: () => getTopHeadlines({
+      page: 1,
+      pageSize: options?.pageSize || 3,
+      country: options?.country || 'us',
+      category: options?.category || 'general'
+    }),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000
+  })
   
   return {
     ...query,
-    articles
+    articles: query.data?.articles ?? [],
+    isLoading: query.isLoading,
+    isError: query.isError,
+    refetch: query.refetch
   }
 }
 

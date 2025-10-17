@@ -39,27 +39,27 @@ export function AppLayout({ children, showNewsColumn = false }: AppLayoutProps) 
         <main className="w-full px-4 py-4 pb-20 overflow-x-hidden">
           {renderContent(children)}
         </main>
-      ) : showNewsColumn ? (
-        <div className="flex gap-6 max-w-[1400px] mx-auto py-4 px-4">
-          <aside className={cn("shrink-0", isCompact ? 'w-16' : 'w-[280px]')}>
+      ) : showNewsColumn && !isCompact ? (
+        <div className="flex gap-6 max-w-[1400px] mx-auto px-4">
+          <aside className={cn("shrink-0 sticky top-0 h-screen overflow-y-auto", isCompact ? 'w-18' : 'w-[280px]')}>
             <FeedSidebar isCompact={isCompact} />
           </aside>
           
-          <main className="flex-1 min-w-0 max-w-[600px]">
+          <main className="flex-1 py-4 min-w-0 max-w-[600px]">
             {renderContent(children)}
           </main>
           
-          <aside className="w-[350px] shrink-0">
+          <aside className="w-[350px] shrink-0 sticky bottom-0">
             <FeedRightColumn />
           </aside>
         </div>
       ) : (
-        <div className="flex gap-6 max-w-[1400px] mx-auto py-4 px-4">
-          <aside className={cn("shrink-0", isCompact ? 'w-16' : 'w-[280px]')}>
+        <div className="flex gap-6 max-w-[1400px] mx-auto px-4">
+          <aside className={cn("shrink-0 sticky top-0 h-screen overflow-y-auto", isCompact ? 'w-18' : 'w-[280px]')}>
             <FeedSidebar isCompact={isCompact} />
           </aside>
           
-          <main className="flex-1 min-w-0">
+          <main className="flex-1 py-4 min-w-0">
             {renderContent(children)}
           </main>
         </div>

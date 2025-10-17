@@ -21,7 +21,7 @@ export function NewsCard({ article, className }: NewsCardProps) {
     <article
       onClick={handleClick}
       className={cn(
-        'group cursor-pointer rounded-lg border border-border p-3 transition-colors hover:bg-accent',
+        'group cursor-pointer rounded-lg border border-border p-3 transition-colors',
         className
       )}
     >

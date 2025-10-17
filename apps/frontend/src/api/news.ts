@@ -33,7 +33,7 @@ export async function getTopHeadlines({
   page = 1,
   pageSize = 10,
   country = 'us',
-  category = 'technology'
+  category = 'general'
 }: GetNewsParams = {}): Promise<NewsResponse> {
   try {
     const response = await api.get('/news/top-headlines', {
