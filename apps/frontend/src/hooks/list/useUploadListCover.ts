@@ -1,9 +1,9 @@
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { uploadListCoverApi } from '@/api/lists'
+import { uploadListCoverApi, type UploadListCoverResponse } from '@/api/lists'
 
 export function useUploadListCover() {
-  return useMutation({
+  return useMutation<UploadListCoverResponse, Error, File>({
     mutationFn: (file: File) => uploadListCoverApi(file),
     onSuccess: () => {
       toast.success('Cover uploaded successfully!')

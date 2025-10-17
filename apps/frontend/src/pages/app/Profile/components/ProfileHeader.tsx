@@ -48,14 +48,14 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
             src={user.avatar ?? undefined} 
             name={user.name} 
             size="2xl"
-            className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 border-4 border-background"
+            className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40"
           />
         ) : (
           <Avatar 
             src={user.avatar ?? undefined} 
             name={user.name} 
             size="2xl"
-            className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 border-4 border-background"
+            className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40"
           />
         )}
       </div>

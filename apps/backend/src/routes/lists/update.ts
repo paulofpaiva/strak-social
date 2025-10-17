@@ -6,13 +6,37 @@ import { asyncHandler } from '../../middleware/asyncHandler'
 import { ApiResponse } from '../../utils/response'
 import { AppError } from '../../middleware/errorHandler'
 import { eq, and } from 'drizzle-orm'
+import multer from 'multer'
+import { uploadFile, generateCoverFilename } from '../../services/storage'
+import path from 'path'
 
 const router = Router()
 
-router.patch('/:id', authenticateToken, asyncHandler(async (req: Request, res: Response) => {
+const uploadMiddleware = (req: Request, res: Response, next: any) => {
+  const contentType = req.headers['content-type']
+  if (contentType && contentType.includes('multipart/form-data')) {
+    const upload = multer({
+      storage: multer.memoryStorage(),
+      limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype.startsWith('image/')) {
+          cb(null, true)
+        } else {
+          cb(new Error('Only image files are allowed'))
+        }
+      }
+    }).single('cover')
+    
+    upload(req, res, next)
+  } else {
+    next()
+  }
+}
+
+router.patch('/:id', authenticateToken, uploadMiddleware, asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user!.id
   const listId = req.params.id
-  const { title, description, coverUrl, isPrivate } = req.body
+  const { title, description, coverUrl, isPrivate: isPrivateRaw } = req.body
 
   const existingList = await db
     .select()
@@ -47,11 +71,28 @@ router.patch('/:id', authenticateToken, asyncHandler(async (req: Request, res: R
     updateData.description = description ? description.trim() : null
   }
 
-  if (coverUrl !== undefined) {
+  if (req.file) {
+    const userId = req.user!.id
+    const extension = path.extname(req.file.originalname)
+    const filename = generateCoverFilename(userId, extension)
+    
+    try {
+      const newCoverUrl = await uploadFile(
+        req.file.buffer,
+        'covers',
+        filename,
+        req.file.mimetype
+      )
+      updateData.coverUrl = newCoverUrl
+    } catch (error) {
+      throw new AppError('Failed to upload cover image', 500)
+    }
+  } else if (coverUrl !== undefined) {
     updateData.coverUrl = coverUrl || null
   }
 
-  if (isPrivate !== undefined) {
+  if (isPrivateRaw !== undefined) {
+    const isPrivate = typeof isPrivateRaw === 'string' ? isPrivateRaw === 'true' : isPrivateRaw
     updateData.isPrivate = isPrivate
   }
 
@@ -65,4 +106,3 @@ router.patch('/:id', authenticateToken, asyncHandler(async (req: Request, res: R
 }))
 
 export default router
-

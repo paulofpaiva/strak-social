@@ -71,8 +71,21 @@ export const getListByIdApi = async (id: string) => {
   return response.data.data
 }
 
-export const updateListApi = async (id: string, data: UpdateListData) => {
-  const response = await api.patch(`/lists/${id}`, data)
+export const updateListApi = async (id: string, data: UpdateListData, coverFile?: File | null) => {
+  const formData = new FormData()
+  
+  if (coverFile) {
+    formData.append('cover', coverFile)
+  }
+  formData.append('title', data.title || '')
+  formData.append('description', data.description || '')
+  formData.append('isPrivate', data.isPrivate?.toString() || 'false')
+
+  const response = await api.patch(`/lists/${id}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
   return response.data.data
 }
 
@@ -116,18 +129,6 @@ export const unfollowListApi = async (listId: string) => {
   return response.data
 }
 
-export const uploadListCoverApi = async (file: File) => {
-  const formData = new FormData()
-  formData.append('cover', file)
-
-  const response = await api.post('/upload/list-cover', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  })
-
-  return response.data.data
-}
 
 export const deleteListCoverApi = async (coverUrl: string) => {
   const response = await api.delete('/upload/list-cover', {
@@ -156,5 +157,21 @@ export const getListPostsApi = async (listId: string, page: number = 1, limit: n
 export const removePostFromListApi = async (listId: string, postId: string) => {
   const response = await api.delete(`/lists/${listId}/posts/${postId}`)
   return response.data
+}
+
+export interface UploadListCoverResponse {
+  coverUrl: string
+}
+
+export const uploadListCoverApi = async (file: File): Promise<UploadListCoverResponse> => {
+  const formData = new FormData()
+  formData.append('cover', file)
+
+  const response = await api.post<{ data: UploadListCoverResponse }>('/upload/list-cover', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
+  return response.data.data
 }
 

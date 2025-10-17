@@ -5,7 +5,7 @@ export function ProfileSkeleton() {
         <div className="h-32 sm:h-48 md:h-64 w-full bg-muted"></div>
         
         <div className="absolute -bottom-12 sm:-bottom-16 left-4 sm:left-6">
-          <div className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 bg-muted rounded-full border-4 border-background"></div>
+          <div className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 bg-muted rounded-full"></div>
         </div>
 
         <div className="absolute top-4 right-4">

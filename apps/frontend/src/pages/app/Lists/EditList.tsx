@@ -17,9 +17,9 @@ export function EditList() {
 
   const list = data?.list
 
-  const handleSubmit = async (data: CreateListFormData) => {
+  const handleSubmit = async (data: CreateListFormData, coverFile?: File | null) => {
     if (!id) return
-    await updateListMutation.mutateAsync({ id, data })
+    await updateListMutation.mutateAsync({ id, data, coverFile })
     navigateWithReturn(`/lists/${id}`, { replace: true })
   }
 
